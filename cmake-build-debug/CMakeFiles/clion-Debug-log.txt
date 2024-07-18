@@ -14,10 +14,10 @@ CMake Error at C:/Program Files/JetBrains/CLion 2023.3.4/bin/cmake/win/x64/share
 
   It fails with the following output:
 
-    Change Dir: '//wsl.localhost/AI-cmd/home/pipin/C++CudaTransformerX/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5jxsma'
+    Change Dir: '//wsl.localhost/AI-cmd/home/pipin/C++CudaTransformerX/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-h91ib5'
     
-    Run Build Command(s): "C:/Program Files/JetBrains/CLion 2023.3.4/bin/ninja/win/x64/ninja.exe" -v cmTC_d8977
-    ninja: error: '//wsl.localhost/AI-cmd/home/pipin/C++CudaTransformerX/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-5jxsma/testCCompiler.c', needed by 'CMakeFiles/cmTC_d8977.dir/testCCompiler.c.obj', missing and no known rule to make it
+    Run Build Command(s): "C:/Program Files/JetBrains/CLion 2023.3.4/bin/ninja/win/x64/ninja.exe" -v cmTC_0ae42
+    ninja: error: '//wsl.localhost/AI-cmd/home/pipin/C++CudaTransformerX/cmake-build-debug/CMakeFiles/CMakeScratch/TryCompile-h91ib5/testCCompiler.c', needed by 'CMakeFiles/cmTC_0ae42.dir/testCCompiler.c.obj', missing and no known rule to make it
     
     
 
