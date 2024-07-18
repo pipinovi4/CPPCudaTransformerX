@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 #include "MixedPrecisionFloat16.h"
+#include <algorithm>
+#include <stdexcept>
+#include <numeric>
 
 template <typename T>
 class Tensor {
@@ -13,6 +16,7 @@ private:
     std::string dtype;
 
     [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const;
+    T &at(const std::vector<int> &indices);
 
 public:
     explicit Tensor(const std::vector<int>& dims);
@@ -35,25 +39,25 @@ public:
 
     [[maybe_unused]] [[nodiscard]] Tensor<T> slice(int axis) const;
 
-    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other) const;
 
-    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
 
-    [[nodiscard]] Tensor<T> expandDims(int axis) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> expandDims(int axis) const;
 
-    [[nodiscard]] Tensor<T> squeeze() const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> squeeze() const;
 
-    [[nodiscard]] Tensor<T> reshape(int newShape) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> reshape(int newShape) const;
 
-    [[nodiscard]] Tensor<T> reshape(const std::vector<int>& newDimensions) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> reshape(const std::vector<int>& newDimensions) const;
 
-    [[nodiscard]] Tensor<T> transpose() const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;
 
-    [[nodiscard]] static Tensor<T> zeros(const std::vector<int>& dims);
+    [[maybe_unused]] [[nodiscard]] static Tensor<T> zeros(const std::vector<int>& dims);
 
-    [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
+    [[maybe_unused]] [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
 
-    [[nodiscard]] Tensor<T> strip(const int& axis) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> strip(const int& axis) const;
 
     Tensor<T> operator+(const Tensor<T>& other) const;
 
