@@ -4,6 +4,8 @@ C++CudaTransformerX is a high-performance implementation of a Transformer model 
 
 ## Features
 - Written in C++ for performance.
+- Written from scratch without external libraries.
+- Written in a modular and extensible manner.
 - GPU acceleration using NVIDIA CUDA.
 - Mixed precision for efficient memory usage.
 - Custom Tensor class with GPU support.
@@ -27,4 +29,6 @@ C++CudaTransformerX is a high-performance implementation of a Transformer model 
    ```bash
    git clone https://github.com/yourusername/C++CudaTransformerX.git
    cd C++CudaTransformerX
+   gcc -o main main.cpp
+    ```
 
