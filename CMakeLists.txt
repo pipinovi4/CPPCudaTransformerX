@@ -8,5 +8,4 @@ add_executable(C++CudaTransformerX ../CPPCudaTransformerX/src/main.cpp
         ../CPPCudaTransformerX/src/MixedPrecisionFloat16.cpp
         ../CPPCudaTransformerX/include/Tensor.h
         ../CPPCudaTransformerX/src/Tensor.cpp
-        ../CPPCudaTransformerX/src/main.cpp
 )
