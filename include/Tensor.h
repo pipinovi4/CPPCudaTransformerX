@@ -91,7 +91,7 @@ public:
     Tensor<T> operator/(T scalar) const;
 
     T& operator[](int index);
-//    Tensor<T> operator[](const std::vector<int>& indices) const;
+    Tensor<T> operator[](const std::vector<int>& indices) const;
 
 private:
     std::vector<int> dimensions;
@@ -124,37 +124,6 @@ private:
 
     int getTotalSize(const std::vector<int>& dims) const {
         return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
-    }
-
-    T& at(int index) {
-        if (dimensions.size() == 1) {
-            if (index < 0 || index >= dimensions[0]) {
-                throw std::out_of_range("Index out of bounds");
-            }
-            return data[index];
-        } else {
-            throw std::out_of_range("Use multi-dimensional indexing for tensors with more than one dimension");
-        }
-    }
-
-    Tensor<T> subTensor(int index) const {
-        if (dimensions.size() <= 1) {
-            throw std::out_of_range("Tensor has only one dimension, use one-dimensional indexing");
-        }
-        if (index < 0 || index >= dimensions[0]) {
-            throw std::out_of_range("Index out of bounds");
-        }
-
-        // Calculate new dimensions and strides
-        std::vector<int> new_dimensions(dimensions.begin() + 1, dimensions.end());
-        int sub_tensor_size = 1;
-        for (int dim : new_dimensions) {
-            sub_tensor_size *= dim;
-        }
-        std::vector<T> new_data(data.begin() + index * sub_tensor_size, data.begin() + (index + 1) * sub_tensor_size);
-
-        Tensor<T> sub_tensor(new_dimensions, new_data);
-        return sub_tensor;
     }
 
     // Primary template for is_vector

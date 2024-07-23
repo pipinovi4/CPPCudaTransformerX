@@ -695,20 +695,52 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //TODO: Implement the operator overloads for the tensor class
 template<typename T>
 T& Tensor<T>::operator[](int index) {
-    return at(index);
+    if (dimensions.size() == 1) {
+        if (index < 0 || index >= dimensions[0]) {
+            throw std::out_of_range("Index out of bounds");
+        }
+        return data[index];
+    } else {
+        throw std::out_of_range("Use multi-dimensional indexing for tensors with more than one dimension");
+    }
 }
 
-//template<typename T>
-//Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
-//    if (indices.size() != dimensions.size()) {
-//        throw std::out_of_range("Incorrect number of indices");
-//    }
-//    int flatIndex = 0;
-//    for (size_t i = 0; i < indices.size(); ++i) {
-//        if (indices[i] < 0 || indices[i] >= dimensions[i]) {
-//            throw std::out_of_range("Index out of bounds");
-//        }
-//        flatIndex += strides[i] * indices[i];
-//    }
-//    return Tensor<T>({1}, {data[flatIndex]});
-//}
+template<typename T>
+Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
+    // Initialize starting index and dimensions for the sub-tensor
+    std::vector<int> slice_dims = dimensions;
+    std::vector<int> slice_strides = strides;
+    int start_index = 0;
+    int dimension_size = getTotalSize(dimensions);
+
+    // Validate indices and calculate the starting index in the flattened data
+    if (indices.size() > dimensions.size()) {
+        throw std::out_of_range("Too many indices provided");
+    }
+
+    for (size_t i = 0; i < indices.size(); ++i) {
+        if (indices[i] < 0 || indices[i] >= dimensions[i]) {
+            throw std::out_of_range("Index out of bounds");
+        }
+        start_index += strides[i] * indices[i];
+        slice_dims[i] = 1;  // The selected slice dimension is 1
+        dimension_size /= dimensions[i]; // Update the dimension size for the remaining dimensions
+    }
+
+    // Reduce dimensions and strides for remaining dimensions
+    for (size_t i = indices.size(); i < dimensions.size(); ++i) {
+        dimension_size *= dimensions[i];
+        slice_dims[i] = dimensions[i]; // Keep remaining dimensions as they are
+    }
+
+    // Create the sub-tensor
+    Tensor<T> result_tensor(slice_dims);
+
+    // Copy relevant data into the sub-tensor
+    std::vector<int> result_index(slice_dims.size(), 0);
+    for (int i = 0; i < dimension_size; ++i) {
+        result_tensor.data[i] = data[start_index + i];
+    }
+
+    return result_tensor;
+}

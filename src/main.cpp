@@ -4,7 +4,7 @@
 
 int main() {
     // Initialize tensor with dimensions and data
-    Tensor<float> one_tensor({1, 2, 3}, std::vector<float>{1, 1, 1, 1, 1, 1});
+    Tensor<float> one_tensor({2, 2, 2}, std::vector<float>{1, 1, 1, 1, 1, 1, 2, 2});
 
     // Initialize tensor with dimensions only
     Tensor<int> two_tensor({1, 2});
@@ -21,5 +21,6 @@ int main() {
     three_tensor.print();
     four_tensor.print();
 
+    one_tensor[{1, 1}].print();
     return 0;
 }
