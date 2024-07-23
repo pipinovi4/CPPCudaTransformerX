@@ -2,7 +2,7 @@
 
 template<typename T>
 template<typename D>
-Tensor<T>::Tensor(const std::vector<int> &dims, const D& data) {
+Tensor<T>::Tensor(const std::vector<int>& dims, const D& data) {
     /*
      * Header:
      * \brief Constructor for a tensor with specified dimensions and data
@@ -38,15 +38,12 @@ Tensor<T>::Tensor(const std::vector<int> &dims, const D& data) {
         throw std::invalid_argument("Data must be a vector");
     }
 
-    int dims_size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
+    int dims_size = getTotalSize(dims);
 
     if (!dims.empty()) {
         this->dimensions = dims;
         if (data.empty()) {
-            for (int i = 0; i < dims_size; ++i) {
-                this->data.push_back(T(0));
-            }
-            this->dimensions = dims;
+            this->data.resize(dims_size, T(0));
         } else {
             std::vector<typename ExtractType<D>::Type> flattened_data;
             flatten(data, flattened_data);
@@ -67,46 +64,39 @@ Tensor<T>::Tensor(const std::vector<int> &dims, const D& data) {
     if (dims_size != this->data.size()) {
         throw std::invalid_argument("Data size does not match the specified dimensions");
     }
+
+    this->strides = calculateStrides();
 }
 
 template<typename T>
-Tensor<T>::Tensor(const std::vector<int> &dims) {
-    /*
-     * Header:
-     * \brief Constructor for a tensor with specified dimensions
-     *
-     * Params:
-     * \param dims The dimensions of the tensor
-     *
-     * Exceptions:
-     * \throws std::invalid_argument If the number of indices does not match the number of dimensions
-     *
-    */
-    int dims_size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
-    for (int i = 0; i < dims_size; ++i) {
-        this->data.push_back(T(0));
-    }
+Tensor<T>::Tensor(const std::vector<int>& dims) : Tensor<T>(dims, std::vector<T>()) {
+    int dims_size = getTotalSize(dims);
     this->dimensions = dims;
+    this->data.resize(dims_size, T(0));
+
+    if (dims_size != this->data.size()) {
+        throw std::invalid_argument("Data size does not match the specified dimensions");
+    }
+
+    this->strides = calculateStrides();
+}
+
+template <typename T>
+Tensor<T>::Tensor(std::initializer_list<int> dims) : Tensor<T>(std::vector<int>(dims), std::vector<T>()) {
+    int dims_size = getTotalSize(dims);
+    std::vector<int> dims_vec(dims);
+    this->data.resize(dims_size, T(0));
+
+    if (dims_size != this->data.size()) {
+        throw std::invalid_argument("Data size does not match the specified dimensions");
+    }
+
+    this->strides = calculateStrides();
 }
 
 template<typename T>
 template<typename D>
-Tensor<T>::Tensor(const D& data) {
-    /*
-     * Header:
-     * \brief Constructor for a tensor with data
-     *
-     * Params:
-     * \param data The data to be stored in the tensor
-     *
-     * TParams:
-     * \tparam D The type of the data
-     *
-     * Exceptions:
-     * \throws std::invalid_argument If the data is not a vector
-     * \throws std::invalid_argument If the number of indices does not match the number of dimensions
-     *
-    */
+Tensor<T>::Tensor(const D &data) {
     if (!is_vector<D>::value) {
         throw std::invalid_argument("Data must be a vector");
     }
@@ -115,6 +105,11 @@ Tensor<T>::Tensor(const D& data) {
     flatten(data, flattened_data);
     this->data = flattened_data;
     this->dimensions = compute_shape(data);
+    std::vector<int> computed_shape = compute_shape(data);
+    if (getTotalSize(dimensions) != std::accumulate(computed_shape.begin(), computed_shape.end(), 1, std::multiplies<>())) {
+        throw std::invalid_argument("Data size does not match the specified dimensions");
+    }
+    this->strides = calculateStrides();
 }
 
 template<typename T>
@@ -137,21 +132,6 @@ template<typename T>
 T Tensor<T>::get(const std::vector<int>& indices) const {
     int index = calculateIndex(indices);
     return data[index];
-}
-
-    template<typename T>
-int Tensor<T>::calculateIndex(const std::vector<int>& indices) const {
-    if (indices.size() != dimensions.size()) {
-        throw std::invalid_argument("Number of indices must match number of dimensions");
-    }
-
-    int index = 0;
-    int stride = 1;
-    for (int i = dimensions.size() - 1; i >= 0; --i) {
-        index += indices[i] * stride;
-        stride *= dimensions[i];
-    }
-    return index;
 }
 
 template<typename T>
@@ -545,111 +525,190 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
     return tensor;
 }
 
+// TODO: Implement the tril and triu
+//template<typename T>
+//Tensor<T> Tensor<T>::tril(const int& axis) const {
+//    int dimension_size = dimensions.size();
+//    // Check if the axis is valid
+//    if (std::abs(axis) >= dimensions[dimensions.size() - 1]) {
+//        std::cout << "Invalid axis" << std::endl;
+//        return Tensor<T>(dimensions);
+//    }
+//
+//
+//
+//    return Tensor<T>(dimensions);
+//}
+
+//template<typename T>
+//Tensor<T> Tensor<T>::triu(const int& axis) const {
+//    std::vector<T> result(getTotalSize(dimensions), 0);
+//
+//    int dim_size = dimensions[dimensions.size() -1] - axis;
+//    std::vector<int> indices(dimensions.size(), 0);
+//
+//    // Apply the upper triangular mask
+//    for (int i = 0; i < dim_size; ++i) {
+//        for (int j = 0; j < dim_size; ++j) {
+//            if (j >= i) {
+//                indices[axis] = i;
+//                indices[axis + 1] = j;
+//                int index = calculateIndex(indices);
+//                result[index] = data[index];
+//            }
+//        }
+//    }
+//
+//    return Tensor<T>(dimensions, result);
+//}
+
+//template<typename T>
+//Tensor<T> Tensor<T>::operator+(const Tensor<T> &other) const {
+//    // Ensure the dimensions match
+//    if (dimensions != other.shape()) {
+//        throw std::invalid_argument("Dimensions mismatch");
+//    }
+//
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise addition
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result[i] = data[i] + other.data[i];
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
+//    // Ensure dimensions match
+//    if (this->dimensions != other.dimensions) {
+//        throw std::invalid_argument("Dimension mismatch for subtraction");
+//    }
+//
+//    // Create result tensor
+//    Tensor<T> result(this->dimensions);
+//
+//    // Perform element-wise subtraction
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = this->data[i] - other.data[i];
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator*(const Tensor<T> &other) const {
+//    // Check if dimensions match
+//    if (dimensions.size() != other.shape().size()) {
+//        throw std::invalid_argument("Tensor dimensions do not match for multiplication");
+//    }
+//
+//    for (size_t i = 0; i < dimensions.size(); ++i) {
+//        if (dimensions[i] != other.shape()[i]) {
+//            throw std::invalid_argument("Tensor dimensions do not match for multiplication");
+//        }
+//    }
+//
+//    Tensor<T> result(dimensions); // Create a result tensor with the same shape
+//    for (int i = 0; i < dimensions[0]; ++i) {
+//        for (int j = 0; j < dimensions[1]; ++j) {
+//            // Access elements from both tensors and perform multiplication
+//            result(i, j) = (*this)(i, j) * other(i, j);
+//        }
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator/(const Tensor<T> &other) const {
+//    // Ensure the dimensions match
+//    if (dimensions != other.shape()) {
+//        throw std::invalid_argument("Dimensions mismatch");
+//    }
+//
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise division
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = data[i] / other.data[i];
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator+(T scalar) const {
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise addition with scalar
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = data[i] + scalar;
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator-(T scalar) const {
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise subtraction with scalar
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = data[i] - scalar;
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator*(T scalar) const {
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise multiplication with scalar
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = data[i] * scalar;
+//    }
+//
+//    return result;
+//}
+//
+//template<typename T>
+//Tensor<T> Tensor<T>::operator/(T scalar) const {
+//    // Create a new tensor for the result
+//    Tensor<T> result(dimensions);
+//
+//    // Perform element-wise division with scalar
+//    for (size_t i = 0; i < data.size(); ++i) {
+//        result.data[i] = data[i] / scalar;
+//    }
+//
+//    return result;
+//}
+
+//TODO: Implement the operator overloads for the tensor class
 template<typename T>
-Tensor<T> Tensor<T>::tril(const int& axis) const {
-    std::vector<int> new_dims = dimensions;
-    std::vector<T> result(data);
-
-    int axis_to_use = (axis == -1) ? dimensions.size() - 2 : axis;
-
-    for (int i = 0; i < dimensions[axis_to_use]; ++i) {
-        for (int j = i + 1; j < dimensions[axis_to_use + 1]; ++j) {
-            std::vector<int> idx1(dimensions.size(), 0);
-            std::vector<int> idx2(dimensions.size(), 0);
-
-            idx1[axis_to_use] = i;
-            idx1[axis_to_use + 1] = j;
-            idx2[axis_to_use] = j;
-            idx2[axis_to_use + 1] = i;
-
-            int idx1_flat = calculateIndex(idx1);
-            int idx2_flat = calculateIndex(idx2);
-
-            result[idx1_flat] = 0;
-            result[idx2_flat] = 0;
-        }
-    }
-
-    Tensor<T> triuTensor(new_dims);
-
-    return Tensor<T>(new_dims, result);
+T& Tensor<T>::operator[](int index) {
+    return at(index);
 }
 
-template<typename T>
-Tensor<T> Tensor<T>::triu(const int& axis) const {
-    std::vector<int> new_dims = dimensions;
-    std::vector<T> result(data);
-
-    int axis_to_use = (axis == -1) ? dimensions.size() - 2 : axis;
-
-    for (int i = 0; i < dimensions[axis_to_use]; ++i) {
-        for (int j = 0; j < i; ++j) {
-            std::vector<int> idx1(dimensions.size(), 0);
-            std::vector<int> idx2(dimensions.size(), 0);
-
-            idx1[axis_to_use] = i;
-            idx1[axis_to_use + 1] = j;
-            idx2[axis_to_use] = j;
-            idx2[axis_to_use + 1] = i;
-
-            int idx1_flat = calculateIndex(idx1);
-            int idx2_flat = calculateIndex(idx2);
-
-            result[idx1_flat] = 0;
-            result[idx2_flat] = 0;
-        }
-    }
-
-    return Tensor<T>(new_dims, result);
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator+(const Tensor<T> &other) const {
-    // Implementation methode operator+ for other
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator-(const Tensor<T> &other) const {
-    // Implementation methode operator- for other
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator*(const Tensor<T> &other) const {
-    // Implementation methode operator* for other
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator/(const Tensor<T> &other) const {
-    // Implementation methode operator/ for other
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator+(T scalar) const {
-    // Implementation methode operator+ for scalar
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator-(T scalar) const {
-    // Implementation methode operator- for scalar
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator*(T scalar) const {
-    // Implementation methode operator* for scalar
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator/(T scalar) const {
-    // Implementation methode operator/ for scalar
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator[](int index) const {
-    // Implementation methode operator[] for index
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
-    // Implementation methode operator[] for indices
-}
-
+//template<typename T>
+//Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
+//    if (indices.size() != dimensions.size()) {
+//        throw std::out_of_range("Incorrect number of indices");
+//    }
+//    int flatIndex = 0;
+//    for (size_t i = 0; i < indices.size(); ++i) {
+//        if (indices[i] < 0 || indices[i] >= dimensions[i]) {
+//            throw std::out_of_range("Index out of bounds");
+//        }
+//        flatIndex += strides[i] * indices[i];
+//    }
+//    return Tensor<T>({1}, {data[flatIndex]});
+//}

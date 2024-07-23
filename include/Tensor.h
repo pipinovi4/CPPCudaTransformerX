@@ -8,79 +8,33 @@
 #include <stdexcept>
 #include <numeric>
 #include <type_traits>
+#include <cassert>
+#include <cmath>
 
 template <typename T>
 class Tensor {
-private:
-    std::vector<int> dimensions;
-    std::vector<T> data;
-
-    [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const;
-
-    // Primary template for is_vector
-    template <typename D>
-    struct is_vector : std::false_type {};
-
-    // Specialization for std::vector
-    template <typename D, typename Allocator>
-    struct is_vector<std::vector<D, Allocator>> : std::true_type {};
-
-    // Base case: handle the innermost type
-    template <typename D>
-    struct ExtractType {
-        using Type = T; // This is the innermost type
-    };
-
-    // Recursive case: handle the outer dimensions
-    template <typename D>
-    struct ExtractType<std::vector<D>> {
-        using Type = typename ExtractType<D>::Type; // Recursively extract inner type
-    };
-
-    // Recursive traversal to the innermost type
-    template <typename D>
-    void flatten(const D& vec, std::vector<T>& result) {
-        if constexpr (is_vector<D>::value) {
-            for (const auto& elem : vec) {
-                flatten(elem, result);
-            }
-        } else {
-            result.push_back(vec);
-        }
-    }
-
-    template <typename D>
-    std::vector<int> compute_shape(const D& vec) {
-        if constexpr (is_vector<D>::value) {
-            if (vec.empty()) {
-                return {0};
-            }
-            std::vector<int> shape;
-            shape.push_back(vec.size());
-            auto inner_shape = compute_shape(vec[0]);
-            shape.insert(shape.end(), inner_shape.begin(), inner_shape.end());
-            return shape;
-        } else {
-            return {};
-        }
-    }
-
 public:
-    // Constructor to initialize the tensor with a vector of vectors
-
+    // Constructor to initialize the tensor with dimensions and optionally with data
     template<typename D>
     explicit Tensor(const std::vector<int>& dims, const D& data);
 
+    // Constructor to initialize the tensor with dimensions only
     explicit Tensor(const std::vector<int>& dims);
 
+    // Constructor to initialize the tensor with dimensions from an initializer list
+    Tensor(std::initializer_list<int> dims);
+
+    // Constructor to initialize the tensor with data
     template<typename D>
     explicit Tensor(const D& data);
 
     // Helper functions to get the dimensions and size of the tensor
 
-    [[maybe_unused]] [[nodiscard]] const std::vector<int>& shape() const;
+    [[nodiscard]] const std::vector<int>& shape() const;
 
-    [[maybe_unused]] [[nodiscard]] int size() const;
+    [[nodiscard]] int size() const;
+
+    void print() const;
 
     // Manipulation structure functions
 
@@ -136,11 +90,120 @@ public:
 
     Tensor<T> operator/(T scalar) const;
 
-    Tensor<T> operator[](int index) const;
+    T& operator[](int index);
+//    Tensor<T> operator[](const std::vector<int>& indices) const;
 
-    Tensor<T> operator[](const std::vector<int>& indices) const;
+private:
+    std::vector<int> dimensions;
+    std::vector<T> data;
+    std::vector<int> strides;
 
-    void print() const;
+    [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const {
+        if (indices.size() != dimensions.size()) {
+            throw std::invalid_argument("Number of indices must match number of dimensions");
+        }
+
+        int index = 0;
+        int stride = 1;
+        for (int i = dimensions.size() - 1; i >= 0; --i) {
+            index += indices[i] * stride;
+            stride *= dimensions[i];
+        }
+        return index;
+    }
+
+    std::vector<int> calculateStrides() const {
+        std::vector<int> localStrides(dimensions.size());
+        int stride = 1;
+        for (int i = dimensions.size() - 1; i >= 0; --i) {
+            localStrides[i] = stride;
+            stride *= dimensions[i];
+        }
+        return localStrides;
+    }
+
+    int getTotalSize(const std::vector<int>& dims) const {
+        return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
+    }
+
+    T& at(int index) {
+        if (dimensions.size() == 1) {
+            if (index < 0 || index >= dimensions[0]) {
+                throw std::out_of_range("Index out of bounds");
+            }
+            return data[index];
+        } else {
+            throw std::out_of_range("Use multi-dimensional indexing for tensors with more than one dimension");
+        }
+    }
+
+    Tensor<T> subTensor(int index) const {
+        if (dimensions.size() <= 1) {
+            throw std::out_of_range("Tensor has only one dimension, use one-dimensional indexing");
+        }
+        if (index < 0 || index >= dimensions[0]) {
+            throw std::out_of_range("Index out of bounds");
+        }
+
+        // Calculate new dimensions and strides
+        std::vector<int> new_dimensions(dimensions.begin() + 1, dimensions.end());
+        int sub_tensor_size = 1;
+        for (int dim : new_dimensions) {
+            sub_tensor_size *= dim;
+        }
+        std::vector<T> new_data(data.begin() + index * sub_tensor_size, data.begin() + (index + 1) * sub_tensor_size);
+
+        Tensor<T> sub_tensor(new_dimensions, new_data);
+        return sub_tensor;
+    }
+
+    // Primary template for is_vector
+    template <typename D>
+    struct is_vector : std::false_type {};
+
+    // Specialization for std::vector
+    template <typename D, typename Allocator>
+    struct is_vector<std::vector<D, Allocator>> : std::true_type {};
+
+    // Base case: handle the innermost type
+    template <typename D>
+    struct ExtractType {
+        using Type = T; // This is the innermost type
+    };
+
+    // Recursive case: handle the outer dimensions
+    template <typename D>
+    struct ExtractType<std::vector<D>> {
+        using Type = typename ExtractType<D>::Type; // Recursively extract inner type
+    };
+
+    // Recursive traversal to the innermost type
+    template <typename D>
+    void flatten(const D& vec, std::vector<T>& result) {
+        if constexpr (is_vector<D>::value) {
+            for (const auto& elem : vec) {
+                flatten(elem, result);
+            }
+        } else {
+            result.push_back(vec);
+        }
+    }
+
+    template <typename D>
+    std::vector<int> compute_shape(const D& vec) {
+        if constexpr (is_vector<D>::value) {
+            if (vec.empty()) {
+                return {0};
+            }
+            std::vector<int> shape;
+            shape.push_back(vec.size());
+            auto inner_shape = compute_shape(vec[0]);
+            shape.insert(shape.end(), inner_shape.begin(), inner_shape.end());
+            return shape;
+        } else {
+            return {};
+        }
+    }
 };
 
 template class Tensor<float>;
