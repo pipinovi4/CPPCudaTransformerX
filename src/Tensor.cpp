@@ -562,42 +562,44 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //    return Tensor<T>(dimensions, result);
 //}
 
-//template<typename T>
-//Tensor<T> Tensor<T>::operator+(const Tensor<T> &other) const {
-//    // Ensure the dimensions match
-//    if (dimensions != other.shape()) {
-//        throw std::invalid_argument("Dimensions mismatch");
-//    }
-//
-//    // Create a new tensor for the result
-//    Tensor<T> result(dimensions);
-//
-//    // Perform element-wise addition
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result[i] = data[i] + other.data[i];
-//    }
-//
-//    return result;
-//}
-//
-//template<typename T>
-//Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
-//    // Ensure dimensions match
-//    if (this->dimensions != other.dimensions) {
-//        throw std::invalid_argument("Dimension mismatch for subtraction");
-//    }
-//
-//    // Create result tensor
-//    Tensor<T> result(this->dimensions);
-//
-//    // Perform element-wise subtraction
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result.data[i] = this->data[i] - other.data[i];
-//    }
-//
-//    return result;
-//}
-//
+//TODO: Implement the operators
+template<typename T>
+Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
+    // Ensure that tensors have the same shape
+    if (this->dimensions != other.dimensions) {
+        throw std::invalid_argument("Tensors must have the same shape for addition");
+    }
+
+    // Create a new tensor to hold the result
+    Tensor<T> result(this->dimensions);
+
+    // Perform element-wise addition
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        result.data[i] = this->data[i] + other.data[i];
+    }
+
+    return result;
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
+    // Ensure dimensions match
+    if (this->dimensions != other.dimensions) {
+        throw std::invalid_argument("Dimension mismatch for subtraction");
+    }
+
+    // Create result tensor
+    Tensor<T> result(this->dimensions);
+
+    // Perform element-wise subtraction
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data[i] = this->data[i] - other.data[i];
+    }
+
+    return result;
+}
+
+//TODO: Implement the operators multiplication and division
 //template<typename T>
 //Tensor<T> Tensor<T>::operator*(const Tensor<T> &other) const {
 //    // Check if dimensions match
@@ -621,7 +623,7 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //
 //    return result;
 //}
-//
+
 //template<typename T>
 //Tensor<T> Tensor<T>::operator/(const Tensor<T> &other) const {
 //    // Ensure the dimensions match
@@ -639,60 +641,59 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //
 //    return result;
 //}
-//
-//template<typename T>
-//Tensor<T> Tensor<T>::operator+(T scalar) const {
-//    // Create a new tensor for the result
-//    Tensor<T> result(dimensions);
-//
-//    // Perform element-wise addition with scalar
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result.data[i] = data[i] + scalar;
-//    }
-//
-//    return result;
-//}
-//
-//template<typename T>
-//Tensor<T> Tensor<T>::operator-(T scalar) const {
-//    // Create a new tensor for the result
-//    Tensor<T> result(dimensions);
-//
-//    // Perform element-wise subtraction with scalar
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result.data[i] = data[i] - scalar;
-//    }
-//
-//    return result;
-//}
-//
-//template<typename T>
-//Tensor<T> Tensor<T>::operator*(T scalar) const {
-//    // Create a new tensor for the result
-//    Tensor<T> result(dimensions);
-//
-//    // Perform element-wise multiplication with scalar
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result.data[i] = data[i] * scalar;
-//    }
-//
-//    return result;
-//}
-//
-//template<typename T>
-//Tensor<T> Tensor<T>::operator/(T scalar) const {
-//    // Create a new tensor for the result
-//    Tensor<T> result(dimensions);
-//
-//    // Perform element-wise division with scalar
-//    for (size_t i = 0; i < data.size(); ++i) {
-//        result.data[i] = data[i] / scalar;
-//    }
-//
-//    return result;
-//}
 
-//TODO: Implement the operator overloads for the tensor class
+template<typename T>
+Tensor<T> Tensor<T>::operator+(T scalar) const {
+    // Create a new tensor for the result
+    Tensor<T> result(dimensions);
+
+    // Perform element-wise addition with scalar
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data[i] = data[i] + scalar;
+    }
+
+    return result;
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::operator-(T scalar) const {
+    // Create a new tensor for the result
+    Tensor<T> result(dimensions);
+
+    // Perform element-wise subtraction with scalar
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data[i] = data[i] - scalar;
+    }
+
+    return result;
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::operator*(T scalar) const {
+    // Create a new tensor for the result
+    Tensor<T> result(dimensions);
+
+    // Perform element-wise multiplication with scalar
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data[i] = data[i] * scalar;
+    }
+
+    return result;
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::operator/(T scalar) const {
+    // Create a new tensor for the result
+    Tensor<T> result(dimensions);
+
+    // Perform element-wise division with scalar
+    for (size_t i = 0; i < data.size(); ++i) {
+        result.data[i] = data[i] / scalar;
+    }
+
+    return result;
+}
+
 template<typename T>
 T& Tensor<T>::operator[](int index) {
     if (dimensions.size() == 1) {
