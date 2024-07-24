@@ -17,17 +17,17 @@ class Tensor {
 public:
     // Constructor to initialize the tensor with dimensions and optionally with data
     template<typename D>
-    explicit Tensor(const std::vector<int>& dims, const D& data);
+    Tensor(const std::vector<int>& dims, const D& data);
+
+    // Constructor to initialize the tensor with data
+    template<typename D>
+    explicit Tensor(const D& data);
 
     // Constructor to initialize the tensor with dimensions only
     explicit Tensor(const std::vector<int>& dims);
 
     // Constructor to initialize the tensor with dimensions from an initializer list
     Tensor(std::initializer_list<int> dims);
-
-    // Constructor to initialize the tensor with data
-    template<typename D>
-    explicit Tensor(const D& data);
 
     // Helper functions to get the dimensions and size of the tensor
 
@@ -208,6 +208,8 @@ private:
 //    }
 
 };
+
+#include "../src/Tensor.tpp"
 
 template class Tensor<float>;
 template class Tensor<int>;
