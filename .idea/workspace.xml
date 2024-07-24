@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="C++CudaTransformerX" targetName="test_tensor" />
+      <config projectName="C++CudaTransformerX" targetName="C++CudaTransformerX" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Updated .gitignore configuration.">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="pipinovi4 &lt;prustolivgra@gmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+    <option name="SIGN_OFF_COMMIT" value="true" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;pipinovi4&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/pipinovi4/CPPCudaTransformerX",
+    "accountId": "1b9524dd-7cfa-4648-87af-37595fe29dfb"
+  }
+}]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/include/MixedPrecisionFloat16.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/Tensor.h" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="InvalidFacetManager">
+    <ignored-facets>
+      <facet id="C++CudaTransformerX/invalid/Python facet" />
+    </ignored-facets>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="3.4" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2jPXxg99Zvb2D5Ba0ycbEXmxmw5" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "C/C++ File.main.cpp - WSL.executor": "Run",
+    "C/C++ File.main.cpp.executor": "Run",
+    "C/C++ File.src\\main.cpp.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "/home/pipin/C++CudaTransformerX",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/build" />
+      <recent name="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX\docs" />
+      <recent name="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX" />
+    </key>
+  </component>
+  <component name="RunManager" selected="C/C++ File.main.cpp">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="test_tensor" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="test_tensor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="test_tensor" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="C++CudaTransformerX" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="C++CudaTransformerX" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="C++CudaTransformerX">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="C++CudaTransformerX" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="C++CudaTransformerX" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="C++CudaTransformerX">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="main.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="main.cpp" CONFIG_NAME="main.cpp">
+      <option name="sourceFile" value="src/main.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="main.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="main.cpp" CONFIG_NAME="main.cpp">
+      <option name="sourceFile" value="src/main.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="python3" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="C++CudaTransformerX" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX\src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/.venv/bin/python3" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="python3" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="C++CudaTransformerX" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX\src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/.venv/bin/python3" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="C/C++ File.main.cpp" />
+      <item itemvalue="CMake Application.C++CudaTransformerX" />
+      <item itemvalue="Google Test.test_tensor" />
+      <item itemvalue="Google Test.Tensor_Constructor_Test" />
+      <item itemvalue="Python.python3" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="" />
+      <created>1721289933428</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1721289933428</updated>
+      <workItem from="1721289934839" duration="18938000" />
+      <workItem from="1721465032013" duration="1688000" />
+      <workItem from="1721562433702" duration="704000" />
+      <workItem from="1721626982408" duration="45723000" />
+      <workItem from="1721734303873" duration="1213000" />
+      <workItem from="1721735673703" duration="21000" />
+      <workItem from="1721738983362" duration="567000" />
+      <workItem from="1721740192031" duration="129000" />
+      <workItem from="1721740806111" duration="15000" />
+      <workItem from="1721740834291" duration="27000" />
+      <workItem from="1721740863042" duration="5000" />
+      <workItem from="1721740897389" duration="146000" />
+      <workItem from="1721741614306" duration="1747000" />
+      <workItem from="1721743441050" duration="16000" />
+      <workItem from="1721743528818" duration="627000" />
+      <workItem from="1721745892696" duration="456000" />
+      <workItem from="1721746413865" duration="349000" />
+      <workItem from="1721746992280" duration="26000" />
+      <workItem from="1721747116242" duration="3938000" />
+      <workItem from="1721751205943" duration="130000" />
+      <workItem from="1721802902560" duration="2000" />
+      <workItem from="1721803164527" duration="9687000" />
+    </task>
+    <task id="LOCAL-00001" summary="Initializing project">
+      <option name="closed" value="true" />
+      <created>1721290067867</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290067867</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Made in Mixed Precision with (float 16 | float 32)">
+      <option name="closed" value="true" />
+      <created>1721290293659</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290293659</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Made in Mixed Precision with (float 16 | float 32)">
+      <option name="closed" value="true" />
+      <created>1721290311091</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290311091</updated>
+    </task>
+    <task id="LOCAL-00004" summary="The Tensor class has been created, in the process of implementing the class">
+      <option name="closed" value="true" />
+      <created>1721290437172</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290437172</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Updated CMakeLists.txt">
+      <option name="closed" value="true" />
+      <created>1721290501799</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290501799</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Updated CMakeLists.txt">
+      <option name="closed" value="true" />
+      <created>1721290713062</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290713062</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Made README file">
+      <option name="closed" value="true" />
+      <created>1721290772948</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1721290772948</updated>
+    </task>
+    <task id="LOCAL-00008" summary="The file structure in the `docs' directory is made">
+      <option name="closed" value="true" />
+      <created>1721291421282</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1721291421282</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Minor update README.md">
+      <option name="closed" value="true" />
+      <created>1721302367464</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1721302367464</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Implemented transpose method of class Tensor.cpp">
+      <option name="closed" value="true" />
+      <created>1721303801454</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721303801454</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added.">
+      <option name="closed" value="true" />
+      <created>1721649672488</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721649672488</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml">
+      <option name="closed" value="true" />
+      <created>1721649813920</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1721649813920</updated>
+    </task>
+    <task id="LOCAL-00013" summary="- Updated Tensor class constructors to ensure correct parameter matching and initialization.">
+      <option name="closed" value="true" />
+      <created>1721722876019</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1721722876019</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory.">
+      <option name="closed" value="true" />
+      <created>1721723862121</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1721723862121</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other">
+      <option name="closed" value="true" />
+      <created>1721725093535</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1721725093535</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning.">
+      <option name="closed" value="true" />
+      <created>1721812602565</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1721812602565</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories.">
+      <option name="closed" value="true" />
+      <created>1721813535070</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1721813535070</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Updated .gitignore configuration.">
+      <option name="closed" value="true" />
+      <created>1721813827086</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1721813827086</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initializing project" />
+    <MESSAGE value="Made in Mixed Precision with (float 16 | float 32)" />
+    <MESSAGE value="The Tensor class has been created, in the process of implementing the class" />
+    <MESSAGE value="Updated CMakeLists.txt" />
+    <MESSAGE value="Made README file" />
+    <MESSAGE value="The file structure in the `docs' directory is made" />
+    <MESSAGE value="Minor update README.md" />
+    <MESSAGE value="Implemented transpose method of class Tensor.cpp" />
+    <MESSAGE value="Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added." />
+    <MESSAGE value="Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml" />
+    <MESSAGE value="- Updated Tensor class constructors to ensure correct parameter matching and initialization." />
+    <MESSAGE value="Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory." />
+    <MESSAGE value="Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other" />
+    <MESSAGE value="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning." />
+    <MESSAGE value="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories." />
+    <MESSAGE value="Updated .gitignore configuration." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated .gitignore configuration." />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
