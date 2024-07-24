@@ -1,0 +1,17 @@
+# Python virtual environment
+.venv/
+
+# CMake build directories
+build/
+cmake-build-debug/
+CMakeUserPresets.json
+CMakeFiles
+
+# Системні файли
+*.log
+*.tmp
+
+# Інші непотрібні файли
+*.swp
+*.swo
+*.swn
