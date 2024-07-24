@@ -21,8 +21,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Updated .gitignore configuration.">
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tensor.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -256,7 +261,7 @@
       <workItem from="1721747116242" duration="3938000" />
       <workItem from="1721751205943" duration="130000" />
       <workItem from="1721802902560" duration="2000" />
-      <workItem from="1721803164527" duration="9687000" />
+      <workItem from="1721803164527" duration="16923000" />
     </task>
     <task id="LOCAL-00001" summary="Initializing project">
       <option name="closed" value="true" />
@@ -402,7 +407,31 @@
       <option name="project" value="LOCAL" />
       <updated>1721813827086</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Updated .gitignore configuration.">
+      <option name="closed" value="true" />
+      <created>1721813962317</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1721813962317</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Updated .gitignore configuration.">
+      <option name="closed" value="true" />
+      <created>1721813968728</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1721813968728</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.">
+      <option name="closed" value="true" />
+      <created>1721824192605</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1721824192605</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -430,7 +459,8 @@
     <MESSAGE value="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning." />
     <MESSAGE value="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories." />
     <MESSAGE value="Updated .gitignore configuration." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated .gitignore configuration." />
+    <MESSAGE value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

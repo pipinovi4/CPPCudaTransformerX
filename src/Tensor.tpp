@@ -1,3 +1,6 @@
+#ifndef TENSOR_TPP
+#define TENSOR_TPP
+
 #include "../include/Tensor.h"
 
 template<typename T>
@@ -40,8 +43,6 @@ Tensor<T>::Tensor(const std::vector<int>& dims, const D& data) {
 
     int dims_size = getTotalSize(dims);
 
-    std::cout << "Dims_size: " << dims_size << std::endl;
-
     if (!dims.empty()) {
         this->dimensions = dims;
         std::vector<int> computed_shape = compute_shape(data);
@@ -61,11 +62,7 @@ Tensor<T>::Tensor(const std::vector<int>& dims, const D& data) {
         std::vector<typename ExtractType<D>::Type> flattened_data;
         flatten(data, flattened_data);
         this->data = flattened_data;
-        this->dimensions = compute_shape(data);
-    }
-
-    if (dims_size != this->data.size()) {
-        throw std::invalid_argument("Data size does not match the specified dimensions");
+        this->dimensions = dims;
     }
 
     this->strides = calculateStrides();
@@ -100,22 +97,16 @@ Tensor<T>::Tensor(const std::initializer_list<int> dims) : Tensor<T>(std::vector
 template<typename T>
 template<typename D>
 Tensor<T>::Tensor(const D &data) : Tensor<T>(std::vector<int>(), data) {
-    // std::vector<int> computed_shape = compute_shape(data);
-    // std::cout << "Hello world!" << std::endl;
-    // if (!is_vector<D>::value) {
-    //     throw std::invalid_argument("Data must be a vector");
-    // }
-    //
-    // if (getTotalSize(dimensions) != std::accumulate(computed_shape.begin(), computed_shape.end(), 1, std::multiplies<>())) {
-    //     throw std::invalid_argument("Data size does not match the specified dimensions");
-    // }
-    //
-    // std::vector<typename ExtractType<D>::Type> flattened_data;
-    // flatten(data, flattened_data);
-    // this->data = flattened_data;
-    // this->dimensions = compute_shape(data);
-    // this->strides = calculateStrides();
-    Tensor<T> (std::vector<int>{}, data);
+    std::vector<int> computed_shape = compute_shape(data);
+    if (!is_vector<D>::value) {
+        throw std::invalid_argument("Data must be a vector");
+    }
+
+    std::vector<typename ExtractType<D>::Type> flattened_data;
+    flatten(data, flattened_data);
+    this->data = flattened_data;
+    this->dimensions = compute_shape(data);
+    this->strides = calculateStrides();
 }
 
 template<typename T>
@@ -224,15 +215,15 @@ void Tensor<T>::fill(T value) {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::slice(int axis, int start, int end, int step) const {
+Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
     }
 
     // Calculate effective start, end and step
-    int actual_start = (start < 0) ? (dimensions[axis] + start) : start;
-    int actual_end = (end < 0) ? (dimensions[axis] + end) : end;
-    int actual_step = (step == 0) ? 1 : step;
+    const int actual_start = (start < 0) ? (dimensions[axis] + start) : start;
+    const int actual_end = (end < 0) ? (dimensions[axis] + end) : end;
+    const int actual_step = (step == 0) ? 1 : step;
 
     // Validate indices
     if (actual_start < 0 || actual_start >= dimensions[axis]) {
@@ -276,21 +267,21 @@ Tensor<T> Tensor<T>::slice(int axis, int start, int end, int step) const {
         }
     }
 
-    return sliced_tensor;
+    return sliced_tensor.squeeze();
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::slice(int axis, int start, int end) const {
+Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end) const {
     return slice(axis, start, end, 1);
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::slice(int axis, int start) const {
+Tensor<T> Tensor<T>::slice(const int axis, const int start) const {
     return slice(axis, start, dimensions[axis], 1);
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::slice(int axis) const {
+Tensor<T> Tensor<T>::slice(const int axis) const {
     return slice(axis, 0, dimensions[axis], 1);
 }
 
@@ -758,3 +749,5 @@ Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
 //     int flatIndex = toFlatIndex(indices);
 //     return data[flatIndex];
 // }
+
+#endif // TENSOR_TPP

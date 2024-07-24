@@ -12,7 +12,7 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 add_executable(C++CudaTransformerX
         src/main.cpp
         src/MixedPrecisionFloat16.cpp
-        src/Tensor.cpp
+        src/Tensor.tpp
         include/MixedPrecisionFloat16.h
         include/Tensor.h
 )
