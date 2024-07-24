@@ -3,13 +3,14 @@
 
 #include <vector>
 #include <string>
-#include "MixedPrecisionFloat16.h"
+#include <iostream>
 #include <algorithm>
 #include <stdexcept>
 #include <numeric>
 #include <type_traits>
 #include <cassert>
 #include <cmath>
+#include "MixedPrecisionFloat16.h"
 
 template <typename T>
 class Tensor {
@@ -91,7 +92,12 @@ public:
     Tensor<T> operator/(T scalar) const;
 
     T& operator[](int index);
+
     Tensor<T> operator[](const std::vector<int>& indices) const;
+
+    T& operator()(int indices);
+
+    const T& operator()(const std::vector<int>& indices) const;
 
 private:
     std::vector<int> dimensions;
@@ -112,7 +118,7 @@ private:
         return index;
     }
 
-    std::vector<int> calculateStrides() const {
+    [[nodiscard]] std::vector<int> calculateStrides() const {
         std::vector<int> localStrides(dimensions.size());
         int stride = 1;
         for (int i = dimensions.size() - 1; i >= 0; --i) {
@@ -122,7 +128,7 @@ private:
         return localStrides;
     }
 
-    int getTotalSize(const std::vector<int>& dims) const {
+    static int getTotalSize(const std::vector<int>& dims) {
         return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());
     }
 
@@ -159,7 +165,7 @@ private:
     }
 
     template <typename D>
-    std::vector<int> compute_shape(const D& vec) {
+     std::vector<int> compute_shape(const D& vec) {
         if constexpr (is_vector<D>::value) {
             if (vec.empty()) {
                 return {0};
@@ -173,12 +179,38 @@ private:
             return {};
         }
     }
+
+//    std::vector<int> combineIndices(const std::vector<int>& this_indices, const std::vector<int>& other_indices, int this_rank, int other_rank) const {
+//        std::vector<int> result_indices(this_rank + (other_rank - 1), 0);
+//
+//        // Copy dimensions from this_indices
+//        for (int i = 0; i < this_rank - 1; ++i) {
+//            result_indices[i] = this_indices[i];
+//        }
+//
+//        // Insert dimensions from other_indices
+//        for (int i = 0; i < other_rank - 1; ++i) {
+//            result_indices[this_rank - 1 + i] = other_indices[i + 1];
+//        }
+//
+//        return result_indices;
+//    }
+//
+//    int toFlatIndex(const std::vector<int>& indices) const {
+//        size_t flatIndex = 0;
+//        size_t product = 1;
+//        for (size_t i = indices.size(); i > 0; --i) {
+//            auto index = static_cast<size_t>(indices[i - 1]);
+//            flatIndex += index * product;
+//            product *= dimensions[i - 1];
+//        }
+//        return static_cast<int>(flatIndex);
+//    }
+
 };
 
 template class Tensor<float>;
 template class Tensor<int>;
 template class Tensor<double>;
-
-#include "../src/Tensor.cpp"
 
 #endif // TENSOR_H

@@ -2,7 +2,6 @@
 #define MixedPrecisionFloat16_H
 
 #include <cstdint>
-#include <iostream>
 
 class float_16 {
 public:
@@ -22,6 +21,5 @@ float_16 operator+(const float_16& a, const float_16&b);
 float_16 operator-(const float_16& a, const float_16&b);
 float_16 operator*(const float_16& a, const float_16&b);
 float_16 operator/(const float_16& a, const float_16&b);
-
 
 #endif // MixedPrecisionFloat16_H
