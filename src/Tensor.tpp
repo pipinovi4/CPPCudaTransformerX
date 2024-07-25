@@ -575,11 +575,11 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //     return result;
 // }
 
-//TODO: Implement the dot product
-template <typename T>
-Tensor<T> Tensor<T>::dot(Tensor<T>& other) {
-
-}
+// //TODO: Implement the dot product
+// template <typename T>
+// Tensor<T> Tensor<T>::dot(Tensor<T>& other) {
+//
+// }
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
@@ -837,6 +837,23 @@ template<typename T>
 T& Tensor<T>::operator()(const std::vector<int>& indices) {
     int flatIndex = toFlatIndex(indices);
     return data[flatIndex];
+}
+
+template<typename T>
+bool Tensor<T>::operator==(const Tensor<T>& other) const {
+    // Check if dimensions match
+    if (this->dimensions != other.dimensions) {
+        return false;
+    }
+
+    // Check if data matches
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        if (this->data[i] != other.data[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 #endif // TENSOR_TPP
