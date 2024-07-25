@@ -523,57 +523,85 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 }
 
 // TODO: Implement the tril and triu
-// template<typename T>
-// Tensor<T> Tensor<T>::tril(const int& axis) {
-//     const int dimSize = dimensions.size();
-//
-//     std::vector<int> coreDimensions = dimensions;
-//     for (int i = 0; i < dimSize - 2; ++i) {
-//         if (i < dimSize - 2) {
-//             coreDimensions[i] = dimensions[i];
-//         }
-//     }
-//     std::vector<int> targetDimensions = {dimensions[dimSize - 2], dimensions[dimSize - 1]};
-//
-//     std::vector<int> newCoreDimensions(dimSize - 2, 0);
-//     std::vector<int> newTargetDimensions(2, 0);
-//
-//
-// }
+template<typename T>
+Tensor<T> Tensor<T>::tril(const int& axis) {
+    const int dimSize = dimensions.size();
+    if (dimSize < 2) {
+        throw std::invalid_argument("Tensor must have at least 2 dimensions for tril operation.");
+    }
 
+    // Get the shape of the matrix and batch dimensions
+    const int rows = dimensions[dimSize - 2];
+    const int cols = dimensions[dimSize - 1];
+    std::vector<int> batchDimensions(dimSize - 2);
+    std::copy(dimensions.begin(), dimensions.end() - 2, batchDimensions.begin());
 
-// template<typename T>
-// Tensor<T> Tensor<T>::triu(const int& axis) {
-//     Tensor<T> result(dimensions);
-//
-//     // Define the lambda to check if an element should be retained or zeroed
-//     auto shouldZero = [&](const std::vector<int>& idx) -> bool {
-//         for (size_t d = 0; d < idx.size(); ++d) {
-//             if (idx[d] > idx[d + 1] - axis) {
-//                 return true;
-//             }
-//         }
-//         return false;
-//     };
-//
-//     std::function<void(std::vector<int>&, const int)> setUpperTriangular;
-//     setUpperTriangular = [&](std::vector<int>& indices, const int depth) {
-//         if (depth == dimensions.size()) {
-//             result(indices) = shouldZero(indices) ? static_cast<T>(0) : (*this)(indices);
-//             return;
-//         }
-//
-//         for (int i = 0; i < dimensions[depth]; ++i) {
-//             indices[depth] = i;
-//             setUpperTriangular(indices, depth + 1);
-//         }
-//     };
-//
-//     std::vector<int> indices(dimensions.size(), 0);
-//     setUpperTriangular(indices, 0);
-//
-//     return result;
-// }
+    // Compute the total size for batch dimensions
+    int batchSize = 1;
+    for (const int dim : batchDimensions) {
+        batchSize *= dim;
+    }
+
+    // Create new data vector for the result
+    std::vector<T> newData(data.size());
+
+    // Iterate over each element in the matrix dimensions
+    for (int batchIndex = 0; batchIndex < batchSize; ++batchIndex) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                int index = batchIndex * rows * cols + i * cols + j;
+                if (j > i + axis) {
+                    newData[index] = static_cast<T>(0);  // Set elements above the diagonal to zero
+                } else {
+                    newData[index] = data[index];  // Copy elements below or on the diagonal
+                }
+            }
+        }
+    }
+
+    // Return the new tensor with the same dimensions and the modified data
+    return Tensor<T>(dimensions, newData);
+}
+
+template<typename T>
+Tensor<T> Tensor<T>::triu(const int& axis) {
+    const int dimSize = dimensions.size();
+    if (dimSize < 2) {
+        throw std::invalid_argument("Tensor must have at least 2 dimensions for triu operation.");
+    }
+
+    // Get the shape of the matrix and batch dimensions
+    const int rows = dimensions[dimSize - 2];
+    const int cols = dimensions[dimSize - 1];
+    std::vector<int> batchDimensions(dimSize - 2);
+    std::copy(dimensions.begin(), dimensions.end() - 2, batchDimensions.begin());
+
+    // Compute the total size for batch dimensions
+    int batchSize = 1;
+    for (const int dim : batchDimensions) {
+        batchSize *= dim;
+    }
+
+    // Create new data vector for the result
+    std::vector<T> newData(data.size());
+
+    // Iterate over each element in the matrix dimensions
+    for (int batchIndex = 0; batchIndex < batchSize; ++batchIndex) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                int index = batchIndex * rows * cols + i * cols + j;
+                if (i > j + axis) {
+                    newData[index] = static_cast<T>(0);  // Set elements below the diagonal to zero
+                } else {
+                    newData[index] = data[index];  // Copy elements above or on the diagonal
+                }
+            }
+        }
+    }
+
+    // Return the new tensor with the same dimensions and the modified data
+    return Tensor<T>(dimensions, newData);
+}
 
 // //TODO: Implement the dot product
 // template <typename T>
@@ -716,7 +744,6 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
     return result;
 }
 
-//TODO: Implement access for all types of elements in the tensor
 template<typename T>
 Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) {
     for (int i = 0; i < indices.size(); ++i){
@@ -822,7 +849,6 @@ Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) {
         }
     }
 
-    std::cout << "Data size" << newData.size() << std::endl;
     Tensor<T> result(resultDimensions, newData);
     return result;
 }
@@ -854,6 +880,12 @@ bool Tensor<T>::operator==(const Tensor<T>& other) const {
     }
 
     return true;
+}
+
+
+template<typename T>
+bool Tensor<T>::operator!=(const Tensor<T>& other) const {
+    return !(*this == other);
 }
 
 #endif // TENSOR_TPP

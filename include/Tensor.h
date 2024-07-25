@@ -102,6 +102,8 @@ public:
 
     bool operator==(const Tensor<T>& other) const;
 
+    bool operator!=(const Tensor<T>& other) const;
+
 private:
     std::vector<int> dimensions;
     std::vector<T> data;

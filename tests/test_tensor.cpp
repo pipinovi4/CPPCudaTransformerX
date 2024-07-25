@@ -110,19 +110,21 @@ TEST(Tensor, Ones) {
     EXPECT_EQ(tensor.get({0, 0}), 1);
 }
 
-// TEST(Tensor, Tril) {
-//     const Tensor<int> tensor = Tensor<int>::ones({3, 3});
-//     const Tensor<int> tril = tensor.tril();
-//     EXPECT_EQ(tril.get({0, 2}), 0);
-// }
-//
-// TEST(Tensor, Triu) {
-//     const Tensor<int> tensor = Tensor<int>::ones({3, 3});
-//     const Tensor<int> triu = tensor.triu();
-//     EXPECT_EQ(triu.get({2, 0}), 0);
-// }
+TEST(Tensor, Tril) {
+    Tensor<int> tensor = Tensor<int>::ones({3, 3});
+    const Tensor<int> tril = tensor.tril();
+    EXPECT_EQ(tril.get({0, 2}), 0);
+}
 
-// Tests for operators
+TEST(Tensor, Triu) {
+    Tensor<int> tensor = Tensor<int>::ones({10, 10});
+    const Tensor<int> triu = tensor.triu();
+    EXPECT_EQ(triu.get({1, 0}), 0);
+    EXPECT_EQ(triu.get({2, 0}), 0);
+    EXPECT_EQ(triu.get({2, 1}), 0);
+
+    const Tensor<int> triu_axis2 = tensor.triu(10);
+}
 
 TEST(Tensor, Addition) {
     const Tensor<int> tensor1 = createTestTensor<int>();
@@ -138,19 +140,19 @@ TEST(Tensor, Subtraction) {
     EXPECT_EQ(result.get({0, 0, 0}), 0);
 }
 
-// TEST(Tensor, Multiplication) {
-//     const Tensor<int> tensor1 = createTestTensor<int>();
-//     const Tensor<int> tensor2 = createTestTensor<int>();
-//     const Tensor<int> result = tensor1 * tensor2;
-//     EXPECT_EQ(result.get({0, 0, 0}), 1);
-// }
-//
-// TEST(Tensor, Division) {
-//     const Tensor<int> tensor1 = createTestTensor<int>();
-//     const Tensor<int> tensor2 = createTestTensor<int>();
-//     const Tensor<int> result = tensor1 / tensor2;
-//     EXPECT_EQ(result.get({0, 0, 0}), 1);
-// }
+TEST(Tensor, Multiplication) {
+    const Tensor<int> tensor1 = createTestTensor<int>();
+    const Tensor<int> tensor2 = createTestTensor<int>();
+    const Tensor<int> result = tensor1 * tensor2;
+    EXPECT_EQ(result.get({0, 0, 0}), 1);
+}
+
+TEST(Tensor, Division) {
+    const Tensor<int> tensor1 = createTestTensor<int>();
+    const Tensor<int> tensor2 = createTestTensor<int>();
+    const Tensor<int> result = tensor1 / tensor2;
+    EXPECT_EQ(result.get({0, 0, 0}), 1);
+}
 
 TEST(Tensor, ScalarAddition) {
     const Tensor<int> tensor = createTestTensor<int>();
@@ -176,25 +178,22 @@ TEST(Tensor, ScalarDivision) {
     EXPECT_EQ(result.get({0, 0, 0}), 0);
 }
 
-// TEST(Tensor, BracketOperator) {
-//     Tensor<int> tensor = createTestTensor<int>();
-//     EXPECT_EQ(tensor[{0, 0, 0}], 1);
-// }
-//
-// TEST(Tensor, ParenthesisOperator) {
-//     Tensor<int> tensor = createTestTensor<int>();
-//     EXPECT_EQ(tensor({0, 0, 0}), 1);
-// }
+TEST(Tensor, ParenthesisOperator) {
+    Tensor<int> tensor = createTestTensor<int>();
+    const std::vector<int> resultData{1};
+    // Define the expected result for the given indices
+    const auto expectedResult = Tensor<int>({1}, resultData); // Value at index {0, 0, 0}
 
-// TEST(Tensor, AssignmentOperator) {
-//     Tensor<int> tensor = createTestTensor<int>();
-//     tensor[{0, 0, 0}] = 10;
-//     EXPECT_EQ(tensor[{0, 0, 0}], 10);
-// }
+    // Fetch the result using the operator[] method
+    const auto result = tensor[{0, 0, 0}];
 
-// TEST(Tensor, ComparisonOperators) {
-//     const Tensor<int> tensor1 = createTestTensor<int>();
-//     const Tensor<int> tensor2 = createTestTensor<int>();
-//     EXPECT_TRUE(tensor1 == tensor2);
-//     EXPECT_FALSE(tensor1 != tensor2);
-// }
+    // Check if the result matches the expected result
+    EXPECT_EQ(result, expectedResult);
+}
+
+TEST(Tensor, ComparisonOperators) {
+    const Tensor<int> tensor1 = createTestTensor<int>();
+    const Tensor<int> tensor2 = createTestTensor<int>();
+    EXPECT_TRUE(tensor1 == tensor2);
+    EXPECT_FALSE(!(tensor1 == tensor2));
+}
