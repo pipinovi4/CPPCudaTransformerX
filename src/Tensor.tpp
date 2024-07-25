@@ -575,6 +575,12 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
 //     return result;
 // }
 
+//TODO: Implement the dot product
+template <typename T>
+Tensor<T> Tensor<T>::dot(Tensor<T>& other) {
+
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
     // Ensure that tensors have the same shape
@@ -712,46 +718,112 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
 
 //TODO: Implement access for all types of elements in the tensor
 template<typename T>
-T& Tensor<T>::operator[](int index) {
-    if (dimensions.size() == 1) {
-        if (index < 0 || index >= dimensions[0]) {
-            throw std::out_of_range("Index out of bounds");
+Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) {
+    for (int i = 0; i < indices.size(); ++i){
+        if (std::abs(indices[i]) >= dimensions[i]) {
+            throw std::invalid_argument("Index out of bounds");
         }
-        return data[index];
-    } else {
-        throw std::out_of_range("Use multi-dimensional indexing for tensors with more than one dimension");
     }
-}
 
-// Accessor method for multi-dimensional indexing
-template<typename T>
-Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
-    // Check that the number of indices matches the tensor's dimensions
+    /*
+        * Explanation:
+        *
+        * This function is designed to index a multi-dimensional tensor using a vector of indices.
+        *
+        * Parameters:
+        * - indices: A vector of integers specifying the indices along each dimension of the tensor.
+        *            Indices can be positive or negative. Negative indices are converted to their
+        *            corresponding positive indices by adding the dimension size.
+        *
+        * Internal Concepts:
+        *
+        * 1. newIndices:
+        *    - Represents the indices for the new tensor with specified dimensions.
+        *    - If the number of provided indices is less than the total number of dimensions,
+        *      the remaining dimensions are assumed to include all possible indices.
+        *    - The unspecified dimensions are filled with -1, indicating that the entire slice along
+        *      those dimensions should be included in the resulting tensor.
+        *
+        * 2. coreDimensions:
+        *    - These dimensions remain unchanged and are not directly indexed.
+        *    - They represent the base dimensions of the tensor that are not affected by the
+        *      current indexing operation.
+        *
+        * 3. targetDimensions:
+        *    - These dimensions are affected by the indexing operation.
+        *    - They correspond to the dimensions where indices are provided.
+        *
+        * Pseudocode Example:
+        *
+        * Given a tensor with dimensions [4, 3, 3], and indices [2, 1]:
+        *
+        * - If the indices are [2, 1], this means we are selecting a slice of the tensor where:
+        *   - The first dimension is fixed at index 2.
+        *   - The second dimension is fixed at index 1.
+        *   - The resulting tensor has dimensions [3], corresponding to the last remaining dimension.
+        *
+        * - If the indices are not fully specified (e.g., [2]), the new tensor will include all
+        *   indices along the unspecified dimensions.
+        *
+        * - Example Iteration:
+        *   - For core dimension [0, 0, 0, 0] and target dimension [3, 3]:
+        *     - core - [0, 0, 0, 0], target - [3, 3]
+        *     - core - [0, 0, 0, 1], target - [3, 3]
+        *     - core - [0, 0, 1, 0], target - [3, 3]
+        *     - core - [1, 1, 1, 1], target - [3, 3]
+        *   - This iteration explains how the tensor's core dimensions interact with the target dimensions
+        *     and how the resulting size is computed.
+        *
+        * The final size of the resulting tensor should match the expected dimensions after
+        * applying the indexing operation.
+    */
+    std::vector<int> newIndices;
+    std::vector<int> coreDimensions(dimensions.size() - 2, 0);
+    std::vector<int> targetDimensions = {dimensions[dimensions.size() - 2], dimensions[dimensions.size() - 1]};
+    int linear_index = indices[0];
+
     if (indices.size() != dimensions.size()) {
-        throw std::out_of_range("Number of indices does not match tensor dimensions");
-    }
-
-    // Calculate the flat index from the multi-dimensional indices
-    int flatIndex = 0;
-    int stride = 1;
-    for (int i = dimensions.size() - 1; i >= 0; --i) {
-        if (indices[i] < 0) {
-            if (indices[i] == -1) {
-                flatIndex += (dimensions[i] - 1) * stride;
-            } else {
-                throw std::out_of_range("Index out of bounds");
-            }
-        } else if (indices[i] >= dimensions[i]) {
-            throw std::out_of_range("Index out of bounds");
-        } else {
-            flatIndex += indices[i] * stride;
+        newIndices = std::vector<int>(dimensions.size(), -1);
+        for (int i = 0; i < indices.size(); ++i) {
+            newIndices[i] = indices[i];
         }
-        stride *= dimensions[i];
+    }
+    for (int i = 0; i < dimensions.size() - 1; ++i) {
+        if (dimensions.size() - 2 >= i) {
+            coreDimensions[i] = dimensions[i];
+        }
     }
 
-    // Create and return a new tensor representing the accessed slice
-    Tensor<T> result({1});
-    result.data[0] = data[flatIndex];
+    for (int i = 1; i < dimensions.size(); ++i) {
+        if (newIndices[i] == -1) {
+            linear_index *= dimensions[i];
+        } else {
+            linear_index *= indices[i];
+        }
+    }
+
+    std::vector<int> mama{};
+    for (int i = 0; i < dimensions.size(); ++i) {
+        if (i >= indices.size()) {
+            mama.push_back(dimensions[i]);
+        }
+    }
+    int dataSize = getTotalSize(mama);
+
+    std::vector<int> newData(dataSize, T(0));
+    for (int i = 0; i < dataSize; ++i) {
+        newData[i] = data[i];
+    }
+
+    std::vector<int> resultDimensions{};
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+        if (newIndices[i] == -1) {
+            resultDimensions.push_back(dimensions[i]);
+        }
+    }
+
+    std::cout << "Data size" << newData.size() << std::endl;
+    Tensor<T> result(resultDimensions, newData);
     return result;
 }
 

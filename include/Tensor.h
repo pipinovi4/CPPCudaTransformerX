@@ -40,41 +40,43 @@ public:
 
     // Manipulation structure functions
 
-    [[maybe_unused]] void set(const std::vector<int>& indices, T value);
+    void set(const std::vector<int>& indices, T value);
 
-    [[maybe_unused]] T get(const std::vector<int>& indices) const;
+    T get(const std::vector<int>& indices) const;
 
     void fill(T value);
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
+    [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> slice(int axis, int start, int end) const;
+    [[nodiscard]] Tensor<T> slice(int axis, int start, int end) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> slice(int axis, int start) const;
+    [[nodiscard]] Tensor<T> slice(int axis, int start) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> slice(int axis) const;
+    [[nodiscard]] Tensor<T> slice(int axis) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other) const;
+    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
+    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> expandDims(int axis) const;
+    [[nodiscard]] Tensor<T> expandDims(int axis) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> squeeze() const;
+    [[nodiscard]] Tensor<T> squeeze() const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> reshape(int newShape) const;
+    [[nodiscard]] Tensor<T> reshape(int newShape) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> reshape(const std::vector<int>& newDimensions) const;
+    [[nodiscard]] Tensor<T> reshape(const std::vector<int>& newDimensions) const;
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;
+    [[nodiscard]] Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;
 
-    [[maybe_unused]] [[nodiscard]] static Tensor<T> zeros(const std::vector<int>& dims);
+    [[nodiscard]] static Tensor<T> zeros(const std::vector<int>& dims);
 
-    [[maybe_unused]] [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
+    [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> tril(const int& axis = 0);
+    [[nodiscard]] Tensor<T> tril(const int& axis = 0);
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> triu(const int& axis = 0);
+    [[nodiscard]] Tensor<T> triu(const int& axis = 0);
+
+    Tensor<T> dot(Tensor<T>& other);
 
     Tensor<T> operator+(const Tensor<T>& other) const;
 
@@ -92,9 +94,7 @@ public:
 
     Tensor<T> operator/(T scalar) const;
 
-    T& operator[](int index);
-
-    Tensor<T> operator[](const std::vector<int>& indices) const;
+    Tensor<T> operator[](const std::vector<int>& indices);
 
     T& operator()(int indices);
 
