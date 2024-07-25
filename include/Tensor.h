@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <cassert>
 #include <cmath>
+#include <functional>
 #include "MixedPrecisionFloat16.h"
 
 template <typename T>
@@ -71,9 +72,9 @@ public:
 
     [[maybe_unused]] [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> tril(const int& axis = 0) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> tril(const int& axis = 0);
 
-    [[maybe_unused]] [[nodiscard]] Tensor<T> triu(const int& axis = 0) const;
+    [[maybe_unused]] [[nodiscard]] Tensor<T> triu(const int& axis = 0);
 
     Tensor<T> operator+(const Tensor<T>& other) const;
 
@@ -97,7 +98,7 @@ public:
 
     T& operator()(int indices);
 
-    const T& operator()(const std::vector<int>& indices) const;
+    T& operator()(const std::vector<int>& indices);
 
 private:
     std::vector<int> dimensions;
@@ -180,33 +181,32 @@ private:
         }
     }
 
-//    std::vector<int> combineIndices(const std::vector<int>& this_indices, const std::vector<int>& other_indices, int this_rank, int other_rank) const {
-//        std::vector<int> result_indices(this_rank + (other_rank - 1), 0);
-//
-//        // Copy dimensions from this_indices
-//        for (int i = 0; i < this_rank - 1; ++i) {
-//            result_indices[i] = this_indices[i];
-//        }
-//
-//        // Insert dimensions from other_indices
-//        for (int i = 0; i < other_rank - 1; ++i) {
-//            result_indices[this_rank - 1 + i] = other_indices[i + 1];
-//        }
-//
-//        return result_indices;
-//    }
-//
-//    int toFlatIndex(const std::vector<int>& indices) const {
-//        size_t flatIndex = 0;
-//        size_t product = 1;
-//        for (size_t i = indices.size(); i > 0; --i) {
-//            auto index = static_cast<size_t>(indices[i - 1]);
-//            flatIndex += index * product;
-//            product *= dimensions[i - 1];
-//        }
-//        return static_cast<int>(flatIndex);
-//    }
+    static std::vector<int> combineIndices(const std::vector<int>& this_indices, const std::vector<int>& other_indices, const int this_rank, const int other_rank) {
+        std::vector<int> result_indices(this_rank + (other_rank - 1), 0);
 
+        // Copy dimensions from this_indices
+        for (int i = 0; i < this_rank - 1; ++i) {
+            result_indices[i] = this_indices[i];
+        }
+
+        // Insert dimensions from other_indices
+        for (int i = 0; i < other_rank - 1; ++i) {
+            result_indices[this_rank - 1 + i] = other_indices[i + 1];
+        }
+
+        return result_indices;
+    }
+
+    [[nodiscard]] int toFlatIndex(const std::vector<int>& indices) const {
+        size_t flatIndex = 0;
+        size_t product = 1;
+        for (size_t i = indices.size(); i > 0; --i) {
+            const auto index = static_cast<size_t>(indices[i - 1]);
+            flatIndex += index * product;
+            product *= dimensions[i - 1];
+        }
+        return static_cast<int>(flatIndex);
+    }
 };
 
 #include "../src/Tensor.tpp"

@@ -521,43 +521,59 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
     tensor.fill(T(1.0));
     return tensor;
 }
+
+// TODO: Implement the tril and triu
+// template<typename T>
+// Tensor<T> Tensor<T>::tril(const int& axis) {
+//     const int dimSize = dimensions.size();
 //
-// // TODO: Implement the tril and triu
-// /template<typename T>
-// /Tensor<T> Tensor<T>::tril(const int& axis) const {
-// /    int dimension_size = dimensions.size();
-// /    // Check if the axis is valid
-// /    if (std::abs(axis) >= dimensions[dimensions.size() - 1]) {
-// /        std::cout << "Invalid axis" << std::endl;
-// /        return Tensor<T>(dimensions);
-// /    }
-// /
-// /
-// /
-// /    return Tensor<T>(dimensions);
-// /}
+//     std::vector<int> coreDimensions = dimensions;
+//     for (int i = 0; i < dimSize - 2; ++i) {
+//         if (i < dimSize - 2) {
+//             coreDimensions[i] = dimensions[i];
+//         }
+//     }
+//     std::vector<int> targetDimensions = {dimensions[dimSize - 2], dimensions[dimSize - 1]};
 //
-// //template<typename T>
-// /Tensor<T> Tensor<T>::triu(const int& axis) const {
-// /    std::vector<T> result(Tensor<T>::getTotalSize(dimensions), 0);
-// /
-// /    int dim_size = dimensions[dimensions.size() -1] - axis;
-// /    std::vector<int> indices(dimensions.size(), 0);
-// /
-// /    // Apply the upper triangular mask
-// /    for (int i = 0; i < dim_size; ++i) {
-// /        for (int j = 0; j < dim_size; ++j) {
-// /            if (j >= i) {
-// /                indices[axis] = i;
-// /                indices[axis + 1] = j;
-// /                int index = calculateIndex(indices);
-// /                result[index] = data[index];
-// /            }
-// /        }
-// /    }
-// /
-// /    return Tensor<T>(dimensions, result);
-// /}
+//     std::vector<int> newCoreDimensions(dimSize - 2, 0);
+//     std::vector<int> newTargetDimensions(2, 0);
+//
+//
+// }
+
+
+// template<typename T>
+// Tensor<T> Tensor<T>::triu(const int& axis) {
+//     Tensor<T> result(dimensions);
+//
+//     // Define the lambda to check if an element should be retained or zeroed
+//     auto shouldZero = [&](const std::vector<int>& idx) -> bool {
+//         for (size_t d = 0; d < idx.size(); ++d) {
+//             if (idx[d] > idx[d + 1] - axis) {
+//                 return true;
+//             }
+//         }
+//         return false;
+//     };
+//
+//     std::function<void(std::vector<int>&, const int)> setUpperTriangular;
+//     setUpperTriangular = [&](std::vector<int>& indices, const int depth) {
+//         if (depth == dimensions.size()) {
+//             result(indices) = shouldZero(indices) ? static_cast<T>(0) : (*this)(indices);
+//             return;
+//         }
+//
+//         for (int i = 0; i < dimensions[depth]; ++i) {
+//             indices[depth] = i;
+//             setUpperTriangular(indices, depth + 1);
+//         }
+//     };
+//
+//     std::vector<int> indices(dimensions.size(), 0);
+//     setUpperTriangular(indices, 0);
+//
+//     return result;
+// }
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
@@ -595,43 +611,52 @@ Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
     return result;
 }
 
-// //TODO: Implement the operators multiplication and division
-// /template<typename T>
-// /Tensor<T> Tensor<T>::operator*(const Tensor<T>& other) const {
-// /    // Assuming tensors are of the same shape for simplicity
-// /    Tensor<T> result(dimensions, std::vector<T>(data.size(), T()));
-// /
-// /    // Perform element-wise multiplication
-// /    size_t size = Tensor<T>::getTotalSize(dimensions);
-// /    for (size_t i = 0; i < size; ++i) {
-// /        std::vector<int> indices(dimensions.size());
-// /        size_t temp = i;
-// /        for (size_t d = dimensions.size(); d > 0; --d) {
-// /            indices[d - 1] = temp % dimensions[d - 1];
-// /            temp /= dimensions[d - 1];
-// /        }
-// /        result(indices) = data[i] * other(indices);
-// /    }
-// /    return result;
-// /}
+template<typename T>
+Tensor<T> Tensor<T>::operator*(const Tensor<T>& other) const {
+    // Assuming tensors are of the same shape for simplicity
+    Tensor<T> result(dimensions, std::vector<T>(data.size(), T()));
 
-//template<typename T>
-// /Tensor<T> Tensor<T>::operator/(const Tensor<T> &other) const {
-// /    // Ensure the dimensions match
-// /    if (dimensions != other.shape()) {
-// /        throw std::invalid_argument("Dimensions mismatch");
-// /    }
-// /
-// /    // Create a new tensor for the result
-// /    Tensor<T> result(dimensions);
-// /
-// /    // Perform element-wise division
-// /    for (size_t i = 0; i < data.size(); ++i) {
-// /        result.data[i] = data[i] / other.data[i];
-// /    }
-// /
-// /    return result;
-// /}
+    if (dimensions != other.shape()) {
+        throw std::invalid_argument("Dimensions mismatch");
+    }
+
+    // Perform element-wise multiplication
+    const size_t size = Tensor<T>::getTotalSize(dimensions);
+    for (size_t i = 0; i < size; ++i) {
+        std::vector<int> indices(dimensions.size());
+        size_t temp = i;
+        for (size_t d = dimensions.size(); d > 0; --d) {
+            indices[d - 1] = temp % dimensions[d - 1];
+            temp /= dimensions[d - 1];
+        }
+        result(indices) = data[i] * other.get(indices);
+    }
+    return result;
+}
+
+
+template<typename T>
+Tensor<T> Tensor<T>::operator/(const Tensor<T>& other) const {
+    // Assuming tensors are of the same shape for simplicity
+    Tensor<T> result(dimensions, std::vector<T>(data.size(), T()));
+
+    if (dimensions != other.shape()) {
+        throw std::invalid_argument("Dimensions mismatch");
+    }
+
+    // Perform element-wise multiplication
+    const size_t size = Tensor<T>::getTotalSize(dimensions);
+    for (size_t i = 0; i < size; ++i) {
+        std::vector<int> indices(dimensions.size());
+        size_t temp = i;
+        for (size_t d = dimensions.size(); d > 0; --d) {
+            indices[d - 1] = temp % dimensions[d - 1];
+            temp /= dimensions[d - 1];
+        }
+        result(indices) = data[i] / other.get(indices);
+    }
+    return result;
+}
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(T scalar) const {
@@ -685,6 +710,7 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
     return result;
 }
 
+//TODO: Implement access for all types of elements in the tensor
 template<typename T>
 T& Tensor<T>::operator[](int index) {
     if (dimensions.size() == 1) {
@@ -697,57 +723,48 @@ T& Tensor<T>::operator[](int index) {
     }
 }
 
+// Accessor method for multi-dimensional indexing
 template<typename T>
 Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
-    // Initialize starting index and dimensions for the sub-tensor
-    std::vector<int> slice_dims = dimensions;
-    std::vector<int> slice_strides = strides;
-    int start_index = 0;
-    int dimension_size = Tensor<T>::getTotalSize(dimensions);
-
-    // Validate indices and calculate the starting index in the flattened data
-    if (indices.size() > dimensions.size()) {
-        throw std::out_of_range("Too many indices provided");
+    // Check that the number of indices matches the tensor's dimensions
+    if (indices.size() != dimensions.size()) {
+        throw std::out_of_range("Number of indices does not match tensor dimensions");
     }
 
-    for (size_t i = 0; i < indices.size(); ++i) {
-        if (indices[i] < 0 || indices[i] >= dimensions[i]) {
+    // Calculate the flat index from the multi-dimensional indices
+    int flatIndex = 0;
+    int stride = 1;
+    for (int i = dimensions.size() - 1; i >= 0; --i) {
+        if (indices[i] < 0) {
+            if (indices[i] == -1) {
+                flatIndex += (dimensions[i] - 1) * stride;
+            } else {
+                throw std::out_of_range("Index out of bounds");
+            }
+        } else if (indices[i] >= dimensions[i]) {
             throw std::out_of_range("Index out of bounds");
+        } else {
+            flatIndex += indices[i] * stride;
         }
-        start_index += strides[i] * indices[i];
-        slice_dims[i] = 1;  // The selected slice dimension is 1
-        dimension_size /= dimensions[i]; // Update the dimension size for the remaining dimensions
+        stride *= dimensions[i];
     }
 
-    // Reduce dimensions and strides for remaining dimensions
-    for (size_t i = indices.size(); i < dimensions.size(); ++i) {
-        dimension_size *= dimensions[i];
-        slice_dims[i] = dimensions[i]; // Keep remaining dimensions as they are
-    }
-
-    // Create the sub-tensor
-    Tensor<T> result_tensor(slice_dims);
-
-    // Copy relevant data into the sub-tensor
-    std::vector<int> result_index(slice_dims.size(), 0);
-    for (int i = 0; i < dimension_size; ++i) {
-        result_tensor.data[i] = data[start_index + i];
-    }
-
-    return result_tensor;
+    // Create and return a new tensor representing the accessed slice
+    Tensor<T> result({1});
+    result.data[0] = data[flatIndex];
+    return result;
 }
 
-// //TODO: Implement the multi-dimensional indexing
-// template<typename T>
-// T& Tensor<T>::operator()(int indices) {
-//     int flatIndex = toFlatIndex(indices);
-//     return data[flatIndex];
-// }
-//
-// template<typename T>
-// const T& Tensor<T>::operator()(const std::vector<int>& indices) const {
-//     int flatIndex = toFlatIndex(indices);
-//     return data[flatIndex];
-// }
+template<typename T>
+T& Tensor<T>::operator()(int indices) {
+    int flatIndex = toFlatIndex({indices});
+    return data[flatIndex];
+}
+
+template<typename T>
+T& Tensor<T>::operator()(const std::vector<int>& indices) {
+    int flatIndex = toFlatIndex(indices);
+    return data[flatIndex];
+}
 
 #endif // TENSOR_TPP
