@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <numeric>
 #include <type_traits>
+#include <numeric>
 #include <cassert>
 #include <cmath>
 #include <functional>
@@ -76,7 +77,7 @@ public:
 
     [[nodiscard]] Tensor<T> triu(const int& axis = 0);
 
-    Tensor<T> dot(Tensor<T>& other);
+    Tensor<T> dot(const Tensor<T>& other) const ;
 
     Tensor<T> operator+(const Tensor<T>& other) const;
 

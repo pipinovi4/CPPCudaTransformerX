@@ -603,11 +603,61 @@ Tensor<T> Tensor<T>::triu(const int& axis) {
     return Tensor<T>(dimensions, newData);
 }
 
-// //TODO: Implement the dot product
-// template <typename T>
-// Tensor<T> Tensor<T>::dot(Tensor<T>& other) {
-//
-// }
+template <typename T>
+Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
+    // Ensure tensors have the same number of dimensions
+    if (dimensions.size() != other.dimensions.size()) {
+        throw std::invalid_argument("Tensors must have the same number of dimensions.");
+    }
+
+    // Ensure the last dimension of the first tensor matches the second-to-last dimension of the second tensor
+    if (dimensions.back() != other.dimensions[other.dimensions.size() - 2]) {
+        throw std::invalid_argument("The last dimension of the first tensor must match the second-to-last dimension of the second tensor.");
+    }
+
+    // Compute result dimensions
+    std::vector<int> resultDimensions;
+    for (size_t i = 0; i < dimensions.size() - 1; ++i) {
+        resultDimensions.push_back(dimensions[i]);
+    }
+    for (size_t i = 0; i < other.dimensions.size() - 2; ++i) {
+        resultDimensions.push_back(other.dimensions[i]);
+    }
+    resultDimensions.push_back(other.dimensions.back());
+
+    // Compute total size of the result tensor
+    size_t resultSize = 1;
+    for (const int dim : resultDimensions) {
+        resultSize *= dim;
+    }
+
+    // Initialize result data
+    std::vector<T> resultData(resultSize, static_cast<T>(0));
+
+    // Compute the dot product
+    const int A_lastDim = dimensions.back();
+    const int B_penultimateDim = other.dimensions[other.dimensions.size() - 2];
+    int B_lastDim = other.dimensions.back();
+
+    for (size_t i = 0; i < dimensions.size() - 1; ++i) {
+        for (size_t j = 0; j < other.dimensions.size() - 2; ++j) {
+            for (int k = 0; k < B_lastDim; ++k) {
+                for (int m = 0; m < A_lastDim; ++m) {
+                    for (int l = 0; l < dimensions[i]; ++l) {
+                        int idxA = (i * dimensions[i] + l) * A_lastDim + m;
+                        int idxB = (j * B_penultimateDim + m) * B_lastDim + k;
+                        int idxR = (i * other.dimensions.size() + j) * B_lastDim + k;
+
+                        resultData[idxR] += data[idxA] * other.data[idxB];
+                    }
+                }
+            }
+        }
+    }
+
+    // Return the resulting tensor
+    return Tensor<T>(resultDimensions, resultData);
+}
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
