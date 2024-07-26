@@ -73,10 +73,12 @@ TEST(Tensor, Transpose) {
     const Tensor<int> tensor = create2DTensor(dims, data);
 
     const Tensor<int> result = tensor.transpose();
+    result.print();
 
     const std::vector<int> expectedDims = {3, 2};
     const std::vector<int> expectedData = {1, 4, 2, 5, 3, 6};  // Expected result of transposing A
     const Tensor<int> expectedResult(expectedDims, expectedData);
+    expectedResult.print();
 
     EXPECT_EQ(result.shape(), expectedResult.shape());
     EXPECT_TRUE(result == expectedResult);

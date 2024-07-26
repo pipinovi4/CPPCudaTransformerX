@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef TENSOR_H
 #define TENSOR_H
 
@@ -17,6 +19,8 @@
 template <typename T>
 class Tensor {
 public:
+    std::vector<T> data;
+
     // Constructor to initialize the tensor with dimensions and optionally with data
     template<typename D>
     Tensor(const std::vector<int>& dims, const D& data);
@@ -107,7 +111,6 @@ public:
 
 private:
     std::vector<int> dimensions;
-    std::vector<T> data;
     std::vector<int> strides;
 
     [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const {

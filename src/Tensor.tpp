@@ -471,48 +471,46 @@ Tensor<T> Tensor<T>::zeros(const std::vector<int> &dims) {
 
 template<typename T>
 Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
-    std::vector<int> perm = permutation;
+    // Create new dimensions for the transposed tensor
+    std::vector<int> newDimensions;
+    if (permutation.empty()) {
+        newDimensions = std::vector<int>(dimensions.rbegin(), dimensions.rend());
+    } else {
+        for (size_t i = 0; i < permutation.size(); ++i) {
+            newDimensions.push_back(dimensions[permutation[i]]);
+        }
+    }
 
-    // Check if the permutation is empty
-    if (perm.empty()) {
-        if (dimensions.size() == 2) {
-            perm = {1, 0};
+    // Create a new tensor for the transposed result
+    Tensor<T> result(newDimensions);
+
+    // Copy data from the current tensor
+    std::vector<int> indices(dimensions.size(), 0);
+    for (size_t i = 0; i < data.size(); ++i) {
+        // Calculate current indices in the original tensor
+        size_t temp = i;
+        for (size_t j = indices.size(); j-- > 0;) {
+            indices[j] = temp % dimensions[j];
+            temp /= dimensions[j];
+        }
+
+        // Calculate transposed indices
+        std::vector<int> transposedIndices(indices.size());
+        if (permutation.empty()) {
+            for (size_t j = 0; j < indices.size(); ++j) {
+                transposedIndices[j] = indices[indices.size() - 1 - j];
+            }
         } else {
-            perm.resize(dimensions.size());
-            std::iota(perm.rbegin(), perm.rend(), 0);
+            for (size_t j = 0; j < permutation.size(); ++j) {
+                transposedIndices[j] = indices[permutation[j]];
+            }
         }
+
+        // Copy data into the result tensor
+        result.set(transposedIndices, data[i]);
     }
 
-    if (perm.size() != dimensions.size()) {
-        throw std::invalid_argument("Invalid permutation size");
-    }
-
-    // Validate permutation
-    std::vector<int> check_perm(perm.size(), 0);
-    for (const int& p : perm) {
-        if (p < 0 || p >= perm.size()) {
-            throw std::invalid_argument("Invalid permutation index");
-        }
-        check_perm[p]++;
-    }
-
-    for (const int& p : check_perm) {
-        if (p != 1) {
-            throw std::invalid_argument("Invalid permutation");
-        }
-    }
-
-    // Create new dimensions on the permutation
-    std::vector<int> newDimensions(dimensions.size());
-    for (size_t i = 0; i < perm.size(); ++i) {
-        newDimensions[i] = dimensions[perm[i]];
-    }
-    // Assuming transpose operation on data (not implemented here)
-    // This is just a placeholder for actual transpose logic
-    Tensor<T> transposedTensor(newDimensions);
-    // Transpose data (requires actual implementation)
-
-    return transposedTensor;
+    return result;
 }
 
 template<typename T>
