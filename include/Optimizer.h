@@ -13,7 +13,7 @@ template <typename T>
 class Optimizer {
 public:
     explicit Optimizer(T learning_rate, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
-        : learning_rate(learning_rate), beta1(beta1), beta2(beta2), epsilon(epsilon),  first_moment_vector(Tensor<T>({1})), second_moment_vector(Tensor<T>({1})), time_step(0) {}
+        : learning_rate(learning_rate), beta1(beta1), beta2(beta2), epsilon(epsilon), first_moment_vector(Tensor<T>({1})), second_moment_vector(Tensor<T>({1})), time_step(0) {}
 
     void initialize(std::vector<int> param_shape);
 
