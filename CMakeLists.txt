@@ -15,10 +15,19 @@ add_executable(C++CudaTransformerX
         src/Tensor.tpp
         include/MixedPrecisionFloat16.h
         include/Tensor.h
+        include/DenseLayer.h
+        include/ActivationFunction.h
+        include/Optimizer.h
+        include/LossFunction.h
+        src/Optimizer.cpp
+        src/DenseLayer.cpp
+        src/LossFunction.cpp
+        src/ActivationFunction.tpp
 )
 
 # Add the test executable
-add_executable(test_tensor tests/test_tensor.cpp)
+add_executable(global_tests tests/test_tensor.cpp
+        tests/test_activation_function.cpp)
 
 # Link the test executable with Google Test libraries
-target_link_libraries(test_tensor gtest gtest_main)
+target_link_libraries(global_tests gtest gtest_main)
