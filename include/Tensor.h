@@ -14,6 +14,7 @@
 #include <cmath>
 #include <functional>
 #include "MixedPrecisionFloat16.h"
+#include <sstream>
 
 template <typename T>
 class Tensor {
@@ -125,6 +126,12 @@ public:
     bool operator==(const Tensor<T>& other) const;
 
     bool operator!=(const Tensor<T>& other) const;
+
+    // Method to serialize the tensor to a stream
+    void serialize(std::ostream& os) const;
+
+    // Method to deserialize the tensor from a stream
+    void deserialize(std::istream& is);
 
 private:
     std::vector<int> dimensions;

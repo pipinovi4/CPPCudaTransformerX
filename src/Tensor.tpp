@@ -985,10 +985,59 @@ bool Tensor<T>::operator==(const Tensor<T>& other) const {
     return true;
 }
 
-
 template<typename T>
 bool Tensor<T>::operator!=(const Tensor<T>& other) const {
     return !(*this == other);
+}
+
+template <typename T>
+void Tensor<T>::serialize(std::ostream& os) const {
+    // Write the shape
+    os << "{";
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+        os << dimensions[i];
+        if (i < dimensions.size() - 1) {
+            os << ", ";
+        }
+    }
+    os << "}, ";
+
+    // Write the data
+    os << "{";
+    for (size_t i = 0; i < data.size(); ++i) {
+        os << data[i];
+        if (i < data.size() - 1) {
+            os << ", ";
+        }
+    }
+    os << "}";
+}
+
+template <typename T>
+void Tensor<T>::deserialize(std::istream& is) {
+    char ch;
+    // Read the shape
+    is >> ch; // Read '{'
+    dimensions.clear();
+    int dim;
+    while (is >> dim) {
+        dimensions.push_back(dim);
+        is >> ch; // Read ',' or '}'
+        if (ch == '}') break;
+    }
+    is >> ch; // Read ','
+
+    // Read the data
+    is >> ch; // Read '{'
+    data.clear();
+    data.reserve(getTotalSize(dimensions));
+    T value;
+    while (is >> value) {
+        data.push_back(value);
+        is >> ch; // Read ',' or '}'
+        if (ch == '}') break;
+    }
+    is >> ch; // Read ','
 }
 
 #endif // TENSOR_TPP
