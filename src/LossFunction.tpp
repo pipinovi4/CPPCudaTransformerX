@@ -73,5 +73,4 @@ T LossFunction<T>::meanAbsoluteError(const Tensor<T>& predictions, const Tensor<
 
     return loss / static_cast<T>(predictions.data.size());
 }
-
 #endif // LOSSFUNCTION_TPP
