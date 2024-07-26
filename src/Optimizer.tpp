@@ -109,14 +109,22 @@ void Optimizer<T>::load_state(const std::string& filename) {
     }
 }
 
-// template <typename T>
-// void Optimizer<T>::apply_weight_decay(Tensor<T>& params, T weight_decay) {
-//
-// }
+template <typename T>
+void Optimizer<T>::apply_weight_decay(Tensor<T>& params, T weight_decay) {
+    for (size_t i = 0; i < params.size(); ++i) {
+        params.data[i] -= weight_decay * params.data[i];
+    }
+}
 
-// template <typename T>
-// void Optimizer<T>::clip_gradients(Tensor<T>& grads, T clip_value) {
-//
-// }
+template <typename T>
+void Optimizer<T>::clip_gradients(Tensor<T>& grads, T clip_value) {
+    for (size_t i = 0; i < grads.size(); ++i) {
+        if (grads.data[i] > clip_value) {
+            grads.data[i] = clip_value;
+        } else if (grads.data[i] < -clip_value) {
+            grads.data[i] = -clip_value;
+        }
+    }
+}
 
 #endif // OPTIMIZER_TPP
