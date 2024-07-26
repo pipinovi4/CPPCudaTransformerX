@@ -215,6 +215,13 @@ void Tensor<T>::fill(T value) {
 }
 
 template<typename T>
+void Tensor<T>::sqrt() {
+    for (T& element : data) {
+        element = std::sqrt(element);
+    }
+}
+
+template<typename T>
 Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");

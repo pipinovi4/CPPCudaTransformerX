@@ -1,8 +1,7 @@
-#pragma once
-
 #ifndef TENSOR_H
 #define TENSOR_H
 
+#pragma once
 #include <vector>
 #include <string>
 #include <iostream>
@@ -50,6 +49,8 @@ public:
     T get(const std::vector<int>& indices) const;
 
     void fill(T value);
+
+    void sqrt();
 
     [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
 
