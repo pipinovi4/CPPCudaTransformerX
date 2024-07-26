@@ -198,8 +198,6 @@ void Tensor<T>::print() const {
         std::cout << "float";
     } else if (std::is_same<T, double>::value) {
         std::cout << "double";
-    } else if (std::is_same<T, float_16>::value) {
-        std::cout << "float_16";
     } else {
         std::cout << typeid(T).name();
     }
@@ -215,10 +213,12 @@ void Tensor<T>::fill(T value) {
 }
 
 template<typename T>
-void Tensor<T>::sqrt() {
-    for (T& element : data) {
-        element = std::sqrt(element);
+Tensor<T> Tensor<T>::sqrt() {
+    Tensor<T> result(dimensions);
+    for (int i = 0; i < data.size(); ++i) {
+        result.data[i] = std::sqrt(data[i]);
     }
+    return result;
 }
 
 template<typename T>
@@ -797,6 +797,54 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
     }
 
     return result;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator-=(const Tensor<T>& other) {
+    *this = *this - other;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator+=(const Tensor<T>& other) {
+    *this = *this + other;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator/=(const Tensor<T>& other) {
+    *this = *this / other;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator*=(const Tensor<T>& other) {
+    *this = *this * other;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator-=(T& scalar) {
+    *this = *this - scalar;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator+=(T& scalar) {
+    *this = *this + scalar;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator/=(T& scalar) {
+    *this = *this / scalar;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator*=(T& scalar) {
+    *this = *this * scalar;
+    return *this;
 }
 
 template<typename T>

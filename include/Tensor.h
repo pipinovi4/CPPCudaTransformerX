@@ -50,7 +50,7 @@ public:
 
     void fill(T value);
 
-    void sqrt();
+    Tensor<T> sqrt();
 
     [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
 
@@ -99,6 +99,22 @@ public:
     Tensor<T> operator*(T scalar) const;
 
     Tensor<T> operator/(T scalar) const;
+
+    Tensor<T>& operator-=(const Tensor<T>& other);
+
+    Tensor<T>& operator+=(const Tensor<T>& other);
+
+    Tensor<T>& operator*=(const Tensor<T>& other);
+
+    Tensor<T>& operator/=(const Tensor<T>& other);
+
+    Tensor<T>& operator-=(T& scalar);
+
+    Tensor<T>& operator+=(T& scalar);
+
+    Tensor<T>& operator*=(T& scalar);
+
+    Tensor<T>& operator/=(T& scalar);
 
     Tensor<T> operator[](const std::vector<int>& indices);
 
