@@ -268,6 +268,14 @@ TEST_F(SigmoidDerivativeTest, HandlesNormalCase) {
     ExpectTensorNear(1e-2);
 }
 
+TEST_F(SigmoidDerivativeTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f, -1000.f};
+    const std::vector<float> outputData = {0.0f, 0.0f}; // Sigmoid derivative approaches 0 for large positive/negative values
+
+    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::sigmoidDerivative);
+    ExpectTensorNear(1e-2);
+}
+
 // Softmax Derivative Tests
 class SoftmaxDerivativeTest : public ActivationFunctionDerivativeTest<float> {
 protected:
@@ -308,6 +316,14 @@ TEST_F(ReluDerivativeTest, HandlesNormalCase) {
     ExpectTensorNear(1e-2);
 }
 
+TEST_F(ReluDerivativeTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f, -1000.f};
+    const std::vector<float> outputData = {1.0f, 0.0f}; // ReLU derivative is 1 for positive values and 0 for negative values
+
+    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::reluDerivative);
+    ExpectTensorNear(1e-2);
+}
+
 // Leaky ReLU Derivative Tests
 class LeakyReluDerivativeTest : public ActivationFunctionDerivativeTest<float> {
 protected:
@@ -321,6 +337,14 @@ TEST_F(LeakyReluDerivativeTest, HandlesNormalCase) {
     const std::vector<float> outputData = {0.01f, 0.0f, 1.0f, 1.0f};
 
     SetUpTensorsWithAlpha(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::leakyReluDerivative, 0.01f);
+    ExpectTensorNearWithAlpha(1e-2);
+}
+
+TEST_F(LeakyReluDerivativeTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f, -1000.f};
+    const std::vector<float> outputData = {1.0f, 0.01f}; // Leaky ReLU derivative is 1 for positive values and alpha for negative values
+
+    SetUpTensorsWithAlpha(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::leakyReluDerivative, 0.01f);
     ExpectTensorNearWithAlpha(1e-2);
 }
 
@@ -340,6 +364,14 @@ TEST_F(EluDerivativeTest, HandlesNormalCase) {
     ExpectTensorNearWithAlpha(1e-2);
 }
 
+TEST_F(EluDerivativeTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f, -1000.f};
+    const std::vector<float> outputData = {1.0f, 0.0f}; // ELU derivative is 1 for positive values and alpha * exp(x) for large negative values
+
+    SetUpTensorsWithAlpha(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::eluDerivative, 1.0f);
+    ExpectTensorNearWithAlpha(1e-2);
+}
+
 // Tanh Derivative Tests
 class TanhDerivativeTest : public ActivationFunctionDerivativeTest<float> {
 protected:
@@ -353,5 +385,13 @@ TEST_F(TanhDerivativeTest, HandlesNormalCase) {
     const std::vector<float> outputData = {0.4199743f, 1.0f, 0.4199743f, 0.0706508f};
 
     SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::tanhDerivative);
+    ExpectTensorNear(1e-2);
+}
+
+TEST_F(TanhDerivativeTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f, -1000.f};
+    const std::vector<float> outputData = {0.0f, 0.0f}; // Tanh derivative approaches 0 for large positive/negative values
+
+    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::tanhDerivative);
     ExpectTensorNear(1e-2);
 }
