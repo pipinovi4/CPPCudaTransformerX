@@ -72,7 +72,7 @@ template<typename T>
 Tensor<T>::Tensor(const std::vector<int>& dims) : Tensor<T>(dims, std::vector<T>()) {
     int dims_size = getTotalSize(dims);
     this->dimensions = dims;
-    this->data.resize(dims_size, T(0));
+    this->data.resize(dims_size);
 
     if (dims_size != this->data.size()) {
         throw std::invalid_argument("Data size does not match the specified dimensions");
@@ -85,7 +85,7 @@ template <typename T>
 Tensor<T>::Tensor(const std::initializer_list<int> dims) : Tensor<T>(std::vector<int>(dims), std::vector<T>()) {
     int dims_size = getTotalSize(dims);
     std::vector<int> dims_vec(dims);
-    this->data.resize(dims_size, T(0));
+    this->data.resize(dims_size);
 
     if (dims_size != this->data.size()) {
         throw std::invalid_argument("Data size does not match the specified dimensions");
@@ -702,17 +702,65 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
-    // Ensure that tensors have the same shape
-    if (this->dimensions != other.dimensions) {
-        throw std::invalid_argument("Tensors must have the same shape for addition");
+    // Check if dimensions are compatible for broadcasting
+    //calculate
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for addition");
+        }
+    }
+
+    // Calculate resulting dimensions
+    std::vector<int> result_dims(this_dims.size());
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        result_dims[i] = std::max(this_dims[i], other_dims[i]);
     }
 
     // Create a new tensor to hold the result
-    Tensor<T> result(this->dimensions);
+    Tensor<T> result(result_dims);
 
-    // Perform element-wise addition
-    for (size_t i = 0; i < this->data.size(); ++i) {
-        result.data[i] = this->data[i] + other.data[i];
+    // Perform element-wise addition with broadcasting
+    for (size_t i = 0; i < result.data.size(); ++i) {
+        std::vector<int> result_indices(result_dims.size());
+        size_t temp = i;
+        for (size_t j = result_indices.size(); j-- > 0;) {
+            result_indices[j] = temp % result_dims[j];
+            temp /= result_dims[j];
+        }
+
+        std::vector<int> this_indices(this_dims.size());
+        std::vector<int> other_indices(other_dims.size());
+        for (size_t j = 0; j < result_indices.size(); ++j) {
+            this_indices[j] = (this_dims[j] == 1) ? 0 : result_indices[j];
+            other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
+        }
+
+        if (this_dims.size() != other_dims.size()) {
+            throw std::invalid_argument("Number of indices must match number of dimensions");
+        }
+
+        // Choosed this way to calculate the index to avoid the use of calculateIndex method
+        // Because if create new tensor this isn't memory efficient.
+        int this_index = 0;
+        int this_stride = 1;
+        int other_index = 0;
+        int other_stride = 1;
+        for (int j = this_dims.size() - 1; j >= 0; --j) {
+            this_index += other_dims[j] * this_stride;
+            this_stride *= this_dims[j];
+            other_index += this_dims[j] * other_stride;
+            other_stride *= other_dims[j];
+        }
+
+        result.data[i] = this->data[this_index] + other.data[other_index];
     }
 
     return result;
@@ -720,17 +768,60 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 
 template<typename T>
 Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
-    // Ensure dimensions match
-    if (this->dimensions != other.dimensions) {
-        throw std::invalid_argument("Dimension mismatch for subtraction");
+    // Check if dimensions are compatible for broadcasting
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
-    // Create result tensor
-    Tensor<T> result(this->dimensions);
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for subtraction");
+        }
+    }
 
-    // Perform element-wise subtraction
-    for (size_t i = 0; i < data.size(); ++i) {
-        result.data[i] = this->data[i] - other.data[i];
+    // Calculate resulting dimensions
+    std::vector<int> result_dims(this_dims.size());
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        result_dims[i] = std::max(this_dims[i], other_dims[i]);
+    }
+
+    // Create a new tensor to hold the result
+    Tensor<T> result(result_dims);
+
+    // Perform element-wise subtraction with broadcasting
+    for (size_t i = 0; i < result.data.size(); ++i) {
+        std::vector<int> result_indices(result_dims.size());
+        size_t temp = i;
+        for (size_t j = result_indices.size(); j-- > 0;) {
+            result_indices[j] = temp % result_dims[j];
+            temp /= result_dims[j];
+        }
+
+        std::vector<int> this_indices(this_dims.size());
+        std::vector<int> other_indices(other_dims.size());
+        for (size_t j = 0; j < result_indices.size(); ++j) {
+            this_indices[j] = (this_dims[j] == 1) ? 0 : result_indices[j];
+            other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
+        }
+
+        // Choosed this way to calculate the index to avoid the use of calculateIndex method
+        // Because if create new tensor this isn't memory efficient.
+        int this_index = 0;
+        int this_stride = 1;
+        int other_index = 0;
+        int other_stride = 1;
+        for (int j = this_dims.size() - 1; j >= 0; --j) {
+            this_index += other_dims[j] * this_stride;
+            this_stride *= this_dims[j];
+            other_index += this_dims[j] * other_stride;
+            other_stride *= other_dims[j];
+        }
+
+        result.data[i] = this->data[this_index] - other.data[other_index];
     }
 
     return result;
