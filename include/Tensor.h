@@ -53,6 +53,8 @@ public:
 
     Tensor<T> sqrt();
 
+    Tensor<T> sum(int& axis);
+
     [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
 
     [[nodiscard]] Tensor<T> slice(int axis, int start, int end) const;

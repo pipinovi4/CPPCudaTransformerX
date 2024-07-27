@@ -222,6 +222,42 @@ Tensor<T> Tensor<T>::sqrt() {
 }
 
 template<typename T>
+Tensor<T> Tensor<T>::sum(int& axis) {
+    if (axis < 0 || axis >= dimensions.size()) {
+        throw std::invalid_argument("Invalid axis");
+    }
+
+    std::vector<int> new_dims = dimensions;
+    new_dims.erase(new_dims.begin() + axis);
+
+    Tensor<T> result(new_dims);
+
+    std::vector<int> indices(dimensions.size(), 0);
+    std::vector<int> result_indices(new_dims.size(), 0);
+
+    for (size_t i = 0; i < data.size(); ++i) {
+        size_t temp = i;
+        for (size_t j = indices.size(); j-- > 0;) {
+            indices[j] = temp % dimensions[j];
+            temp /= dimensions[j];
+        }
+
+        for (size_t j = 0; j < indices.size(); ++j) {
+            if (j < axis) {
+                result_indices[j] = indices[j];
+            } else if (j > axis) {
+                result_indices[j - 1] = indices[j];
+            }
+        }
+
+        int result_index = result.calculateIndex(result_indices);
+        result.data[result_index] += data[i];
+    }
+
+    return result;
+}
+
+template<typename T>
 Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
