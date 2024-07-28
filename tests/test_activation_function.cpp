@@ -2,52 +2,32 @@
 #include "../include/Tensor.h"
 #include "../include/ActivationFunction.h"
 
-typedef Tensor<float> (*ActivationFunc)(const Tensor<float>&);
-typedef Tensor<float> (*ActivationFuncWithAlpha)(const Tensor<float>&, float);
-
 template <typename T>
 class ActivationFunctionTest : public ::testing::Test {
 protected:
     Tensor<T> input;
     Tensor<T> expected;
-    ActivationFunc activation;
-    ActivationFuncWithAlpha activationWithAlpha{};
-    float alpha;
+    Tensor<T> processedDataForward;
+    Tensor<T> processedDataBackward;
 
-    ActivationFunctionTest() : input(Tensor<float>({1, 1})), expected(Tensor<float>({1, 1})), activation(ActivationFunction<float>::relu), alpha(0.01f) {}
+    ActivationFunctionTest() : input(Tensor<float>({1, 1})), expected(Tensor<float>({1, 1})), processedDataForward(Tensor<float>({1, 1})), processedDataBackward(Tensor<float>({1, 1})) {}
 
-    void SetUpTensors(const std::vector<float>& inputData, const std::vector<float>& outputData, const std::vector<int>& inputDims, const std::vector<int>& outputDims, const ActivationFunc activationFunction) {
-        input = Tensor<float>(inputDims, inputData);
-        expected = Tensor<float>(outputDims, outputData);
-        activation = activationFunction;
+    void SetUpData(const Tensor<T>& input, const Tensor<T>& expected) {
+        this->input = input;
+        this->expected = expected;
     }
 
-    void SetUpTensorsWithAlpha(const std::vector<float>& inputData, const std::vector<float>& outputData, const std::vector<int>& inputDims, const std::vector<int>& outputDims, const ActivationFuncWithAlpha activationFunction, float alphaValue) {
-        input = Tensor<float>(inputDims, inputData);
-        expected = Tensor<float>(outputDims, outputData);
-        activationWithAlpha = activationFunction;
-        alpha = alphaValue;
+    template <typename F>
+    void ProcessDataForward(F activationFunction) {
+        processedDataForward = activationFunction.forward(input);
     }
 
-    Tensor<T> processInput(const Tensor<T>& input) {
-        return activation(input);
+    template <typename F>
+    void ProcessDataBackward(F activationFunction) {
+        processedDataBackward = activationFunction.backward(input);
     }
 
-    Tensor<T> processInputWithAlpha(const Tensor<T>& input) {
-        return activationWithAlpha(input, alpha);
-    }
-
-    void ExpectTensorNear(const double abs_error = 1e-2) {
-        const Tensor<float>& actual = processInput(input);
-        ASSERT_EQ(actual.shape(), expected.shape()) << "Tensor shapes do not match.";
-        for (size_t i = 0; i < actual.data.size(); ++i) {
-            EXPECT_NEAR(actual.data[i], expected.data[i], abs_error)
-                << "Mismatch at index " << i << ": expected " << expected.data[i] << " but got " << actual.data[i];
-        }
-    }
-
-    void ExpectTensorNearWithAlpha(const double abs_error = 1e-2) {
-        const Tensor<float>& actual = processInputWithAlpha(input);
+    void ExpectTensorNear(Tensor<T> actual, const double abs_error = 1e-2) {
         ASSERT_EQ(actual.shape(), expected.shape()) << "Tensor shapes do not match.";
         for (size_t i = 0; i < actual.data.size(); ++i) {
             EXPECT_NEAR(actual.data[i], expected.data[i], abs_error)
@@ -56,342 +36,249 @@ protected:
     }
 };
 
-// Sigmoid Activation Function Tests
-class SigmoidActivationFunctionTest : public ActivationFunctionTest<float> {
+class Sigmoid : public ActivationFunctionTest<float> {
+public:
+    ActivationFunction<float>::Sigmoid sigmoid;
+
+    Sigmoid() {
+        sigmoid = ActivationFunction<float>::Sigmoid();
+   }
+};
+
+TEST_F(Sigmoid, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 0.19661193f, -0.19661193f, 0.11750186f, -0.11750186f});
+
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.5f, 0.7310586f, 0.26894143f, 0.62245935f, 0.37754068f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 0.19661193f, -0.19661193f, 0.11750186f, -0.11750186f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(sigmoid);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(sigmoid);
+    ExpectTensorNear(expectedBackward, 1e-6);
+}
+
+TEST_F(Sigmoid, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, 1000.0f, -1000.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -1000.0f, 1000.0f, -1000.0f});
+
+    const auto expectedFoward = Tensor<float>(std::vector<float>{1.0f, 1.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 0.0f, -0.0f, 0.0f, -0.0f});
+
+    SetUpData(inputForward, expectedFoward);
+    ProcessDataForward(sigmoid);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataForward(sigmoid);
+    ExpectTensorNear(expectedBackward, 1e-6);
+}
+
+class Softmax : public ActivationFunctionTest<float> {
 protected:
-    void SetUp() override {
-        activation = ActivationFunction<float>::sigmoid;
+    ActivationFunction<float>::Softmax softmax;
+
+    Softmax() {
+        softmax = ActivationFunction<float>::Softmax();
     }
 };
 
-TEST_F(SigmoidActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {0.0f, 1.0f, 2.0f, 3.0f};
-    const std::vector<float> outputData = {0.5f, 0.7310586f, 0.880797f, 0.9525741f};
+TEST_F(Softmax, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1.0f, 2.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f, 4.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f});
 
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::sigmoid);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0160293f, 0.04357216f, 0.11844141f, 0.32195713f, 0.0160293f, 0.04357216f, 0.11844141f, 0.32195713f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.01577236f, 0.08334725f, 0.31323913f, 0.87320295f, 0.01577236f, 0.08334725f, 0.31323913f, 0.87320295f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(softmax);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataForward(softmax);
+    ExpectTensorNear(expectedBackward, 1e-6);
 }
 
-TEST_F(SigmoidActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f};
-    const std::vector<float> outputData = {1.0f};
+TEST_F(Softmax, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, 1000.0f, -1000.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -1000.0f, 1000.0f, -1000.0f});
 
-    SetUpTensors(inputData, outputData, {1, 1}, {1, 1}, ActivationFunction<float>::sigmoid);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.33333333f, 0.33333333f, 0.0f,0.33333333f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{250.0f, 0.0f, -0.0f, 250.0f, -0.f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(softmax);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataForward(softmax);
+    ExpectTensorNear(expectedBackward, 1e-6);
 }
 
-// Softmax Activation Function Tests
-class SoftMaxActivationFunctionTest : public ActivationFunctionTest<float> {
+class ReLU : public ActivationFunctionTest<float> {
 protected:
-    void SetUp() override {
-        activation = ActivationFunction<float>::softmax;
+    ActivationFunction<float>::ReLU relu;
+
+    ReLU() {
+        relu = ActivationFunction<float>::ReLU();
     }
 };
 
-TEST_F(SoftMaxActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {1.0f, 2.0f, 3.0f};
-    const std::vector<float> outputData = {0.0900306f, 0.2447285f, 0.6652409f};
+TEST_F(ReLU, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    SetUpTensors(inputData, outputData, {1, 3}, {1, 3}, ActivationFunction<float>::softmax);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(relu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(relu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-TEST_F(SoftMaxActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, 1000.f, 1000.f};
-    const std::vector<float> outputData = {0.3333333f, 0.3333333f, 0.3333333f};
+TEST_F(ReLU, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    SetUpTensors(inputData, outputData, {1, 3}, {1, 3}, ActivationFunction<float>::softmax);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(relu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(relu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-// ReLU Activation Function Tests
-class ReluActivationFunctionTest : public ActivationFunctionTest<float> {
+class LeakyReLU : public ActivationFunctionTest<float> {
 protected:
-    void SetUp() override {
-        activation = ActivationFunction<float>::relu;
+    ActivationFunction<float>::LeakyReLU leaky_relu;
+
+    LeakyReLU() {
+        leaky_relu = ActivationFunction<float>::LeakyReLU();
     }
 };
 
-TEST_F(ReluActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {0.0f, 0.0f, 1.0f, 2.0f};
+TEST_F(LeakyReLU, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::relu);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -10.0f, 1000.0f, -10.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -10.0f, 1000.0f, -10.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(leaky_relu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(leaky_relu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-TEST_F(ReluActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f};
-    const std::vector<float> outputData = {1000.f};
+TEST_F(LeakyReLU, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    SetUpTensors(inputData, outputData, {1, 1}, {1, 1}, ActivationFunction<float>::relu);
-    ExpectTensorNear(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(leaky_relu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(leaky_relu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-// Leaky ReLU Activation Function Tests
-class LeakyReluActivationFunctionTest : public ActivationFunctionTest<float> {
+class ELU : public ActivationFunctionTest<float> {
 protected:
-    void SetUp() override {
-        activationWithAlpha = ActivationFunction<float>::leakyRelu;
+    ActivationFunction<float>::ELU elu;
+
+    ELU() {
+        elu = ActivationFunction<float>::ELU();
     }
 };
 
-TEST_F(LeakyReluActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {-0.01f, 0.0f, 1.0f, 2.0f};
+TEST_F(ELU, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    SetUpTensorsWithAlpha(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::leakyRelu, 0.01f);
-    ExpectTensorNearWithAlpha(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(elu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(elu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-TEST_F(LeakyReluActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f};
-    const std::vector<float> outputData = {1000.f};
+TEST_F(ELU, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    SetUpTensorsWithAlpha(inputData, outputData, {1, 1}, {1, 1}, ActivationFunction<float>::leakyRelu, 0.01f);
-    ExpectTensorNearWithAlpha(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(elu);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(elu);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-// ELU Activation Function Tests
-class EluActivationFunctionTest : public ActivationFunctionTest<float> {
+class Tanh : public ActivationFunctionTest<float> {
 protected:
-    void SetUp() override {
-        activationWithAlpha = ActivationFunction<float>::elu;
+    ActivationFunction<float>::Tanh tanh;
+
+    Tanh() {
+        tanh = ActivationFunction<float>::Tanh();
     }
 };
 
-TEST_F(EluActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {-0.6321206f, 0.0f, 1.0f, 2.0f};
+TEST_F(Tanh, HandlesNormalCase) {
+    const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    SetUpTensorsWithAlpha(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::elu, 1.0f);
-    ExpectTensorNearWithAlpha(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(tanh);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(tanh);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-TEST_F(EluActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f};
-    const std::vector<float> outputData = {1000.f};
+TEST_F(Tanh, HandlesEdgeCaseLargeValues) {
+    const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
+    const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    SetUpTensorsWithAlpha(inputData, outputData, {1, 1}, {1, 1}, ActivationFunction<float>::elu, 1.0f);
-    ExpectTensorNearWithAlpha(1e-2);
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+
+    SetUpData(inputForward, expectedForward);
+    ProcessDataForward(tanh);
+    ExpectTensorNear(processedDataForward, 1e-6);
+
+    SetUpData(inputBackward, expectedBackward);
+    ProcessDataBackward(tanh);
+    ExpectTensorNear(processedDataBackward, 1e-6);
 }
 
-// Tanh Activation Function Tests
-class TanhActivationFunctionTest : public ActivationFunctionTest<float> {
-protected:
-    void SetUp() override {
-        activation = ActivationFunction<float>::tanh;
-    }
-};
-
-TEST_F(TanhActivationFunctionTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {-0.7615942f, 0.0f, 0.7615942f, 0.9640276f};
-
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::tanh);
-    ExpectTensorNear(1e-2);
-}
-
-TEST_F(TanhActivationFunctionTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f};
-    const std::vector<float> outputData = {1.0f};
-
-    SetUpTensors(inputData, outputData, {1, 1}, {1, 1}, ActivationFunction<float>::tanh);
-    ExpectTensorNear(1e-2);
-}
-
-// Derivative Tests
-template <typename T>
-class ActivationFunctionDerivativeTest : public ::testing::Test {
-protected:
-    Tensor<T> input;
-    Tensor<T> expected;
-    ActivationFunc activationDerivative;
-    ActivationFuncWithAlpha activationDerivativeWithAlpha{};
-    float alpha;
-
-    ActivationFunctionDerivativeTest() : input(Tensor<float>({1, 1})), expected(Tensor<float>({1, 1})), activationDerivative(ActivationFunction<float>::reluDerivative), alpha(0.01f) {}
-
-    void SetUpTensors(const std::vector<float>& inputData, const std::vector<float>& outputData, const std::vector<int>& inputDims, const std::vector<int>& outputDims, const ActivationFunc activationFunction) {
-        input = Tensor<float>(inputDims, inputData);
-        expected = Tensor<float>(outputDims, outputData);
-        activationDerivative = activationFunction;
-    }
-
-    void SetUpTensorsWithAlpha(const std::vector<float>& inputData, const std::vector<float>& outputData, const std::vector<int>& inputDims, const std::vector<int>& outputDims, const ActivationFuncWithAlpha activationFunction, float alphaValue) {
-        input = Tensor<float>(inputDims, inputData);
-        expected = Tensor<float>(outputDims, outputData);
-        activationDerivativeWithAlpha = activationFunction;
-        alpha = alphaValue;
-    }
-
-    Tensor<T> processInput(const Tensor<T>& input) {
-        return activationDerivative(input);
-    }
-
-    Tensor<T> processInputWithAlpha(const Tensor<T>& input) {
-        return activationDerivativeWithAlpha(input, alpha);
-    }
-
-    void ExpectTensorNear(const double abs_error = 1e-2) {
-        const Tensor<float>& actual = processInput(input);
-        ASSERT_EQ(actual.shape(), expected.shape()) << "Tensor shapes do not match.";
-        for (size_t i = 0; i < actual.data.size(); ++i) {
-            EXPECT_NEAR(actual.data[i], expected.data[i], abs_error)
-                << "Mismatch at index " << i << ": expected " << expected.data[i] << " but got " << actual.data[i];
-        }
-    }
-
-    void ExpectTensorNearWithAlpha(const double abs_error = 1e-2) {
-        const Tensor<float>& actual = processInputWithAlpha(input);
-        ASSERT_EQ(actual.shape(), expected.shape()) << "Tensor shapes do not match.";
-        for (size_t i = 0; i < actual.data.size(); ++i) {
-            EXPECT_NEAR(actual.data[i], expected.data[i], abs_error)
-                << "Mismatch at index " << i << ": expected " << expected.data[i] << " but got " << actual.data[i];
-        }
-    }
-};
-
-// Sigmoid Derivative Tests
-class SigmoidDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivative = ActivationFunction<float>::sigmoidDerivative;
-    }
-};
-
-TEST_F(SigmoidDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {0.0f, 1.0f, 2.0f, 3.0f};
-    const std::vector<float> outputData = {0.25f, 0.1966119f, 0.1049936f, 0.0451767f};
-
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::sigmoidDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-TEST_F(SigmoidDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, -1000.f};
-    const std::vector<float> outputData = {0.0f, 0.0f}; // Sigmoid derivative approaches 0 for large positive/negative values
-
-    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::sigmoidDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-// Softmax Derivative Tests
-class SoftmaxDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivative = ActivationFunction<float>::softmaxDerivative;
-    }
-};
-
-TEST_F(SoftmaxDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {1.0f, 2.0f, 3.0f};
-    const std::vector<float> outputData = {0.0819251f, 0.1848365f, 0.2217124f}; // Example values, adjust as needed
-
-    SetUpTensors(inputData, outputData, {1, 3}, {1, 3}, ActivationFunction<float>::softmaxDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-TEST_F(SoftmaxDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, 1000.f, 1000.f};
-    const std::vector<float> outputData = {0.2222222f, 0.2222222f, 0.2222222f}; // Corrected values
-
-    SetUpTensors(inputData, outputData, {1, 3}, {1, 3}, ActivationFunction<float>::softmaxDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-// ReLU Derivative Tests
-class ReluDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivative = ActivationFunction<float>::reluDerivative;
-    }
-};
-
-TEST_F(ReluDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {0.0f, 0.0f, 1.0f, 1.0f};
-
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::reluDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-TEST_F(ReluDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, -1000.f};
-    const std::vector<float> outputData = {1.0f, 0.0f}; // ReLU derivative is 1 for positive values and 0 for negative values
-
-    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::reluDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-// Leaky ReLU Derivative Tests
-class LeakyReluDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivativeWithAlpha = ActivationFunction<float>::leakyReluDerivative;
-    }
-};
-
-TEST_F(LeakyReluDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {0.01f, 0.0f, 1.0f, 1.0f};
-
-    SetUpTensorsWithAlpha(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::leakyReluDerivative, 0.01f);
-    ExpectTensorNearWithAlpha(1e-2);
-}
-
-TEST_F(LeakyReluDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, -1000.f};
-    const std::vector<float> outputData = {1.0f, 0.01f}; // Leaky ReLU derivative is 1 for positive values and alpha for negative values
-
-    SetUpTensorsWithAlpha(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::leakyReluDerivative, 0.01f);
-    ExpectTensorNearWithAlpha(1e-2);
-}
-
-// ELU Derivative Tests
-class EluDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivativeWithAlpha = ActivationFunction<float>::eluDerivative;
-    }
-};
-
-TEST_F(EluDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {0.3678794f, 1.0f, 1.0f, 1.0f};
-
-    SetUpTensorsWithAlpha(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::eluDerivative, 1.0f);
-    ExpectTensorNearWithAlpha(1e-2);
-}
-
-TEST_F(EluDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, -1000.f};
-    const std::vector<float> outputData = {1.0f, 0.0f}; // ELU derivative is 1 for positive values and alpha * exp(x) for large negative values
-
-    SetUpTensorsWithAlpha(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::eluDerivative, 1.0f);
-    ExpectTensorNearWithAlpha(1e-2);
-}
-
-// Tanh Derivative Tests
-class TanhDerivativeTest : public ActivationFunctionDerivativeTest<float> {
-protected:
-    void SetUp() override {
-        activationDerivative = ActivationFunction<float>::tanhDerivative;
-    }
-};
-
-TEST_F(TanhDerivativeTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {-1.0f, 0.0f, 1.0f, 2.0f};
-    const std::vector<float> outputData = {0.4199743f, 1.0f, 0.4199743f, 0.0706508f};
-
-    SetUpTensors(inputData, outputData, {2, 2}, {2, 2}, ActivationFunction<float>::tanhDerivative);
-    ExpectTensorNear(1e-2);
-}
-
-TEST_F(TanhDerivativeTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> inputData = {1000.f, -1000.f};
-    const std::vector<float> outputData = {0.0f, 0.0f}; // Tanh derivative approaches 0 for large positive/negative values
-
-    SetUpTensors(inputData, outputData, {1, 2}, {1, 2}, ActivationFunction<float>::tanhDerivative);
-    ExpectTensorNear(1e-2);
-}
