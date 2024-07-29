@@ -36,6 +36,9 @@ public:
     // Constructor to initialize the tensor with dimensions from an initializer list
     Tensor(std::initializer_list<int> dims);
 
+    // Default constructor to initialize an empty tensor
+    Tensor(const std::vector<int>& dims, const int& newSize);
+
     // Helper functions to get the dimensions and size of the tensor
 
     [[nodiscard]] const std::vector<int>& shape() const;

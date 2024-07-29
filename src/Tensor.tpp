@@ -109,6 +109,13 @@ Tensor<T>::Tensor(const D &data) : Tensor<T>(std::vector<int>(), data) {
     this->strides = calculateStrides();
 }
 
+template <typename T>
+Tensor<T>::Tensor(const std::vector<int>& dims, const int& newSize) : dimensions(dims){
+    this->data.reserve(newSize);
+    this->strides = calculateStrides();
+}
+
+
 template<typename T>
 const std::vector<int>& Tensor<T>::shape() const {
     return dimensions;
