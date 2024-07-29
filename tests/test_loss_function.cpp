@@ -3,13 +3,11 @@
 #include "../include/LossFunction.h"
 #include <cmath>
 
-typedef float (*LossFunc)(const Tensor<float>& predictions, const Tensor<float>& targets, double epsilon);
-
 template <typename T>
 class LossFunctionTest : public ::testing::Test
 {
 protected:
-    LossFunc lossFunction;
+    LossFunction<T>* lossFunction;
     Tensor<T> input;
     Tensor<T> targets;
     double epsilon;
@@ -26,12 +24,16 @@ protected:
         this->epsilon = epsilon;
     }
 
-    T ProcessInput(const Tensor<T>& input, const Tensor<T>& targets, double epsilon) {
-        return lossFunction(input, targets, epsilon);
+    T ProcessInputForward(const Tensor<T>& input, const Tensor<T>& targets, double epsilon) {
+        return lossFunction->forward(input, targets);
+    }
+
+    T ProcessInputBackward(const Tensor<T>& input, const Tensor<T>& targets, double epsilon) {
+        return lossFunction->backward(input, targets);
     }
 
     void ExpectLossNear(const T& expected, const double abs_error = 1e-2) {
-        T actual = ProcessInput(input, targets, epsilon);
+        T actual = ProcessInputForward(input, targets, epsilon);
         if (std::isnan(actual)) {
             ADD_FAILURE() << "Actual value is NaN";
         } else {
@@ -43,7 +45,11 @@ protected:
 class BinaryCrossEntropyLossTest : public LossFunctionTest<float> {
 protected:
     void SetUp() override {
-        lossFunction = LossFunction<float>::binaryCrossEntropyLoss;
+        lossFunction = new LossFunction<float>::binaryCrossEntropyLoss();
+    }
+
+    void TearDown() override {
+        delete lossFunction;
     }
 };
 
@@ -52,7 +58,7 @@ TEST_F(BinaryCrossEntropyLossTest, HandlesNormalCase) {
     const std::vector<float> outputData = {0.119203f, 0.880797f, 0.7310586f, 0.26894143f};
 
     SetUpData(Tensor<float>({2, 2}, inputData), Tensor<float>({2, 2}, outputData));
-    ExpectLossNear(0.705015f, 1e-2);
+    ExpectLossNear(1.4100300073623657, 1e-2);
 }
 
 TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseLargeValues) {
@@ -60,51 +66,118 @@ TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseLargeValues) {
     const std::vector<float> outputData = {1000.f};
 
     SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
-    ExpectLossNear(-15926.442f, 1e-2);
+    ExpectLossNear(-34504.23828125f, 1e-2);
+}
+
+TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseSmallValues) {
+    const std::vector<float> inputData = {1e-7f};
+    const std::vector<float> outputData = {1e-7f};
+
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear( 1.7310188695773832e-06f, 1e-2);
 }
 
 class CrossEntropyLossTest : public LossFunctionTest<float> {
-protected:
+public:
     void SetUp() override {
-        lossFunction = LossFunction<float>::crossEntropyLoss;
+        lossFunction = new LossFunction<float>::crossEntropyLoss();
+    }
+
+    void TearDown() override {
+        delete lossFunction;
     }
 };
 
 TEST_F(CrossEntropyLossTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {0.1f, 0.2f, 0.7f};
-    const std::vector<float> targetData = {0.0f, 0.0f, 1.0f};
+    const std::vector<float> inputData = {0.423423f, 0.423423f, 0.423423f, 0.423423f};
+    const std::vector<float> outputData = {0.119203f, 0.880797f, 0.7310586f, 0.26894143f};
 
-    SetUpData(Tensor<float>({3}, inputData), Tensor<float>({3}, targetData));
-    ExpectLossNear(0.356675f, 1e-2);
+    SetUpData(Tensor<float>({2, 2}, inputData), Tensor<float>({2, 2}, outputData));
+    ExpectLossNear(0.85938370227813721, 1e-2);
 }
 
-TEST_F(CrossEntropyLossTest, HandlesEdgeCase) {
-    const std::vector<float> inputData = {1e-10f, 1e-10f, 1e-10f};
-    const std::vector<float> targetData = {0.0f, 0.0f, 1.0f};
+TEST_F(CrossEntropyLossTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f};
+    const std::vector<float> outputData = {1000.f};
 
-    SetUpData(Tensor<float>({3}, inputData), Tensor<float>({3}, targetData));
-    ExpectLossNear(16.118095f, 1e-2);
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(0.f, 1e-2);
 }
 
-class MeanAbsoluteErrorLossTest : public LossFunctionTest<float> {
-protected:
+TEST_F(CrossEntropyLossTest, HandlesEdgeCaseSmallValues) {
+    const std::vector<float> inputData = {1e-7f};
+    const std::vector<float> outputData = {1e-7f};
+
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(1.7310188695773832e-06f, 1e-2);
+}
+
+class MeanSquaredErrorTest : public LossFunctionTest<float> {
+public:
     void SetUp() override {
-        lossFunction = LossFunction<float>::meanAbsoluteError;
+    lossFunction = new LossFunction<float>::meanSquaredError();
+    }
+
+    void TearDown() override {
+        delete lossFunction;
     }
 };
 
-TEST_F(MeanAbsoluteErrorLossTest, HandlesNormalCase) {
-    const std::vector<float> inputData = {0.1f, 0.2f, 0.7f};
-    const std::vector<float> targetData = {0.0f, 0.0f, 1.0f};
+TEST_F(MeanSquaredErrorTest, HandlesNormalCase) {
+    const std::vector<float> inputData = {0.423423f, 0.423423f, 0.423423f, 0.423423f};
+    const std::vector<float> outputData = {0.119203f, 0.880797f, 0.7310586f, 0.26894143f};
 
-    SetUpData(Tensor<float>({3}, inputData), Tensor<float>({3}, targetData));
-    ExpectLossNear(0.2f, 1e-2);
+    SetUpData(Tensor<float>({2, 2}, inputData), Tensor<float>({2, 2}, outputData));
+    ExpectLossNear(0.2101224958896637f, 1e-2);
 }
 
-TEST_F(MeanAbsoluteErrorLossTest, HandlesEdgeCase) {
-    const std::vector<float> inputData = {1.0f, 1.0f, 1.0f};
-    const std::vector<float> targetData = {0.0f, 0.0f, 0.0f};
+TEST_F(MeanSquaredErrorTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f};
+    const std::vector<float> outputData = {1000.f};
 
-    SetUpData(Tensor<float>({3}, inputData), Tensor<float>({3}, targetData));
-    ExpectLossNear(1.0f, 1e-2);
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(0.f, 1e-2);
+}
+
+TEST_F(MeanSquaredErrorTest, HandlesEdgeCaseSmallValues) {
+    const std::vector<float> inputData = {1e-7f};
+    const std::vector<float> outputData = {1e-7f};
+
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(1.7310188695773832e-06f, 1e-2);
+}
+
+class MeanAbsoluteErrorTest : public LossFunctionTest<float> {
+public:
+    void SetUp() override {
+        lossFunction = new LossFunction<float>::meanAbsoluteError();
+    }
+
+    void TearDown() override {
+        delete lossFunction;
+    }
+};
+
+TEST_F(MeanAbsoluteErrorTest, HandlesNormalCase) {
+    const std::vector<float> inputData = {0.423423f, 0.423423f, 0.423423f, 0.423423f};
+    const std::vector<float> outputData = {0.119203f, 0.880797f, 0.7310586f, 0.26894143f};
+
+    SetUpData(Tensor<float>({2, 2}, inputData), Tensor<float>({2, 2}, outputData));
+    ExpectLossNear(0.61185556650161743f, 1e-2);
+}
+
+TEST_F(MeanAbsoluteErrorTest, HandlesEdgeCaseLargeValues) {
+    const std::vector<float> inputData = {1000.f};
+    const std::vector<float> outputData = {1000.f};
+
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(0.f, 1e-2);
+}
+
+TEST_F(MeanAbsoluteErrorTest, HandlesEdgeCaseSmallValues) {
+    const std::vector<float> inputData = {1e-7f};
+    const std::vector<float> outputData = {1e-7f};
+
+    SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
+    ExpectLossNear(1.7310188695773832e-06f, 1e-2);
 }

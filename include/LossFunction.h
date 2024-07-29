@@ -7,13 +7,42 @@
 template <typename T>
 class LossFunction {
 public:
-    static T binaryCrossEntropyLoss(const Tensor<T>& predictions, const Tensor<T>& targets, double epsilon = 1e-7);
+    virtual ~LossFunction() = default;
+    virtual T forward(const Tensor<T>& predictions, const Tensor<T>& targets) = 0;
+    virtual Tensor<T> backward(const Tensor<T>& predictions, const Tensor<T>& targets) = 0;
 
-    static T crossEntropyLoss(const Tensor<T>& predictions, const Tensor<T>& targets, double epsilon = 1e-7);
+    class binaryCrossEntropyLoss;
+    class crossEntropyLoss;
+    class meanSquaredError;
+    class meanAbsoluteError;
+};
 
-    static T meanSquaredError(const Tensor<T>& predictions, const Tensor<T>& targets, double epsilon = 1e-7);
+template<typename T>
+class LossFunction<T>::binaryCrossEntropyLoss final : public LossFunction<T> {
+public:
+    T forward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+    Tensor<T> backward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+};
 
-    static T meanAbsoluteError(const Tensor<T>& predictions, const Tensor<T>& targets, double epsilon = 1e-7);
+template<typename T>
+class LossFunction<T>::crossEntropyLoss final : public LossFunction<T> {
+public:
+    T forward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+    Tensor<T> backward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+};
+
+template<typename T>
+class LossFunction<T>::meanSquaredError final : public LossFunction<T> {
+public:
+    T forward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+    Tensor<T> backward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+};
+
+template<typename T>
+class LossFunction<T>::meanAbsoluteError final : public LossFunction<T> {
+public:
+    T forward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
+    Tensor<T> backward(const Tensor<T>& predictions, const Tensor<T>& targets) override;
 };
 
 #include "../src/LossFunction.tpp"
