@@ -131,8 +131,8 @@ TEST_F(ReLU, HandlesNormalCase) {
     const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
     const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(relu);
@@ -172,8 +172,8 @@ TEST_F(LeakyReLU, HandlesNormalCase) {
     const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
     const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -10.0f, 1000.0f, -10.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, -10.0f, 1000.0f, -10.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -0.01f, 0.5f, -0.005f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.01f, 1.0f, 0.01f, 1.0f, 0.01f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(leaky_relu);
@@ -188,8 +188,8 @@ TEST_F(LeakyReLU, HandlesEdgeCaseLargeValues) {
     const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
     const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, -10.0f, 0.0f, 1000.0f, -10.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.01f, 0.01f, 1.0f, 0.01f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(leaky_relu);
@@ -213,8 +213,8 @@ TEST_F(ELU, HandlesNormalCase) {
     const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
     const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -0.00632121f, 0.5f, -0.00393469f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.01f, 1.0f, 0.00367879f, 1.0f, 0.00606531f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(elu);
@@ -229,8 +229,8 @@ TEST_F(ELU, HandlesEdgeCaseLargeValues) {
     const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
     const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, -0.01f, 0.0f, 1000.0f, -0.01f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.01f, 1.0f, 0.0f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(elu);
@@ -254,8 +254,8 @@ TEST_F(Tanh, HandlesNormalCase) {
     const auto inputForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
     const auto inputBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, -1.0f, 0.5f, -0.5f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 1.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 1.0f, 0.0f, 0.5f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{0.0f, 0.761594f, -0.761594f, 0.462117f, -0.462117f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.419974f, 0.419974f, 0.786448f, 0.786448f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(tanh);
@@ -270,8 +270,8 @@ TEST_F(Tanh, HandlesEdgeCaseLargeValues) {
     const auto inputForward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
     const auto inputBackward = Tensor<float>(std::vector<float>{1000.0f, -1000.0f, 0.0f, 1000.0f, -1000.0f});
 
-    const auto expectedForward = Tensor<float>(std::vector<float>{1000.0f, 0.0f, 0.0f, 1000.0f, 0.0f});
-    const auto expectedBackward = Tensor<float>(std::vector<float>{1.0f, 0.0f, 0.0f, 1.0f, 0.0f});
+    const auto expectedForward = Tensor<float>(std::vector<float>{1.0f, -1.0f, 0.0f, 1.0f, -1.0f});
+    const auto expectedBackward = Tensor<float>(std::vector<float>{0.0f, 0.0f, 1.0f, 0.0f, 0.0f});
 
     SetUpData(inputForward, expectedForward);
     ProcessDataForward(tanh);
