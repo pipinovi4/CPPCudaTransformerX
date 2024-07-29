@@ -3,48 +3,58 @@
 
 #pragma once
 #include "../include/Tensor.h"
-#include "../include/LossFunction.h"
-#include "../include/ActivationFunction.h"
-#include <cmath>
 #include <vector>
-#include <fstream>
 
 template <typename T>
 class Optimizer {
 public:
-    explicit Optimizer(T learning_rate, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
-        : learning_rate(learning_rate), beta1(beta1), beta2(beta2), epsilon(epsilon), first_moment_vector(Tensor<T>({1})), second_moment_vector(Tensor<T>({1})), time_step(0) {}
+    class LearningRateSchedule {
+    public:
+        virtual T getLearningRate(size_t epoch) = 0;
+        virtual ~LearningRateSchedule() = default;
 
-    void initialize(std::vector<int> param_shape);
+        class StepDecaySchedule;
+        class ExponentialDecaySchedule;
+    };
 
-    void Adam(Tensor<T>& params, const Tensor<T>& grads);
+    explicit Optimizer(T learning_rate, LearningRateSchedule& lr_schedule = nullptr)
+     : beta1(T(0.9)), beta2(T(0.999)), epsilon(T(1e-8)), learning_rate(learning_rate), lr_schedule(lr_schedule) {}
 
-    void RMSprop(Tensor<T>& params, const Tensor<T>& grads);
+    virtual void initialize(std::vector<int> param_shape) = 0;
+    virtual void update(Tensor<T>& params, const Tensor<T>& grads, size_t epoch) = 0;
+    virtual ~Optimizer() = default;
 
-    void SGD(Tensor<T>& params, const Tensor<T>& grads);
+    class Adam;
+    class RMSprop;
+    class SGD;
 
-    void reset();
-
-    void save_state(const std::string& filename) const;
-
-    void deserialize(std::istream& is);
-
-    void load_state(const std::string& filename);
-
-    void apply_weight_decay(Tensor<T>& params, T weight_decay);
-
-    void clip_gradients(Tensor<T>& grads, T clip_value);
-
-private:
-    T learning_rate;
+protected:
     T beta1;
     T beta2;
     T epsilon;
-    size_t time_step;
+
+    size_t time_step = 0;
     Tensor<T> first_moment_vector;
     Tensor<T> second_moment_vector;
+    Tensor<T> mean_squared_gradients;
+
+    T learning_rate;
+    LearningRateSchedule& lr_schedule;
+    T decay_rate;
+
+    void updateLearningRate(size_t epoch);
+
+    static void apply_weight_decay(Tensor<T>& params, T weight_decay);
+
+    void clip_gradients(Tensor<T>& grads, T clip_value);
+
+    void save_state(const std::string& filename) const;
+
+    void load_state(const std::string& filename);
+
+    void deserialize(std::istream& is);
 };
 
 #include "../src/Optimizer.tpp"
 
-#endif //OPTIMIZER_H
+#endif // OPTIMIZER_H

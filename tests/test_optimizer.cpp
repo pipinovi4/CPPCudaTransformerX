@@ -3,117 +3,169 @@
 #include "../include/Optimizer.h"
 #include <cmath>
 
+TEST(StepDecayScheduleTest, GetLearningRate) {
+    Optimizer<float>::LearningRateSchedule::StepDecaySchedule lr_schedule(0.01, 0.1, 100);
+
+    EXPECT_NEAR(lr_schedule.getLearningRate(0), 0.01, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(50), 0.0031622776, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(100), 0.001, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(200), 0.0001, 1e-5);
+}
+
+TEST(ExponentialDecayScheduleTest, GetLearningRate) {
+    Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule lr_schedule(0.01, 0.9);
+
+    EXPECT_NEAR(lr_schedule.getLearningRate(0), 0.01, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(1), 0.009, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(2), 0.0081, 1e-5);
+    EXPECT_NEAR(lr_schedule.getLearningRate(3), 0.00729, 1e-5);
+}
+
 typedef float (*Optim)(Tensor<float>& params, const Tensor<float>& grads);
 
 template <typename T>
 class OptimizerTest : public ::testing::Test {
 protected:
-    Optimizer<T> optimizer;
-    Tensor<T> params;
-    Tensor<T> grads;
+    Tensor<T> input_params;
+    Tensor<T> input_grads;
+    Tensor<T> output_params;
+    Tensor<T> output_grads;
+
+    Tensor<T> expected_params;
+    Tensor<T> expected_grads;
 
     OptimizerTest()
-        : optimizer(Optimizer<float>(0.01)),
-          params(Tensor<float>({2, 2})),
-          grads(Tensor<float>({2, 2})) {
-        params.fill(0.5);
-        grads.fill(0.1);
+        : input_params({2, 2}), input_grads({2, 2}), output_params({2, 2}), output_grads({2, 2}),
+          expected_params({2, 2}), expected_grads({2, 2}) {}
+
+    void SetUpData(const Tensor<T>& parameters, const Tensor<T>& gradients, const Tensor<T> expected_parameters, const Tensor<T> expected_gradients) {
+        this->input_params = parameters;
+        this->input_grads = gradients;
+        this->expected_params = expected_parameters;
+        this->expected_grads = expected_gradients;
     }
 
-    void SetUpData(const Tensor<T>& parameters, const Tensor<T>& gradients) {
-        this->params = parameters;
-        this->grads = gradients;
-    }
-
-    void ProcessInput(Tensor<T>& parameters, Tensor<T>& gradients) {
-        optimizer.SGD(parameters, gradients);
-    }
-
-    void ExpectParamsNear(Tensor<T> expected, float abs_error = 1e-2) {
-        ProcessInput(params, grads);
-        for (int i = 0; i < params.size(); i++) {
-            EXPECT_NEAR(params.data[i], expected.data[i], abs_error) << "Expected parameter: " << expected.data[i] << " but got " << params.data[i];
+    void ExpectParamsNear(const float abs_error = 1e-2) {
+        for (int i = 0; i < output_params.size(); i++) {
+            EXPECT_NEAR(output_params.data[i], expected_params.data[i], abs_error) << "Expected parameter: " << expected_params.data[i] << " but got " << output_params.data[i];
+        }
+        for (int i = 0; i < output_grads.size(); i++) {
+            EXPECT_NEAR(output_grads.data[i], expected_grads.data[i], abs_error) << "Expected grads: " << expected_grads.data[i] << " but got " << output_grads.data[i];
         }
     }
 };
 
 class AdamTest : public OptimizerTest<float> {
+public:
+    Optimizer<float>::Adam optimizer;
+    AdamTest()
+        : OptimizerTest<float>(), optimizer(0.9, 0.999, 1e-8, 0.01, *new Optimizer<float>::LearningRateSchedule::StepDecaySchedule(0.01, 0.1, 100)) {}
 protected:
     void SetUp() override {
         optimizer.initialize({2, 2});
     }
 };
 
-TEST_F(AdamTest, HandlesNormalCase) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(AdamTest, HandleNormalCase) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}),
+              Tensor<float>({2, 2}, std::vector<float>{0.099, 0.199, 0.299, 0.399}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
-TEST_F(AdamTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(AdamTest, HandleZeroGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
-class RMSpropTest : public OptimizerTest<float> {
+TEST_F(AdamTest, HandleLargeGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.099, 0.199, 0.299, 0.399}), Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
+}
+
+class RMSPropTest : public OptimizerTest<float> {
+public:
+    Optimizer<float>::RMSprop optimizer;
+    RMSPropTest()
+        : OptimizerTest<float>(), optimizer(0.01, 0.9, 1e-8, *new Optimizer<float>::LearningRateSchedule::StepDecaySchedule(0.01, 0.1, 100)) {}
 protected:
     void SetUp() override {
         optimizer.initialize({2, 2});
     }
 };
 
-TEST_F(RMSpropTest, HandlesNormalCase) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(RMSPropTest, HandleNormalCase) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}),
+              Tensor<float>({2, 2}, std::vector<float>{0.06839302, 0.16838118, 0.268379, 0.36837822}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
-TEST_F(RMSpropTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(RMSPropTest, HandleZeroGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
+}
+
+TEST_F(RMSPropTest, HandleLargeGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.068377226591110229, 0.16837722063064575, 0.26837724447250366, 0.36837723851203918}),
+              Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
 class SGDTest : public OptimizerTest<float> {
+public:
+    Optimizer<float>::SGD optimizer;
+    SGDTest()
+        : OptimizerTest<float>(), optimizer(0.01, *new Optimizer<float>::LearningRateSchedule::StepDecaySchedule(0.01, 0.1, 100)) {}
 protected:
     void SetUp() override {
         optimizer.initialize({2, 2});
     }
 };
 
-TEST_F(SGDTest, HandlesNormalCase) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(SGDTest, HandleNormalCase) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}),
+              Tensor<float>({2, 2}, std::vector<float>{0.0999, 0.1998, 0.2997, 0.3996}), Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
-TEST_F(SGDTest, HandlesEdgeCaseLargeValues) {
-    const std::vector<float> expectedData = {0.4995f, 0.4995f, 0.4995f, 0.4995f};
-    ExpectParamsNear(Tensor<float>({2, 2}, expectedData));
+TEST_F(SGDTest, HandleZeroGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
 
-class ApplyWeightDecayTest : public OptimizerTest<float> {
-protected:
-    void SetUp() override {
-        optimizer.initialize({2, 2});
-    }
-};
-
-TEST_F(ApplyWeightDecayTest, ApplyWeightDecay) {
-    Tensor<float> params({2, 2}, std::vector<float>{1.0f, 2.0f, 3.0f, 4.0f});
-    float weight_decay = 0.1f;
-    optimizer.apply_weight_decay(params, weight_decay);
-
-    EXPECT_NEAR(params.data[0], 0.9f, 1e-5);
-    EXPECT_NEAR(params.data[1], 1.8f, 1e-5);
-    EXPECT_NEAR(params.data[2], 2.7f, 1e-5);
-    EXPECT_NEAR(params.data[3], 3.6f, 1e-5);
+TEST_F(SGDTest, HandleLargeGradients) {
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}), Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.09, 0.19, 0.29, 0.39}), Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}));
+    output_params = input_params;
+    output_grads = input_grads;
+    optimizer.update(output_params, output_grads, 0);
+    ExpectParamsNear();
 }
-
-TEST_F(ApplyWeightDecayTest, ClipGradients) {
-    Tensor<float> grads({2, 2}, std::vector<float>{1.0f, -2.0f, 3.0f, -4.0f});
-    float clip_value = 1.5f;
-    optimizer.clip_gradients(grads, clip_value);
-
-    EXPECT_NEAR(grads.data[0], 1.0f, 1e-5);
-    EXPECT_NEAR(grads.data[1], -1.5f, 1e-5);
-    EXPECT_NEAR(grads.data[2], 1.5f, 1e-5);
-    EXPECT_NEAR(grads.data[3], -1.5f, 1e-5);
-}
-
