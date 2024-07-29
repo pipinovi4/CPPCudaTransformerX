@@ -4,7 +4,6 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <iostream>
 #include <algorithm>
 #include <stdexcept>
 #include <numeric>
@@ -14,13 +13,14 @@
 #include <cmath>
 #include <functional>
 #include "MixedPrecisionFloat16.h"
-#include <sstream>
 #include <random>
 
 template <typename T>
 class Tensor {
 public:
     std::vector<T> data;
+
+    Tensor() = default;
 
     // Constructor to initialize the tensor with dimensions and optionally with data
     template<typename D>
