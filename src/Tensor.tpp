@@ -222,7 +222,7 @@ Tensor<T> Tensor<T>::sqrt() {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::sum(int& axis) {
+Tensor<T> Tensor<T>::sum(int axis) const {
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
     }
@@ -563,7 +563,29 @@ Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
     return tensor;
 }
 
-// TODO: Implement the tril and triu
+template<typename T>
+Tensor<T> Tensor<T>::uniform(const std::vector<int>& dims, T lower, T upper) {
+    Tensor<T> result(dims);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    if constexpr (std::is_floating_point<T>::value) {
+        std::uniform_real_distribution<T> dis(lower, upper);
+        for (T& element : result.data) {
+            element = dis(gen);
+        }
+    } else if constexpr (std::is_integral<T>::value) {
+        std::uniform_int_distribution<T> dis(lower, upper);
+        for (T& element : result.data) {
+            element = dis(gen);
+        }
+    } else {
+        throw std::invalid_argument("Unsupported type for uniform distribution");
+    }
+
+    return result;
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::tril(const int& axis) {
     const int dimSize = dimensions.size();
@@ -646,25 +668,35 @@ Tensor<T> Tensor<T>::triu(const int& axis) {
 
 template <typename T>
 Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
+    // Create a copy of the dimensions to avoid modifying the original tensors
+    std::vector<int> this_dims = dimensions;
+    std::vector<int> other_dims = other.dimensions;
+
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
     // Ensure tensors have the same number of dimensions
-    if (dimensions.size() != other.dimensions.size()) {
+    if (this_dims.size() != other_dims.size()) {
         throw std::invalid_argument("Tensors must have the same number of dimensions.");
     }
 
     // Ensure the last dimension of the first tensor matches the second-to-last dimension of the second tensor
-    if (dimensions.back() != other.dimensions[other.dimensions.size() - 2]) {
+    if (this_dims.back() != other_dims[other_dims.size() - 2]) {
         throw std::invalid_argument("The last dimension of the first tensor must match the second-to-last dimension of the second tensor.");
     }
 
     // Compute result dimensions
     std::vector<int> resultDimensions;
-    for (size_t i = 0; i < dimensions.size() - 1; ++i) {
-        resultDimensions.push_back(dimensions[i]);
+    for (size_t i = 0; i < this_dims.size() - 1; ++i) {
+        resultDimensions.push_back(this_dims[i]);
     }
-    for (size_t i = 0; i < other.dimensions.size() - 2; ++i) {
-        resultDimensions.push_back(other.dimensions[i]);
+    for (size_t i = 0; i < other_dims.size() - 2; ++i) {
+        resultDimensions.push_back(other_dims[i]);
     }
-    resultDimensions.push_back(other.dimensions.back());
+    resultDimensions.push_back(other_dims.back());
 
     // Compute total size of the result tensor
     size_t resultSize = 1;
@@ -676,34 +708,25 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     std::vector<T> resultData(resultSize, static_cast<T>(0));
 
     // Compute the dot product
-    const int A_lastDim = dimensions.back();
-    const int B_penultimateDim = other.dimensions[other.dimensions.size() - 2];
-    int B_lastDim = other.dimensions.back();
+    const int A_lastDim = this_dims.back();
+    const int B_penultimateDim = other_dims[other_dims.size() - 2];
+    const int B_lastDim = other_dims.back();
 
-    for (size_t i = 0; i < dimensions.size() - 1; ++i) {
-        for (size_t j = 0; j < other.dimensions.size() - 2; ++j) {
-            for (int k = 0; k < B_lastDim; ++k) {
-                for (int m = 0; m < A_lastDim; ++m) {
-                    for (int l = 0; l < dimensions[i]; ++l) {
-                        int idxA = (i * dimensions[i] + l) * A_lastDim + m;
-                        int idxB = (j * B_penultimateDim + m) * B_lastDim + k;
-                        int idxR = (i * other.dimensions.size() + j) * B_lastDim + k;
-
-                        resultData[idxR] += data[idxA] * other.data[idxB];
-                    }
-                }
+    for (int i = 0; i < this_dims[0]; ++i) {
+        for (int j = 0; j < B_lastDim; ++j) {
+            for (int k = 0; k < A_lastDim; ++k) {
+                resultData[i * B_lastDim + j] += data[i * A_lastDim + k] * other.data[k * B_lastDim + j];
             }
         }
     }
 
     // Return the resulting tensor
-    return Tensor<T>(resultDimensions, resultData);
+    return Tensor<T>(resultDimensions, resultData).squeeze();
 }
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
     // Check if dimensions are compatible for broadcasting
-    //calculate
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
     if (this_dims.size() < other_dims.size()) {
@@ -743,20 +766,14 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
             other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
         }
 
-        if (this_dims.size() != other_dims.size()) {
-            throw std::invalid_argument("Number of indices must match number of dimensions");
-        }
-
-        // Choosed this way to calculate the index to avoid the use of calculateIndex method
-        // Because if create new tensor this isn't memory efficient.
         int this_index = 0;
         int this_stride = 1;
         int other_index = 0;
         int other_stride = 1;
         for (int j = this_dims.size() - 1; j >= 0; --j) {
-            this_index += other_dims[j] * this_stride;
+            this_index += this_indices[j] * this_stride;
             this_stride *= this_dims[j];
-            other_index += this_dims[j] * other_stride;
+            other_index += other_indices[j] * other_stride;
             other_stride *= other_dims[j];
         }
 
@@ -767,7 +784,8 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
+Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const
+{
     // Check if dimensions are compatible for broadcasting
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
@@ -808,16 +826,14 @@ Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
             other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
         }
 
-        // Choosed this way to calculate the index to avoid the use of calculateIndex method
-        // Because if create new tensor this isn't memory efficient.
         int this_index = 0;
         int this_stride = 1;
         int other_index = 0;
         int other_stride = 1;
         for (int j = this_dims.size() - 1; j >= 0; --j) {
-            this_index += other_dims[j] * this_stride;
+            this_index += this_indices[j] * this_stride;
             this_stride *= this_dims[j];
-            other_index += this_dims[j] * other_stride;
+            other_index += other_indices[j] * other_stride;
             other_stride *= other_dims[j];
         }
 

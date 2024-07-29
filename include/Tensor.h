@@ -15,6 +15,7 @@
 #include <functional>
 #include "MixedPrecisionFloat16.h"
 #include <sstream>
+#include <random>
 
 template <typename T>
 class Tensor {
@@ -53,37 +54,39 @@ public:
 
     Tensor<T> sqrt();
 
-    Tensor<T> sum(int& axis);
+    Tensor<T> sum(int axis) const;
 
-    [[nodiscard]] Tensor<T> slice(int axis, int start, int end, int step) const;
+    Tensor<T> slice(int axis, int start, int end, int step) const;
 
-    [[nodiscard]] Tensor<T> slice(int axis, int start, int end) const;
+    Tensor<T> slice(int axis, int start, int end) const;
 
-    [[nodiscard]] Tensor<T> slice(int axis, int start) const;
+    Tensor<T> slice(int axis, int start) const;
 
-    [[nodiscard]] Tensor<T> slice(int axis) const;
+    Tensor<T> slice(int axis) const;
 
-    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other) const;
+    Tensor<T> concatenate(const Tensor<T>& other) const;
 
-    [[nodiscard]] Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
+    Tensor<T> concatenate(const Tensor<T>& other, int axis) const;
 
-    [[nodiscard]] Tensor<T> expandDims(int axis) const;
+    Tensor<T> expandDims(int axis) const;
 
-    [[nodiscard]] Tensor<T> squeeze() const;
+    Tensor<T> squeeze() const;
 
-    [[nodiscard]] Tensor<T> reshape(int newShape) const;
+    Tensor<T> reshape(int newShape) const;
 
-    [[nodiscard]] Tensor<T> reshape(const std::vector<int>& newDimensions) const;
+    Tensor<T> reshape(const std::vector<int>& newDimensions) const;
 
-    [[nodiscard]] Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;
+    Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;
 
-    [[nodiscard]] static Tensor<T> zeros(const std::vector<int>& dims);
+    static Tensor<T> zeros(const std::vector<int>& dims);
 
-    [[nodiscard]] static Tensor<T> ones(const std::vector<int>& dims);
+    static Tensor<T> ones(const std::vector<int>& dims);
 
-    [[nodiscard]] Tensor<T> tril(const int& axis = 0);
+    static Tensor<T> uniform(const std::vector<int>& dims, T lower = 0.0, T upper = 1.0);
 
-    [[nodiscard]] Tensor<T> triu(const int& axis = 0);
+    Tensor<T> tril(const int& axis = 0);
+
+    Tensor<T> triu(const int& axis = 0);
 
     Tensor<T> dot(const Tensor<T>& other) const ;
 
