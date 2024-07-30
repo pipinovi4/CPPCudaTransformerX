@@ -2,7 +2,7 @@
 BUILD_DIR = build
 
 # Specify the name of the executable
-TEST_EXECUTABLE = test_tensor
+TEST_EXECUTABLE = global_tests
 
 # The 'all' target will run 'venv', 'build', 'test', and 'clean' targets
 all: venv build test clean
