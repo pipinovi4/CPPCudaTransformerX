@@ -16,19 +16,33 @@ C++CudaTransformerX is a high-performance implementation of a Transformer model 
 - `tests/`: Unit tests for validating tensor operations and transformer functionality.
 - `data/`: Directory for storing datasets.
 - `docs/`: Documentation files.
+- `notebooks/`: Jupyter notebooks for experimenting with the transformer model.
+- `utils/`: Utility scripts for data preprocessing and model evaluation.
 - `CMakeLists.txt`: Build configuration.
 
 ## Getting Started
 ### Prerequisites
 - C++17 or higher
+- Python 3.6 or higher
 - NVIDIA CUDA Toolkit
 - CMake
+- Conan (C++ package manager)
+- Pybind11
+- GoogleTest
 
 ### Build
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/C++CudaTransformerX.git
    cd C++CudaTransformerX
-   gcc -o main main.cpp
+   ```
+2. Create a build directory:
+   ```bash
+   make venv
+   make build
     ```
-
+3. Run tests:
+   ```bash
+   make test
+   ```
+   

@@ -1,5 +1,6 @@
 [requires]
 gtest/1.15.0
+cuda/12.1
 
 [generators]
 CMakeDeps
