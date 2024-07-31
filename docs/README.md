@@ -33,16 +33,19 @@ C++CudaTransformerX is a high-performance implementation of a Transformer model 
 ### Build
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/C++CudaTransformerX.git
+   git clone https://github.com/pipinovi4/C++CudaTransformerX
    cd C++CudaTransformerX
    ```
 2. Create a build directory:
    ```bash
-   make venv
    make build
     ```
 3. Run tests:
    ```bash
    make test
+   ```
+4. Create a venv and install dependencies:
+   ```bash
+   make venv
    ```
    
