@@ -1,21 +1,31 @@
 import os
 import gzip
-import numpy as np
 import urllib.request
+import logging
 
-DATA_DIR = "../data"
+DATA_DIR = "data"
 DATASET_URL = "https://ossci-datasets.s3.amazonaws.com/mnist/"
-DATASET_DIR = "../data/mnist"
+DATASET_DIR = "data/mnist"
 
 
 def download():
+    """
+    Download the MNIST dataset.
+
+    This function performs the following steps:
+    1. Create the necessary directories if they do not exist.
+    2. Check if the dataset is already downloaded.
+    3. Download the dataset files if they are not already present.
+
+    :return: None
+    """
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
 
     if not os.path.exists(DATASET_DIR):
         os.makedirs(DATASET_DIR)
 
-    if os.path.exists(f"{DATASET_DIR}/train-images-idx3-ubyte.gz"):
+    if all(os.path.exists(f"{DATASET_DIR}/{file}.txt") for file in ["train-images-idx3-ubyte", "train-labels-idx1-ubyte", "t10k-images-idx3-ubyte", "t10k-labels-idx1-ubyte"]):
         print("MNIST dataset already downloaded.")
         return
 
@@ -36,11 +46,27 @@ def download():
         print("Done.")
 
 
-def extract_mnist(filename):
-    with gzip.open(filename, "rb") as f:
-        if "images" in filename:
-            data = np.frombuffer(f.read(), np.uint8, offset=16).reshape(-1, 28 * 28)
-        else:
-            data = np.frombuffer(f.read(), np.uint8, offset=8)
+def extract_mnist():
+    """
+    Extract the MNIST dataset files.
 
-    return data
+    This function performs the following steps:
+    1. Set up logging.
+    2. Extract `.gz` files to `.txt` files.
+    3. Delete the original `.gz` files after extraction.
+
+    :return: None
+    """
+    logging.basicConfig(level=logging.INFO)
+    for filename in os.listdir(DATASET_DIR):
+        if filename.endswith(".gz"):
+            full_path = os.path.join(DATASET_DIR, filename)
+            txt_filename = full_path[:-3] + ".txt"
+            try:
+                logging.info(f"Extracting {filename} to {txt_filename}...")
+                with gzip.open(full_path, 'rb') as f_in, open(txt_filename, 'wb') as f_out:
+                    f_out.write(f_in.read())
+                logging.info(f"Done extracting {filename}.")
+                os.remove(full_path)  # Delete the original .gz file
+            except Exception as e:
+                logging.error(f"Failed to extract {filename}: {e}")

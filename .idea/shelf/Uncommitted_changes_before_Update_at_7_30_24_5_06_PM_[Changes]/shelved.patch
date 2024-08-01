@@ -1,0 +1,928 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"CMakePresetLoader\">{\r\n  &quot;useNewFormat&quot;: true\r\n}</component>\r\n  <component name=\"CMakeReloadState\">\r\n    <option name=\"reloaded\" value=\"true\" />\r\n  </component>\r\n  <component name=\"CMakeRunConfigurationManager\">\r\n    <generated>\r\n      <config projectName=\"C++CudaTransformerX\" targetName=\"test_tensor\" />\r\n      <config projectName=\"C++CudaTransformerX\" targetName=\"C++CudaTransformerX\" />\r\n    </generated>\r\n  </component>\r\n  <component name=\"CMakeSettings\">\r\n    <configurations>\r\n      <configuration PROFILE_NAME=\"Debug\" ENABLED=\"true\" CONFIG_NAME=\"Debug\" />\r\n    </configurations>\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"66559b8f-b057-46f1-aa1b-2a4c4195d614\" name=\"Changes\" comment=\"Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.\">\r\n      <change beforePath=\"$PROJECT_DIR$/.gitignore\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/CMakeLists.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/CMakeLists.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/main\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/Tensor.cpp\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/Tensor.tpp\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main.cpp\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main.cpp\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ClangdSettings\">\r\n    <option name=\"formatViaClangd\" value=\"false\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"PREVIOUS_COMMIT_AUTHORS\">\r\n      <list>\r\n        <option value=\"pipinovi4 &lt;prustolivgra@gmail.com&gt;\" />\r\n      </list>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n    <option name=\"ROOT_SYNC\" value=\"DONT_SYNC\" />\r\n    <option name=\"SIGN_OFF_COMMIT\" value=\"true\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;pipinovi4&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\"><![CDATA[{\r\n  \"selectedUrlAndAccountId\": {\r\n    \"url\": \"https://github.com/pipinovi4/CPPCudaTransformerX\",\r\n    \"accountId\": \"1b9524dd-7cfa-4648-87af-37595fe29dfb\"\r\n  }\r\n}]]></component>\r\n  <component name=\"HighlightingSettingsPerFile\">\r\n    <setting file=\"file://$PROJECT_DIR$/include/MixedPrecisionFloat16.h\" root0=\"FORCE_HIGHLIGHTING\" />\r\n    <setting file=\"file://$PROJECT_DIR$/include/Tensor.h\" root0=\"FORCE_HIGHLIGHTING\" />\r\n  </component>\r\n  <component name=\"InvalidFacetManager\">\r\n    <ignored-facets>\r\n      <facet id=\"C++CudaTransformerX/invalid/Python facet\" />\r\n    </ignored-facets>\r\n  </component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectApplicationVersion\">\r\n    <option name=\"ide\" value=\"CLion\" />\r\n    <option name=\"majorVersion\" value=\"2023\" />\r\n    <option name=\"minorVersion\" value=\"3.4\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 4\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2jPXxg99Zvb2D5Ba0ycbEXmxmw5\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"C/C++ File.main.cpp - WSL.executor\": \"Run\",\r\n    \"C/C++ File.main.cpp.executor\": \"Run\",\r\n    \"C/C++ File.src\\\\main.cpp.executor\": \"Run\",\r\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\r\n    \"RunOnceActivity.RadMigrateCodeStyle\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.cidr.known.project.marker\": \"true\",\r\n    \"RunOnceActivity.readMode.enableVisualFormatting\": \"true\",\r\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\r\n    \"cf.first.check.clang-format\": \"false\",\r\n    \"cidr.known.project.marker\": \"true\",\r\n    \"git-widget-placeholder\": \"master\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"last_opened_file_path\": \"/home/pipin/C++CudaTransformerX\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.detected.package.tslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"settings.editor.selected.configurable\": \"CMakeSettings\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"$PROJECT_DIR$\" />\r\n      <recent name=\"$PROJECT_DIR$/build\" />\r\n      <recent name=\"\\\\wsl.localhost\\AI-cmd\\home\\pipin\\C++CudaTransformerX\\docs\" />\r\n      <recent name=\"\\\\wsl.localhost\\AI-cmd\\home\\pipin\\C++CudaTransformerX\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"C/C++ File.main.cpp\">\r\n    <configuration default=\"true\" type=\"CLionExternalRunConfiguration\" factoryName=\"Application\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\">\r\n      <method v=\"2\">\r\n        <option name=\"CLION.EXTERNAL.BUILD\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"Tensor_Constructor_Test\" type=\"CMakeGoogleTestRunConfigurationType\" factoryName=\"Google Test\" temporary=\"true\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" TEST_CLASS=\"Tensor_Constructor_Test\" TEST_MODE=\"SUITE_TEST\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n        <option name=\"BeforeTestRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"Tensor_Constructor_Test\" type=\"CMakeGoogleTestRunConfigurationType\" factoryName=\"Google Test\" temporary=\"true\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" TEST_CLASS=\"Tensor_Constructor_Test\" TEST_MODE=\"SUITE_TEST\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n        <option name=\"BeforeTestRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"test_tensor\" type=\"CMakeGoogleTestRunConfigurationType\" factoryName=\"Google Test\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"C++CudaTransformerX\" TARGET_NAME=\"test_tensor\" CONFIG_NAME=\"Debug\" RUN_TARGET_PROJECT_NAME=\"C++CudaTransformerX\" RUN_TARGET_NAME=\"test_tensor\" TEST_MODE=\"SUITE_TEST\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n        <option name=\"BeforeTestRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"C++CudaTransformerX\" type=\"CMakeRunConfiguration\" factoryName=\"Application\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"C++CudaTransformerX\" TARGET_NAME=\"C++CudaTransformerX\" CONFIG_NAME=\"Debug\" RUN_TARGET_PROJECT_NAME=\"C++CudaTransformerX\" RUN_TARGET_NAME=\"C++CudaTransformerX\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"C++CudaTransformerX\" type=\"CMakeRunConfiguration\" factoryName=\"Application\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"C++CudaTransformerX\" TARGET_NAME=\"C++CudaTransformerX\" CONFIG_NAME=\"Debug\" RUN_TARGET_PROJECT_NAME=\"C++CudaTransformerX\" RUN_TARGET_NAME=\"C++CudaTransformerX\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"main.cpp\" type=\"CppFileRunConfiguration\" factoryName=\"CppFileRunConfiguration\" nameIsGenerated=\"true\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"C++CudaTransformerX\" TARGET_NAME=\"main.cpp\" CONFIG_NAME=\"main.cpp\">\r\n      <option name=\"sourceFile\" value=\"src/main.cpp\" />\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"main.cpp\" type=\"CppFileRunConfiguration\" factoryName=\"CppFileRunConfiguration\" nameIsGenerated=\"true\" REDIRECT_INPUT=\"false\" ELEVATE=\"false\" USE_EXTERNAL_CONSOLE=\"false\" EMULATE_TERMINAL=\"false\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"C++CudaTransformerX\" TARGET_NAME=\"main.cpp\" CONFIG_NAME=\"main.cpp\">\r\n      <option name=\"sourceFile\" value=\"src/main.cpp\" />\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"python3\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"C++CudaTransformerX\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\\\\wsl.localhost\\AI-cmd\\home\\pipin\\C++CudaTransformerX\\src\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/.venv/bin/python3\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"python3\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\r\n      <module name=\"C++CudaTransformerX\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"\\\\wsl.localhost\\AI-cmd\\home\\pipin\\C++CudaTransformerX\\src\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/.venv/bin/python3\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <list>\r\n      <item itemvalue=\"C/C++ File.main.cpp\" />\r\n      <item itemvalue=\"CMake Application.C++CudaTransformerX\" />\r\n      <item itemvalue=\"Google Test.test_tensor\" />\r\n      <item itemvalue=\"Google Test.Tensor_Constructor_Test\" />\r\n      <item itemvalue=\"Python.python3\" />\r\n    </list>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82\" />\r\n        <option value=\"bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"66559b8f-b057-46f1-aa1b-2a4c4195d614\" name=\"Changes\" comment=\"\" />\r\n      <created>1721289933428</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1721289933428</updated>\r\n      <workItem from=\"1721289934839\" duration=\"18938000\" />\r\n      <workItem from=\"1721465032013\" duration=\"1688000\" />\r\n      <workItem from=\"1721562433702\" duration=\"704000\" />\r\n      <workItem from=\"1721626982408\" duration=\"45723000\" />\r\n      <workItem from=\"1721734303873\" duration=\"1213000\" />\r\n      <workItem from=\"1721735673703\" duration=\"21000\" />\r\n      <workItem from=\"1721738983362\" duration=\"567000\" />\r\n      <workItem from=\"1721740192031\" duration=\"129000\" />\r\n      <workItem from=\"1721740806111\" duration=\"15000\" />\r\n      <workItem from=\"1721740834291\" duration=\"27000\" />\r\n      <workItem from=\"1721740863042\" duration=\"5000\" />\r\n      <workItem from=\"1721740897389\" duration=\"146000\" />\r\n      <workItem from=\"1721741614306\" duration=\"1747000\" />\r\n      <workItem from=\"1721743441050\" duration=\"16000\" />\r\n      <workItem from=\"1721743528818\" duration=\"627000\" />\r\n      <workItem from=\"1721745892696\" duration=\"456000\" />\r\n      <workItem from=\"1721746413865\" duration=\"349000\" />\r\n      <workItem from=\"1721746992280\" duration=\"26000\" />\r\n      <workItem from=\"1721747116242\" duration=\"3938000\" />\r\n      <workItem from=\"1721751205943\" duration=\"130000\" />\r\n      <workItem from=\"1721802902560\" duration=\"2000\" />\r\n      <workItem from=\"1721803164527\" duration=\"16923000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Initializing project\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290067867</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290067867</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"Made in Mixed Precision with (float 16 | float 32)\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290293659</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290293659</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Made in Mixed Precision with (float 16 | float 32)\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290311091</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290311091</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"The Tensor class has been created, in the process of implementing the class\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290437172</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290437172</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Updated CMakeLists.txt\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290501799</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290501799</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Updated CMakeLists.txt\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290713062</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290713062</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Made README file\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721290772948</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721290772948</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"The file structure in the `docs' directory is made\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721291421282</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721291421282</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00009\" summary=\"Minor update README.md\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721302367464</created>\r\n      <option name=\"number\" value=\"00009\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721302367464</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00010\" summary=\"Implemented transpose method of class Tensor.cpp\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721303801454</created>\r\n      <option name=\"number\" value=\"00010\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721303801454</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00011\" summary=\"Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721649672488</created>\r\n      <option name=\"number\" value=\"00011\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721649672488</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00012\" summary=\"Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721649813920</created>\r\n      <option name=\"number\" value=\"00012\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721649813920</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00013\" summary=\"- Updated Tensor class constructors to ensure correct parameter matching and initialization.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721722876019</created>\r\n      <option name=\"number\" value=\"00013\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721722876019</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00014\" summary=\"Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721723862121</created>\r\n      <option name=\"number\" value=\"00014\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721723862121</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00015\" summary=\"Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721725093535</created>\r\n      <option name=\"number\" value=\"00015\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721725093535</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00016\" summary=\"Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721812602565</created>\r\n      <option name=\"number\" value=\"00016\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721812602565</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00017\" summary=\"Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721813535070</created>\r\n      <option name=\"number\" value=\"00017\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721813535070</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00018\" summary=\"Updated .gitignore configuration.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721813827086</created>\r\n      <option name=\"number\" value=\"00018\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721813827086</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00019\" summary=\"Updated .gitignore configuration.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721813962317</created>\r\n      <option name=\"number\" value=\"00019\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00019\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721813962317</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00020\" summary=\"Updated .gitignore configuration.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721813968728</created>\r\n      <option name=\"number\" value=\"00020\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00020\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721813968728</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00021\" summary=\"Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1721824192605</created>\r\n      <option name=\"number\" value=\"00021\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00021\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1721824192605</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"22\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"VCPKGProject\">\r\n    <isAutomaticCheckingOnLaunch value=\"false\" />\r\n    <isAutomaticFoundErrors value=\"true\" />\r\n    <isAutomaticReloadCMake value=\"true\" />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Initializing project\" />\r\n    <MESSAGE value=\"Made in Mixed Precision with (float 16 | float 32)\" />\r\n    <MESSAGE value=\"The Tensor class has been created, in the process of implementing the class\" />\r\n    <MESSAGE value=\"Updated CMakeLists.txt\" />\r\n    <MESSAGE value=\"Made README file\" />\r\n    <MESSAGE value=\"The file structure in the `docs' directory is made\" />\r\n    <MESSAGE value=\"Minor update README.md\" />\r\n    <MESSAGE value=\"Implemented transpose method of class Tensor.cpp\" />\r\n    <MESSAGE value=\"Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added.\" />\r\n    <MESSAGE value=\"Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml\" />\r\n    <MESSAGE value=\"- Updated Tensor class constructors to ensure correct parameter matching and initialization.\" />\r\n    <MESSAGE value=\"Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory.\" />\r\n    <MESSAGE value=\"Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other\" />\r\n    <MESSAGE value=\"Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning.\" />\r\n    <MESSAGE value=\"Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories.\" />\r\n    <MESSAGE value=\"Updated .gitignore configuration.\" />\r\n    <MESSAGE value=\"Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.\" />\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/.idea/workspace.xml	(date 1722348384965)
+@@ -11,22 +11,30 @@
+   </component>
+   <component name="CMakeRunConfigurationManager">
+     <generated>
+-      <config projectName="C++CudaTransformerX" targetName="test_tensor" />
+       <config projectName="C++CudaTransformerX" targetName="C++CudaTransformerX" />
++      <config projectName="C++CudaTransformerX" targetName="global_tests" />
+     </generated>
+   </component>
+   <component name="CMakeSettings">
+     <configurations>
+       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
++      <configuration PROFILE_NAME="conan-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build" />
++      <configuration PROFILE_NAME="conan-release - conan-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build" />
+     </configurations>
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.">
+-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
++    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Written LICENSE.md and other documentations for the project.">
++      <change afterPath="$PROJECT_DIR$/tests/test_mixed_precission_float16.cpp" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/C++CudaTransformerX.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/C++CudaTransformerX.iml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/Tensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tensor.tpp" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/docs/CONTRIBUTING.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/include/MixedPrecisionFloat16.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MixedPrecisionFloat16.h" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/include/Tensor.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Tensor.h" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/BaseLineDigitRecognation-checkpoint.ipynb" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/notebooks/BaseLineDigitRecognation.ipynb" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/MixedPrecisionFloat16.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/MixedPrecisionFloat16.cpp" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -60,20 +68,33 @@
+     &quot;assignee&quot;: &quot;pipinovi4&quot;
+   }
+ }</component>
+-  <component name="GithubPullRequestsUISettings"><![CDATA[{
+-  "selectedUrlAndAccountId": {
+-    "url": "https://github.com/pipinovi4/CPPCudaTransformerX",
+-    "accountId": "1b9524dd-7cfa-4648-87af-37595fe29dfb"
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/pipinovi4/CPPCudaTransformerX&quot;,
++    &quot;accountId&quot;: &quot;1b9524dd-7cfa-4648-87af-37595fe29dfb&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="HighlightingSettingsPerFile">
++    <setting file="file://$PROJECT_DIR$/include/ActivationFunction.h" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file://$PROJECT_DIR$/include/DenseLayer.h" root0="FORCE_HIGHLIGHTING" />
+     <setting file="file://$PROJECT_DIR$/include/MixedPrecisionFloat16.h" root0="FORCE_HIGHLIGHTING" />
+     <setting file="file://$PROJECT_DIR$/include/Tensor.h" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file://$PROJECT_DIR$/src/ActivationFunction.tpp" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file://$PROJECT_DIR$/src/DenseLayer.tpp" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file://$PROJECT_DIR$/src/Optimizer.tpp" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file://$PROJECT_DIR$/src/Tensor.tpp" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file:///usr/include/c++/9/bits/stl_vector.h" root0="FORCE_HIGHLIGHTING" />
++    <setting file="file:///usr/include/c++/9/iosfwd" root0="FORCE_HIGHLIGHTING" />
+   </component>
+   <component name="InvalidFacetManager">
+     <ignored-facets>
+       <facet id="C++CudaTransformerX/invalid/Python facet" />
+     </ignored-facets>
++  </component>
++  <component name="JsbtTreeLayoutManager">
++    <layout place="tools.popupGrunt">
++      <scroll-view-position x="0" y="0" />
++    </layout>
+   </component>
+   <component name="MarkdownSettingsMigration">
+     <option name="stateVersion" value="1" />
+@@ -106,13 +127,13 @@
+     "cidr.known.project.marker": "true",
+     "git-widget-placeholder": "master",
+     "ignore.virus.scanning.warn.message": "true",
+-    "last_opened_file_path": "/home/pipin/C++CudaTransformerX",
++    "last_opened_file_path": "/home/pipin/C++CudaTransformerX/notebooks/sampleMLP.ipynb",
+     "node.js.detected.package.eslint": "true",
+     "node.js.detected.package.tslint": "true",
+     "node.js.selected.package.eslint": "(autodetect)",
+     "node.js.selected.package.tslint": "(autodetect)",
+     "nodejs_package_manager_path": "npm",
+-    "settings.editor.selected.configurable": "CMakeSettings",
++    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+     "vue.rearranger.settings.migration": "true"
+   }
+ }]]></component>
+@@ -124,12 +145,7 @@
+       <recent name="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="C/C++ File.main.cpp">
+-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+-      <method v="2">
+-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+-      </method>
+-    </configuration>
++  <component name="RunManager" selected="Python.python3">
+     <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
+       <method v="2">
+         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+@@ -142,7 +158,7 @@
+         <option name="BeforeTestRunTask" enabled="true" />
+       </method>
+     </configuration>
+-    <configuration name="test_tensor" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="test_tensor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="test_tensor" TEST_MODE="SUITE_TEST">
++    <configuration name="global_tests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="global_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="global_tests" TEST_MODE="SUITE_TEST">
+       <method v="2">
+         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+         <option name="BeforeTestRunTask" enabled="true" />
+@@ -154,6 +170,11 @@
+       </method>
+     </configuration>
+     <configuration name="C++CudaTransformerX" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="C++CudaTransformerX" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="C++CudaTransformerX">
++      <method v="2">
++        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
++      </method>
++    </configuration>
++    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+       <method v="2">
+         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+       </method>
+@@ -219,7 +240,7 @@
+     <list>
+       <item itemvalue="C/C++ File.main.cpp" />
+       <item itemvalue="CMake Application.C++CudaTransformerX" />
+-      <item itemvalue="Google Test.test_tensor" />
++      <item itemvalue="Google Test.global_tests" />
+       <item itemvalue="Google Test.Tensor_Constructor_Test" />
+       <item itemvalue="Python.python3" />
+     </list>
+@@ -227,8 +248,7 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+-        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
++        <option value="bundled-python-sdk-09665e90c3a7-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.15026.15" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -261,31 +281,14 @@
+       <workItem from="1721747116242" duration="3938000" />
+       <workItem from="1721751205943" duration="130000" />
+       <workItem from="1721802902560" duration="2000" />
+-      <workItem from="1721803164527" duration="16923000" />
+-    </task>
+-    <task id="LOCAL-00001" summary="Initializing project">
+-      <option name="closed" value="true" />
+-      <created>1721290067867</created>
+-      <option name="number" value="00001" />
+-      <option name="presentableId" value="LOCAL-00001" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1721290067867</updated>
+-    </task>
+-    <task id="LOCAL-00002" summary="Made in Mixed Precision with (float 16 | float 32)">
+-      <option name="closed" value="true" />
+-      <created>1721290293659</created>
+-      <option name="number" value="00002" />
+-      <option name="presentableId" value="LOCAL-00002" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1721290293659</updated>
+-    </task>
+-    <task id="LOCAL-00003" summary="Made in Mixed Precision with (float 16 | float 32)">
+-      <option name="closed" value="true" />
+-      <created>1721290311091</created>
+-      <option name="number" value="00003" />
+-      <option name="presentableId" value="LOCAL-00003" />
+-      <option name="project" value="LOCAL" />
+-      <updated>1721290311091</updated>
++      <workItem from="1721803164527" duration="122433000" />
++      <workItem from="1722191008418" duration="9000" />
++      <workItem from="1722191535526" duration="8000" />
++      <workItem from="1722191624902" duration="53103000" />
++      <workItem from="1722338154536" duration="884000" />
++      <workItem from="1722339084283" duration="130000" />
++      <workItem from="1722339225727" duration="84000" />
++      <workItem from="1722339410864" duration="33000" />
+     </task>
+     <task id="LOCAL-00004" summary="The Tensor class has been created, in the process of implementing the class">
+       <option name="closed" value="true" />
+@@ -431,7 +434,255 @@
+       <option name="project" value="LOCAL" />
+       <updated>1721824192605</updated>
+     </task>
+-    <option name="localTasksCounter" value="22" />
++    <task id="LOCAL-00022" summary="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp. Implemented bigger part of test_tensor.cpp.">
++      <option name="closed" value="true" />
++      <created>1721824244756</created>
++      <option name="number" value="00022" />
++      <option name="presentableId" value="LOCAL-00022" />
++      <option name="project" value="LOCAL" />
++      <updated>1721824244756</updated>
++    </task>
++    <task id="LOCAL-00023" summary="The operators of multiplication and division of one Tensor by another have been made.">
++      <option name="closed" value="true" />
++      <created>1721892867333</created>
++      <option name="number" value="00023" />
++      <option name="presentableId" value="LOCAL-00023" />
++      <option name="project" value="LOCAL" />
++      <updated>1721892867333</updated>
++    </task>
++    <task id="LOCAL-00024" summary="**Add multi-dimensional indexing to Tensor class**&#10;&#10;- Implemented `operator[]` for indexing into a multi-dimensional tensor using a vector of indices.&#10;- Added checks for out-of-bounds indices and converted negative indices to positive equivalents.&#10;- Created a new tensor with dimensions corresponding to the remaining dimensions after indexing.&#10;- Updated the tensor's data to reflect the new dimensions and sliced data based on the provided indices.&#10;- Introduced error handling for invalid indices and adjusted internal data handling to support multi-dimensional slicing.&#10;&#10;**Details:**&#10;- The method handles cases where the provided indices are fewer than the tensor's total dimensions, filling unspecified dimensions with `-1` to include all possible indices.&#10;- Internal computation adjusts the tensor’s size and data according to the specified indices.&#10;- Example provided for usage and expected output with a tensor of dimensions `[4, 3, 3]` and indices `[2, 1]`.&#10;&#10;**Notes:**&#10;- Added debug output to show the size of the resulting tensor data.&#10;- The function assumes the tensor's `getTotalSize` and internal data storage mechanisms are correctly implemented.">
++      <option name="closed" value="true" />
++      <created>1721905601791</created>
++      <option name="number" value="00024" />
++      <option name="presentableId" value="LOCAL-00024" />
++      <option name="project" value="LOCAL" />
++      <updated>1721905601791</updated>
++    </task>
++    <task id="LOCAL-00025" summary="Implemented equality operator for Tensor class&#10;&#10;- Added operator== function to compare tensors.&#10;- Checks both dimensions and data for equality.&#10;- Ensures tensors are considered equal only if they have identical shapes and data.">
++      <option name="closed" value="true" />
++      <created>1721906295498</created>
++      <option name="number" value="00025" />
++      <option name="presentableId" value="LOCAL-00025" />
++      <option name="project" value="LOCAL" />
++      <updated>1721906295498</updated>
++    </task>
++    <task id="LOCAL-00026" summary="Add `tril` and `triu` Methods with Equality Operators and Tests&#10;&#10;- Implemented the `tril` method for multi-dimensional tensors to set elements above a specified diagonal to zero.&#10;- Implemented the `triu` method for multi-dimensional tensors to set elements below a specified diagonal to zero.&#10;- Added `operator==` and `operator!=` methods for tensor equality comparison.&#10;- Created comprehensive tests for `tril`, `triu`, `operator==`, and `operator!=` to ensure correctness and functionality.&#10;&#10;These changes enhance tensor manipulation capabilities and provide robust testing for these operations.">
++      <option name="closed" value="true" />
++      <created>1721907579928</created>
++      <option name="number" value="00026" />
++      <option name="presentableId" value="LOCAL-00026" />
++      <option name="project" value="LOCAL" />
++      <updated>1721907579928</updated>
++    </task>
++    <task id="LOCAL-00027" summary="Implement dot Method and Add Extensive Unit Tests&#10;&#10;Description:&#10;&#10;Added the dot method to the Tensor class for computing the dot product between two tensors. This method supports tensors with compatible dimensions and computes the dot product accordingly.&#10;Implemented a range of unit tests to verify the functionality of the dot method:&#10;Basic Dot Product Tests: Validate dot products between 1D and 2D tensors with simple values.&#10;Edge Case Tests: Check behavior with tensors of different dimensions, including cases where dimensions are not compatible for dot product.&#10;Performance Tests: Ensure the dot method performs efficiently with larger tensors.&#10;Changes Made:&#10;&#10;Tensor.h: Added the dot method to the class definition.&#10;Tensor.cpp: Implemented the dot method for computing the dot product.&#10;tensor_tests.cpp: Added comprehensive tests for the dot method, covering:&#10;Basic operations and expected results.&#10;Edge cases where tensors have incompatible dimensions.&#10;Performance scenarios with larger tensors.&#10;Example Usage:&#10;&#10;Tensor&lt;int&gt; result = tensorA.dot(tensorB);&#10;Validates dot product between tensors tensorA and tensorB.&#10;Tests:&#10;&#10;DotProductBasic: Checks dot product between simple 1D and 2D tensors.&#10;DotProductEdgeCases: Ensures method handles edge cases like incompatible dimensions.&#10;DotProductPerformance: Assesses performance with large tensor inputs.">
++      <option name="closed" value="true" />
++      <created>1721908835061</created>
++      <option name="number" value="00027" />
++      <option name="presentableId" value="LOCAL-00027" />
++      <option name="project" value="LOCAL" />
++      <updated>1721908835061</updated>
++    </task>
++    <task id="LOCAL-00028" summary="Updated transpose method in Tensor.tpp. There was an issue with the data where the dims were transposed and the data was not transposed.">
++      <option name="closed" value="true" />
++      <created>1721979296788</created>
++      <option name="number" value="00028" />
++      <option name="presentableId" value="LOCAL-00028" />
++      <option name="project" value="LOCAL" />
++      <updated>1721979296788</updated>
++    </task>
++    <task id="LOCAL-00029" summary="Added ActivationFunction class with full Google Test coverage&#10;&#10;- Implemented the ActivationFunction class.&#10;- Added unit tests for all activation functions using Google Test.&#10;- Ensured full test coverage for the ActivationFunction class.">
++      <option name="closed" value="true" />
++      <created>1721981427123</created>
++      <option name="number" value="00029" />
++      <option name="presentableId" value="LOCAL-00029" />
++      <option name="project" value="LOCAL" />
++      <updated>1721981427123</updated>
++    </task>
++    <task id="LOCAL-00030" summary="Update logic ActivationFunction.tpp and added derivatives for all activation functions with testing.">
++      <option name="closed" value="true" />
++      <created>1721994154468</created>
++      <option name="number" value="00030" />
++      <option name="presentableId" value="LOCAL-00030" />
++      <option name="project" value="LOCAL" />
++      <updated>1721994154468</updated>
++    </task>
++    <task id="LOCAL-00031" summary="Added some additional tests for activation functions.">
++      <option name="closed" value="true" />
++      <created>1721994346501</created>
++      <option name="number" value="00031" />
++      <option name="presentableId" value="LOCAL-00031" />
++      <option name="project" value="LOCAL" />
++      <updated>1721994346501</updated>
++    </task>
++    <task id="LOCAL-00032" summary="Implement loss functions and their tests&#10;Added crossEntropyLoss, huberLoss, binaryCrossEntropyLoss, meanSquaredError, and meanAbsoluteError methods in LossFunction class.&#10;Implemented unit tests for huberLoss using Google Test framework.&#10;Verified correctness of loss functions with various test cases.">
++      <option name="closed" value="true" />
++      <created>1721995306342</created>
++      <option name="number" value="00032" />
++      <option name="presentableId" value="LOCAL-00032" />
++      <option name="project" value="LOCAL" />
++      <updated>1721995306342</updated>
++    </task>
++    <task id="LOCAL-00033" summary="Implement loss functions and their tests&#10;Added crossEntropyLoss, huberLoss, binaryCrossEntropyLoss, meanSquaredError, and meanAbsoluteError methods in LossFunction class.&#10;Implemented unit tests for huberLoss using Google Test framework.&#10;Verified correctness of loss functions with various test cases.">
++      <option name="closed" value="true" />
++      <created>1721995331497</created>
++      <option name="number" value="00033" />
++      <option name="presentableId" value="LOCAL-00033" />
++      <option name="project" value="LOCAL" />
++      <updated>1721995331497</updated>
++    </task>
++    <task id="LOCAL-00034" summary="A minor update to the Tensor class. Added the sqrt method, which calculates the element-wise square root of tensor data">
++      <option name="closed" value="true" />
++      <created>1721998552073</created>
++      <option name="number" value="00034" />
++      <option name="presentableId" value="LOCAL-00034" />
++      <option name="project" value="LOCAL" />
++      <updated>1721998552074</updated>
++    </task>
++    <task id="LOCAL-00035" summary="Minor update to `Tensor.tpp`: Added arithmetic assignment operators (`operator+=`, `operator-=`, `operator*=`, `operator/=`) which perform the same operations as the default arithmetic operators but modify the target tensor in place.">
++      <option name="closed" value="true" />
++      <created>1722000762719</created>
++      <option name="number" value="00035" />
++      <option name="presentableId" value="LOCAL-00035" />
++      <option name="project" value="LOCAL" />
++      <updated>1722000762719</updated>
++    </task>
++    <task id="LOCAL-00036" summary="feat: Add Optimizer class with deserialize method for Tensor and various optimizers&#10;&#10;- Created Optimizer class with template support&#10;- Implemented deserialize method for Tensor class&#10;- Added Adam, RMSprop, and SGD optimizers&#10;- Included methods for initializing, saving, and loading optimizer state&#10;- Added support for weight decay and gradient clipping (commented out for future use)">
++      <option name="closed" value="true" />
++      <created>1722006426844</created>
++      <option name="number" value="00036" />
++      <option name="presentableId" value="LOCAL-00036" />
++      <option name="project" value="LOCAL" />
++      <updated>1722006426844</updated>
++    </task>
++    <task id="LOCAL-00037" summary="feat: Implement apply_weight_decay and clip_gradients methods in Optimizer class&#10;&#10;- Implemented apply_weight_decay method for regularization to prevent overfitting&#10;- Implemented clip_gradients method to stabilize training by preventing large gradients&#10;- Added tests for Optimizer class to verify the functionality of the new methods">
++      <option name="closed" value="true" />
++      <created>1722008729950</created>
++      <option name="number" value="00037" />
++      <option name="presentableId" value="LOCAL-00037" />
++      <option name="project" value="LOCAL" />
++      <updated>1722008729950</updated>
++    </task>
++    <task id="LOCAL-00038" summary="feat: Implement apply_weight_decay and clip_gradients methods in Optimizer class&#10;&#10;- Implemented apply_weight_decay method for regularization to prevent overfitting&#10;- Implemented clip_gradients method to stabilize training by preventing large gradients&#10;- Added tests for Optimizer class to verify the functionality of the new methods">
++      <option name="closed" value="true" />
++      <created>1722008852538</created>
++      <option name="number" value="00038" />
++      <option name="presentableId" value="LOCAL-00038" />
++      <option name="project" value="LOCAL" />
++      <updated>1722008852538</updated>
++    </task>
++    <task id="LOCAL-00039" summary="Added sum method to Tensor class and created test for sum method&#10;&#10;- Implemented sum method in Tensor class to sum elements along a specified axis.&#10;- Created test_tensor.cpp to test the sum method.&#10;- Verified the sum method with a test case in test_tensor.cpp.">
++      <option name="closed" value="true" />
++      <created>1722066781651</created>
++      <option name="number" value="00039" />
++      <option name="presentableId" value="LOCAL-00039" />
++      <option name="project" value="LOCAL" />
++      <updated>1722066781651</updated>
++    </task>
++    <task id="LOCAL-00040" summary="Update Tensor operators: + and -&#10;&#10;- Enhanced the `operator+` to ensure proper broadcasting and element-wise addition.&#10;- Improved the `operator-` to handle broadcasting and element-wise subtraction correctly.&#10;- Added checks for dimension compatibility and optimized index calculations for both operators.">
++      <option name="closed" value="true" />
++      <created>1722070196523</created>
++      <option name="number" value="00040" />
++      <option name="presentableId" value="LOCAL-00040" />
++      <option name="project" value="LOCAL" />
++      <updated>1722070196523</updated>
++    </task>
++    <task id="LOCAL-00041" summary="Updated logic for ActivationFunction class and added all corresponding tests">
++      <option name="closed" value="true" />
++      <created>1722197881251</created>
++      <option name="number" value="00041" />
++      <option name="presentableId" value="LOCAL-00041" />
++      <option name="project" value="LOCAL" />
++      <updated>1722197881252</updated>
++    </task>
++    <task id="LOCAL-00042" summary="Minor update: Corrected expected data in test_activation_function.cpp">
++      <option name="closed" value="true" />
++      <created>1722233665795</created>
++      <option name="number" value="00042" />
++      <option name="presentableId" value="LOCAL-00042" />
++      <option name="project" value="LOCAL" />
++      <updated>1722233665795</updated>
++    </task>
++    <task id="LOCAL-00043" summary="Add `uniform` method to `Tensor` class and comprehensive tests&#10;&#10;- Implemented `uniform` method in `Tensor` class to initialize tensors with values drawn from a uniform distribution.&#10;- Added extensive tests (approximately 900 lines of code) to cover various scenarios and edge cases for the `uniform` method.&#10;- Ensured compatibility with existing tensor operations and verified correctness through unit tests.">
++      <option name="closed" value="true" />
++      <created>1722242013007</created>
++      <option name="number" value="00043" />
++      <option name="presentableId" value="LOCAL-00043" />
++      <option name="project" value="LOCAL" />
++      <updated>1722242013007</updated>
++    </task>
++    <task id="LOCAL-00044" summary="Added a method-constructor to initialize a Tensor with empty data and reserve space for future data, specified by the parameter &quot;newSize&quot;.">
++      <option name="closed" value="true" />
++      <created>1722245201457</created>
++      <option name="number" value="00044" />
++      <option name="presentableId" value="LOCAL-00044" />
++      <option name="project" value="LOCAL" />
++      <updated>1722245201457</updated>
++    </task>
++    <task id="LOCAL-00045" summary="Refactor Optimizer class:&#10;- Added regularization support.&#10;- Split optimizers into subclasses of the Optimizer class.&#10;- Implemented full tests for all cases.">
++      <option name="closed" value="true" />
++      <created>1722266585799</created>
++      <option name="number" value="00045" />
++      <option name="presentableId" value="LOCAL-00045" />
++      <option name="project" value="LOCAL" />
++      <updated>1722266585799</updated>
++    </task>
++    <task id="LOCAL-00046" summary="Added default initialization Tensor class">
++      <option name="closed" value="true" />
++      <created>1722266626578</created>
++      <option name="number" value="00046" />
++      <option name="presentableId" value="LOCAL-00046" />
++      <option name="project" value="LOCAL" />
++      <updated>1722266626578</updated>
++    </task>
++    <task id="LOCAL-00047" summary="feat: Update LossFunction class with forward and backward methods&#10;&#10;- Added forward method for loss predictions&#10;- Added backward method for gradients of the loss&#10;- Implemented BinaryCrossEntropyLoss, CrossEntropyLoss, MeanSquaredError, and MeanAbsoluteError&#10;- Updated tests for BinaryCrossEntropyLoss to handle normal and edge cases&#10;- Added Python tests for BinaryCrossEntropyLoss&#10;&#10;All tests have been updated and verified.">
++      <option name="closed" value="true" />
++      <created>1722270067638</created>
++      <option name="number" value="00047" />
++      <option name="presentableId" value="LOCAL-00047" />
++      <option name="project" value="LOCAL" />
++      <updated>1722270067638</updated>
++    </task>
++    <task id="LOCAL-00048" summary="Implemented DenseLayer class with full unit tests using Google Test. Added a single-layer MLP example in main.cpp.">
++      <option name="closed" value="true" />
++      <created>1722327665717</created>
++      <option name="number" value="00048" />
++      <option name="presentableId" value="LOCAL-00048" />
++      <option name="project" value="LOCAL" />
++      <updated>1722327665717</updated>
++    </task>
++    <task id="LOCAL-00049" summary="Created baseline on the Python in the file BaseLineDigitRecognition.ipynb and downloaded MNIST dataset into directory &quot;data&quot;.">
++      <option name="closed" value="true" />
++      <created>1722346960946</created>
++      <option name="number" value="00049" />
++      <option name="presentableId" value="LOCAL-00049" />
++      <option name="project" value="LOCAL" />
++      <updated>1722346960946</updated>
++    </task>
++    <task id="LOCAL-00050" summary="Created baseline on the Python in the file BaseLineDigitRecognition.ipynb and downloaded MNIST dataset into directory &quot;data&quot;.">
++      <option name="closed" value="true" />
++      <created>1722347096775</created>
++      <option name="number" value="00050" />
++      <option name="presentableId" value="LOCAL-00050" />
++      <option name="project" value="LOCAL" />
++      <updated>1722347096776</updated>
++    </task>
++    <task id="LOCAL-00051" summary="Updated requirements.txt and made Minor update README.md with some corrections `Getting started`.">
++      <option name="closed" value="true" />
++      <created>1722347622485</created>
++      <option name="number" value="00051" />
++      <option name="presentableId" value="LOCAL-00051" />
++      <option name="project" value="LOCAL" />
++      <updated>1722347622485</updated>
++    </task>
++    <task id="LOCAL-00052" summary="Written LICENSE.md and other documentations for the project.">
++      <option name="closed" value="true" />
++      <created>1722348373752</created>
++      <option name="number" value="00052" />
++      <option name="presentableId" value="LOCAL-00052" />
++      <option name="project" value="LOCAL" />
++      <updated>1722348373752</updated>
++    </task>
++    <option name="localTasksCounter" value="53" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -443,24 +694,32 @@
+     <isAutomaticReloadCMake value="true" />
+   </component>
+   <component name="VcsManagerConfiguration">
+-    <MESSAGE value="Initializing project" />
+-    <MESSAGE value="Made in Mixed Precision with (float 16 | float 32)" />
+-    <MESSAGE value="The Tensor class has been created, in the process of implementing the class" />
+-    <MESSAGE value="Updated CMakeLists.txt" />
+-    <MESSAGE value="Made README file" />
+-    <MESSAGE value="The file structure in the `docs' directory is made" />
+-    <MESSAGE value="Minor update README.md" />
+-    <MESSAGE value="Implemented transpose method of class Tensor.cpp" />
+-    <MESSAGE value="Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added." />
+-    <MESSAGE value="Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml" />
+-    <MESSAGE value="- Updated Tensor class constructors to ensure correct parameter matching and initialization." />
+-    <MESSAGE value="Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory." />
+-    <MESSAGE value="Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other" />
+-    <MESSAGE value="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning." />
+-    <MESSAGE value="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories." />
+-    <MESSAGE value="Updated .gitignore configuration." />
+-    <MESSAGE value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
+-    <option name="LAST_COMMIT_MESSAGE" value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
++    <MESSAGE value="Implemented equality operator for Tensor class&#10;&#10;- Added operator== function to compare tensors.&#10;- Checks both dimensions and data for equality.&#10;- Ensures tensors are considered equal only if they have identical shapes and data." />
++    <MESSAGE value="Add `tril` and `triu` Methods with Equality Operators and Tests&#10;&#10;- Implemented the `tril` method for multi-dimensional tensors to set elements above a specified diagonal to zero.&#10;- Implemented the `triu` method for multi-dimensional tensors to set elements below a specified diagonal to zero.&#10;- Added `operator==` and `operator!=` methods for tensor equality comparison.&#10;- Created comprehensive tests for `tril`, `triu`, `operator==`, and `operator!=` to ensure correctness and functionality.&#10;&#10;These changes enhance tensor manipulation capabilities and provide robust testing for these operations." />
++    <MESSAGE value="Implement dot Method and Add Extensive Unit Tests&#10;&#10;Description:&#10;&#10;Added the dot method to the Tensor class for computing the dot product between two tensors. This method supports tensors with compatible dimensions and computes the dot product accordingly.&#10;Implemented a range of unit tests to verify the functionality of the dot method:&#10;Basic Dot Product Tests: Validate dot products between 1D and 2D tensors with simple values.&#10;Edge Case Tests: Check behavior with tensors of different dimensions, including cases where dimensions are not compatible for dot product.&#10;Performance Tests: Ensure the dot method performs efficiently with larger tensors.&#10;Changes Made:&#10;&#10;Tensor.h: Added the dot method to the class definition.&#10;Tensor.cpp: Implemented the dot method for computing the dot product.&#10;tensor_tests.cpp: Added comprehensive tests for the dot method, covering:&#10;Basic operations and expected results.&#10;Edge cases where tensors have incompatible dimensions.&#10;Performance scenarios with larger tensors.&#10;Example Usage:&#10;&#10;Tensor&lt;int&gt; result = tensorA.dot(tensorB);&#10;Validates dot product between tensors tensorA and tensorB.&#10;Tests:&#10;&#10;DotProductBasic: Checks dot product between simple 1D and 2D tensors.&#10;DotProductEdgeCases: Ensures method handles edge cases like incompatible dimensions.&#10;DotProductPerformance: Assesses performance with large tensor inputs." />
++    <MESSAGE value="Updated transpose method in Tensor.tpp. There was an issue with the data where the dims were transposed and the data was not transposed." />
++    <MESSAGE value="Added ActivationFunction class with full Google Test coverage&#10;&#10;- Implemented the ActivationFunction class.&#10;- Added unit tests for all activation functions using Google Test.&#10;- Ensured full test coverage for the ActivationFunction class." />
++    <MESSAGE value="Update logic ActivationFunction.tpp and added derivatives for all activation functions with testing." />
++    <MESSAGE value="Added some additional tests for activation functions." />
++    <MESSAGE value="Implement loss functions and their tests&#10;Added crossEntropyLoss, huberLoss, binaryCrossEntropyLoss, meanSquaredError, and meanAbsoluteError methods in LossFunction class.&#10;Implemented unit tests for huberLoss using Google Test framework.&#10;Verified correctness of loss functions with various test cases." />
++    <MESSAGE value="A minor update to the Tensor class. Added the sqrt method, which calculates the element-wise square root of tensor data" />
++    <MESSAGE value="Minor update to `Tensor.tpp`: Added arithmetic assignment operators (`operator+=`, `operator-=`, `operator*=`, `operator/=`) which perform the same operations as the default arithmetic operators but modify the target tensor in place." />
++    <MESSAGE value="feat: Add Optimizer class with deserialize method for Tensor and various optimizers&#10;&#10;- Created Optimizer class with template support&#10;- Implemented deserialize method for Tensor class&#10;- Added Adam, RMSprop, and SGD optimizers&#10;- Included methods for initializing, saving, and loading optimizer state&#10;- Added support for weight decay and gradient clipping (commented out for future use)" />
++    <MESSAGE value="feat: Implement apply_weight_decay and clip_gradients methods in Optimizer class&#10;&#10;- Implemented apply_weight_decay method for regularization to prevent overfitting&#10;- Implemented clip_gradients method to stabilize training by preventing large gradients&#10;- Added tests for Optimizer class to verify the functionality of the new methods" />
++    <MESSAGE value="Added sum method to Tensor class and created test for sum method&#10;&#10;- Implemented sum method in Tensor class to sum elements along a specified axis.&#10;- Created test_tensor.cpp to test the sum method.&#10;- Verified the sum method with a test case in test_tensor.cpp." />
++    <MESSAGE value="Update Tensor operators: + and -&#10;&#10;- Enhanced the `operator+` to ensure proper broadcasting and element-wise addition.&#10;- Improved the `operator-` to handle broadcasting and element-wise subtraction correctly.&#10;- Added checks for dimension compatibility and optimized index calculations for both operators." />
++    <MESSAGE value="Updated logic for ActivationFunction class and added all corresponding tests" />
++    <MESSAGE value="Minor update: Corrected expected data in test_activation_function.cpp" />
++    <MESSAGE value="Add `uniform` method to `Tensor` class and comprehensive tests&#10;&#10;- Implemented `uniform` method in `Tensor` class to initialize tensors with values drawn from a uniform distribution.&#10;- Added extensive tests (approximately 900 lines of code) to cover various scenarios and edge cases for the `uniform` method.&#10;- Ensured compatibility with existing tensor operations and verified correctness through unit tests." />
++    <MESSAGE value="Added a method-constructor to initialize a Tensor with empty data and reserve space for future data, specified by the parameter &quot;newSize&quot;." />
++    <MESSAGE value="Refactor Optimizer class:&#10;- Added regularization support.&#10;- Split optimizers into subclasses of the Optimizer class.&#10;- Implemented full tests for all cases." />
++    <MESSAGE value="Added default initialization Tensor class" />
++    <MESSAGE value="feat: Update LossFunction class with forward and backward methods&#10;&#10;- Added forward method for loss predictions&#10;- Added backward method for gradients of the loss&#10;- Implemented BinaryCrossEntropyLoss, CrossEntropyLoss, MeanSquaredError, and MeanAbsoluteError&#10;- Updated tests for BinaryCrossEntropyLoss to handle normal and edge cases&#10;- Added Python tests for BinaryCrossEntropyLoss&#10;&#10;All tests have been updated and verified." />
++    <MESSAGE value="Implemented DenseLayer class with full unit tests using Google Test. Added a single-layer MLP example in main.cpp." />
++    <MESSAGE value="Created baseline on the Python in the file BaseLineDigitRecognition.ipynb and downloaded MNIST dataset into directory &quot;data&quot;." />
++    <MESSAGE value="Updated requirements.txt and made Minor update README.md with some corrections `Getting started`." />
++    <MESSAGE value="Written LICENSE.md and other documentations for the project." />
++    <option name="LAST_COMMIT_MESSAGE" value="Written LICENSE.md and other documentations for the project." />
+   </component>
+   <component name="XSLT-Support.FileAssociations.UIState">
+     <expand />
+Index: src/MixedPrecisionFloat16.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Last modified on: 03/07/2024\r\n\r\n#include \"../include/MixedPrecisionFloat16.h\"\r\n\r\nfloat_16::float_16() : value(0) {};\r\n\r\nfloat_16::float_16(float f) {\r\n    value = float32_to_float16(f);\r\n}\r\n\r\nfloat_16::operator float() const {\r\n    return float16_to_float32(value);\r\n}\r\n\r\nuint16_t float_16::float32_to_float16(float f) {\r\n    uint32_t bits = *reinterpret_cast<uint32_t*>(&f);\r\n    uint16_t sign = (bits >> 16) & 0x8000;\r\n    uint16_t exponent = ((bits >> 23) & 0xff) - 127 + 15;\r\n    uint16_t mantissa = (bits >> 13) & 0x3ff;\r\n\r\n    if (exponent <= 0) {\r\n        return sign;\r\n    } else if (exponent > 30) {\r\n        return sign | 0x7c00 | (mantissa == 0 ? 0 : 1);\r\n    } else {\r\n        return sign | (exponent << 10) | mantissa;\r\n    }\r\n}\r\n\r\nfloat float_16::float16_to_float32(uint16_t h) {\r\n    uint16_t sign = (h >> 15) & 0x1;\r\n    uint16_t exponent = (h >> 10) & 0x1f;\r\n    uint16_t mantissa = h & 0x3ff;\r\n\r\n    uint32_t result;\r\n    if (exponent == 0) {\r\n        if (mantissa == 0) {\r\n            result = sign << 31;\r\n        } else {\r\n            exponent = 1;\r\n            while ((mantissa & 0x400) == 0) {\r\n                mantissa <<= 1;\r\n                exponent++;\r\n            }\r\n            mantissa &= ~0x400;\r\n            result = (sign << 31) | ((exponent + 127) << 23) | (mantissa << 13);\r\n        }\r\n    } else if (exponent == 31) {\r\n        result = (sign << 31) | 0x7f800000 | (mantissa << 13);\r\n    } else {\r\n        result = (sign << 31) | ((exponent + 127 - 15) << 23) | (mantissa << 13);\r\n    }\r\n\r\n    return *reinterpret_cast<float*>(&result);\r\n}\r\n\r\nfloat_16 operator+(const float_16& a, const float_16& b) {\r\n    uint16_t result = a.value + b.value;\r\n    return float_16(result);\r\n}\r\n\r\nfloat_16 operator-(const float_16& a, const float_16& b) {\r\n    uint16_t result = a.value - b.value;\r\n    return float_16(result);\r\n}\r\n\r\nfloat_16 operator*(const float_16& a, const float_16& b) {\r\n    uint16_t result = a.value * b.value;\r\n    return float_16(result);\r\n}\r\n\r\nfloat_16 operator/(const float_16& a, const float_16& b) {\r\n    uint16_t result = a.value / b.value;\r\n    return float_16(result);\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/MixedPrecisionFloat16.cpp b/src/MixedPrecisionFloat16.cpp
+--- a/src/MixedPrecisionFloat16.cpp	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/src/MixedPrecisionFloat16.cpp	(date 1721999208770)
+@@ -1,76 +1,74 @@
+-// Last modified on: 03/07/2024
+-
+-#include "../include/MixedPrecisionFloat16.h"
+-
+-float_16::float_16() : value(0) {};
+-
+-float_16::float_16(float f) {
+-    value = float32_to_float16(f);
+-}
+-
+-float_16::operator float() const {
+-    return float16_to_float32(value);
+-}
+-
+-uint16_t float_16::float32_to_float16(float f) {
+-    uint32_t bits = *reinterpret_cast<uint32_t*>(&f);
+-    uint16_t sign = (bits >> 16) & 0x8000;
+-    uint16_t exponent = ((bits >> 23) & 0xff) - 127 + 15;
+-    uint16_t mantissa = (bits >> 13) & 0x3ff;
+-
+-    if (exponent <= 0) {
+-        return sign;
+-    } else if (exponent > 30) {
+-        return sign | 0x7c00 | (mantissa == 0 ? 0 : 1);
+-    } else {
+-        return sign | (exponent << 10) | mantissa;
+-    }
+-}
+-
+-float float_16::float16_to_float32(uint16_t h) {
+-    uint16_t sign = (h >> 15) & 0x1;
+-    uint16_t exponent = (h >> 10) & 0x1f;
+-    uint16_t mantissa = h & 0x3ff;
+-
+-    uint32_t result;
+-    if (exponent == 0) {
+-        if (mantissa == 0) {
+-            result = sign << 31;
+-        } else {
+-            exponent = 1;
+-            while ((mantissa & 0x400) == 0) {
+-                mantissa <<= 1;
+-                exponent++;
+-            }
+-            mantissa &= ~0x400;
+-            result = (sign << 31) | ((exponent + 127) << 23) | (mantissa << 13);
+-        }
+-    } else if (exponent == 31) {
+-        result = (sign << 31) | 0x7f800000 | (mantissa << 13);
+-    } else {
+-        result = (sign << 31) | ((exponent + 127 - 15) << 23) | (mantissa << 13);
+-    }
+-
+-    return *reinterpret_cast<float*>(&result);
+-}
+-
+-float_16 operator+(const float_16& a, const float_16& b) {
+-    uint16_t result = a.value + b.value;
+-    return float_16(result);
+-}
+-
+-float_16 operator-(const float_16& a, const float_16& b) {
+-    uint16_t result = a.value - b.value;
+-    return float_16(result);
+-}
+-
+-float_16 operator*(const float_16& a, const float_16& b) {
+-    uint16_t result = a.value * b.value;
+-    return float_16(result);
+-}
+-
+-float_16 operator/(const float_16& a, const float_16& b) {
+-    uint16_t result = a.value / b.value;
+-    return float_16(result);
+-}
+-
++// #include "../include/MixedPrecisionFloat16.h"
++//
++// float_16::float_16() : value(0) {};
++//
++// float_16::float_16(float f) {
++//     value = float32_to_float16(f);
++// }
++//
++// float_16::operator float() const {
++//     return float16_to_float32(value);
++// }
++//
++// uint16_t float_16::float32_to_float16(float f) {
++//     uint32_t bits = *reinterpret_cast<uint32_t*>(&f);
++//     uint16_t sign = (bits >> 16) & 0x8000;
++//     uint16_t exponent = ((bits >> 23) & 0xff) - 127 + 15;
++//     uint16_t mantissa = (bits >> 13) & 0x3ff;
++//
++//     if (exponent <= 0) {
++//         return sign;
++//     } else if (exponent > 30) {
++//         return sign | 0x7c00 | (mantissa == 0 ? 0 : 1);
++//     } else {
++//         return sign | (exponent << 10) | mantissa;
++//     }
++// }
++//
++// float float_16::float16_to_float32(uint16_t h) {
++//     uint16_t sign = (h >> 15) & 0x1;
++//     uint16_t exponent = (h >> 10) & 0x1f;
++//     uint16_t mantissa = h & 0x3ff;
++//
++//     uint32_t result;
++//     if (exponent == 0) {
++//         if (mantissa == 0) {
++//             result = sign << 31;
++//         } else {
++//             exponent = 1;
++//             while ((mantissa & 0x400) == 0) {
++//                 mantissa <<= 1;
++//                 exponent++;
++//             }
++//             mantissa &= ~0x400;
++//             result = (sign << 31) | ((exponent + 127) << 23) | (mantissa << 13);
++//         }
++//     } else if (exponent == 31) {
++//         result = (sign << 31) | 0x7f800000 | (mantissa << 13);
++//     } else {
++//         result = (sign << 31) | ((exponent + 127 - 15) << 23) | (mantissa << 13);
++//     }
++//
++//     return *reinterpret_cast<float*>(&result);
++// }
++//
++// float_16 operator+(const float_16& a, const float_16& b) {
++//     uint16_t result = a.value + b.value;
++//     return float_16(result);
++// }
++//
++// float_16 operator-(const float_16& a, const float_16& b) {
++//     uint16_t result = a.value - b.value;
++//     return float_16(result);
++// }
++//
++// float_16 operator*(const float_16& a, const float_16& b) {
++//     uint16_t result = a.value * b.value;
++//     return float_16(result);
++// }
++//
++// float_16 operator/(const float_16& a, const float_16& b) {
++//     uint16_t result = a.value / b.value;
++//     return float_16(result);
++// }
++//
+Index: src/main.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include <iostream>\r\n#include <vector>\r\n#include <cassert>\r\n#include \"../include/Tensor.h\"\r\n#include \"../include/ActivationFunction.h\"\r\n#include \"../include/LossFunction.h\"\r\n#include \"../include/Optimizer.h\"\r\n#include \"../include/DenseLayer.h\"\r\n\r\n\r\nint main() {\r\n    try {\r\n        // Define input and output sizes\r\n        constexpr int input_units = 64;\r\n        constexpr int output_units = 64;\r\n        constexpr size_t num_samples = 2;\r\n        constexpr size_t num_epochs = 10000;\r\n\r\n        // Create activation function and optimizer\r\n        ActivationFunction<float>::LeakyReLU activation_function;\r\n        LossFunction<float>::meanSquaredError loss_function;\r\n        Optimizer<float>::SGD optimizer(0.01, *new Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule(0.01, 0.95));\r\n\r\n        // Create DenseLayer instance\r\n        DenseLayer<float> dense_layer(input_units, output_units, &activation_function);\r\n\r\n        // Generate uniform data and labels\r\n        const Tensor<float> input_data = Tensor<float>::uniform({num_samples, input_units}, 0.0f, 1.0f);\r\n        const Tensor<float> labels = input_data * std::sqrt(2.0f) + 1.0f;\r\n\r\n        // Training loop\r\n        for (size_t epoch = 0; epoch < num_epochs; ++epoch) {\r\n            // Forward pass\r\n            Tensor<float> output_data = dense_layer.forward(input_data);\r\n\r\n            // Compute loss (assuming Mean Squared Error)\r\n            const float loss = loss_function.forward(output_data, labels);\r\n\r\n            // Backward pass\r\n            Tensor<float> grad_output = loss_function.backward(output_data, labels);\r\n            Tensor<float> grad_input = dense_layer.backward(grad_output);\r\n\r\n            // Update parameters\r\n            dense_layer.updateParameters(&optimizer, epoch);\r\n\r\n            // Print loss every 100 epochs\r\n            if (epoch % 100 == 0) {\r\n                std::cout << \"Epoch \" << epoch << \", Loss: \" << loss << std::endl;\r\n            }\r\n        }\r\n\r\n        // Print labels\r\n        std::cout << \"Labels: \";\r\n        labels.print();\r\n\r\n        Tensor<float> preds = dense_layer.forward(input_data);\r\n\r\n        std::cout << \"Preds: \";\r\n        preds.print();\r\n\r\n        std::cout << \"Loss preds: \";\r\n        std::cout << loss_function.forward(preds, labels) << std::endl;\r\n\r\n        std::cout << \"Training completed successfully.\" << std::endl;\r\n    } catch (const std::exception& e) {\r\n        std::cerr << \"Exception occurred: \" << e.what() << std::endl;\r\n    }\r\n\r\n    return 0;\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main.cpp b/src/main.cpp
+--- a/src/main.cpp	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/src/main.cpp	(date 1722332952822)
+@@ -1,70 +1,13 @@
+ #include <iostream>
+ #include <vector>
+ #include <cassert>
++#include <cuda_runtime.h>
+ #include "../include/Tensor.h"
+ #include "../include/ActivationFunction.h"
+ #include "../include/LossFunction.h"
+ #include "../include/Optimizer.h"
+ #include "../include/DenseLayer.h"
+ 
+-
+-int main() {
+-    try {
+-        // Define input and output sizes
+-        constexpr int input_units = 64;
+-        constexpr int output_units = 64;
+-        constexpr size_t num_samples = 2;
+-        constexpr size_t num_epochs = 10000;
+-
+-        // Create activation function and optimizer
+-        ActivationFunction<float>::LeakyReLU activation_function;
+-        LossFunction<float>::meanSquaredError loss_function;
+-        Optimizer<float>::SGD optimizer(0.01, *new Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule(0.01, 0.95));
+-
+-        // Create DenseLayer instance
+-        DenseLayer<float> dense_layer(input_units, output_units, &activation_function);
+-
+-        // Generate uniform data and labels
+-        const Tensor<float> input_data = Tensor<float>::uniform({num_samples, input_units}, 0.0f, 1.0f);
+-        const Tensor<float> labels = input_data * std::sqrt(2.0f) + 1.0f;
+-
+-        // Training loop
+-        for (size_t epoch = 0; epoch < num_epochs; ++epoch) {
+-            // Forward pass
+-            Tensor<float> output_data = dense_layer.forward(input_data);
+-
+-            // Compute loss (assuming Mean Squared Error)
+-            const float loss = loss_function.forward(output_data, labels);
+-
+-            // Backward pass
+-            Tensor<float> grad_output = loss_function.backward(output_data, labels);
+-            Tensor<float> grad_input = dense_layer.backward(grad_output);
+-
+-            // Update parameters
+-            dense_layer.updateParameters(&optimizer, epoch);
+-
+-            // Print loss every 100 epochs
+-            if (epoch % 100 == 0) {
+-                std::cout << "Epoch " << epoch << ", Loss: " << loss << std::endl;
+-            }
+-        }
+-
+-        // Print labels
+-        std::cout << "Labels: ";
+-        labels.print();
++int main(void) {
+ 
+-        Tensor<float> preds = dense_layer.forward(input_data);
+-
+-        std::cout << "Preds: ";
+-        preds.print();
+-
+-        std::cout << "Loss preds: ";
+-        std::cout << loss_function.forward(preds, labels) << std::endl;
+-
+-        std::cout << "Training completed successfully." << std::endl;
+-    } catch (const std::exception& e) {
+-        std::cerr << "Exception occurred: " << e.what() << std::endl;
+-    }
+-
+-    return 0;
+ }
+\ No newline at end of file
+Index: tests/test_mixed_precission_float16.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_mixed_precission_float16.cpp b/tests/test_mixed_precission_float16.cpp
+new file mode 100644
+--- /dev/null	(date 1721915218609)
++++ b/tests/test_mixed_precission_float16.cpp	(date 1721915218609)
+@@ -0,0 +1,3 @@
++//
++// Created by root on 7/25/24.
++//
+Index: .idea/C++CudaTransformerX.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module classpath=\"CMake\" type=\"CPP_MODULE\" version=\"4\">\r\n  <component name=\"FacetManager\">\r\n    <facet type=\"Python\" name=\"Python facet\">\r\n      <configuration sdkName=\"Python 3.12 (C++CudaTransformerX)\" />\r\n    </facet>\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/C++CudaTransformerX.iml b/.idea/C++CudaTransformerX.iml
+--- a/.idea/C++CudaTransformerX.iml	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/.idea/C++CudaTransformerX.iml	(date 1721913390879)
+@@ -2,7 +2,7 @@
+ <module classpath="CMake" type="CPP_MODULE" version="4">
+   <component name="FacetManager">
+     <facet type="Python" name="Python facet">
+-      <configuration sdkName="Python 3.12 (C++CudaTransformerX)" />
++      <configuration sdkName="" />
+     </facet>
+   </component>
+ </module>
+\ No newline at end of file
+Index: CMakeLists.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>cmake_minimum_required(VERSION 3.12)\r\nproject(C++CudaTransformerX)\r\n\r\n# Set the C++ standard\r\nset(CMAKE_CXX_STANDARD 17)\r\n\r\n# Include directories and link libraries\r\ninclude_directories(${CMAKE_BINARY_DIR}/include)\r\nlink_directories(${CMAKE_BINARY_DIR}/lib)\r\n\r\n# Add the main executable\r\nadd_executable(C++CudaTransformerX\r\n        src/main.cpp\r\n        src/MixedPrecisionFloat16.cpp\r\n        src/Tensor.tpp\r\n        include/MixedPrecisionFloat16.h\r\n        include/Tensor.h\r\n        include/DenseLayer.h\r\n        include/ActivationFunction.h\r\n        include/Optimizer.h\r\n        include/LossFunction.h\r\n        src/Optimizer.cpp\r\n        src/DenseLayer.cpp\r\n        src/LossFunction.cpp\r\n        src/ActivationFunction.tpp\r\n)\r\n\r\n# Add the test executable\r\nadd_executable(global_tests tests/test_tensor.cpp\r\n        tests/test_activation_function.cpp)\r\n\r\n# Link the test executable with Google Test libraries\r\ntarget_link_libraries(global_tests gtest gtest_main)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/CMakeLists.txt	(date 1722332699372)
+@@ -4,9 +4,12 @@
+ # Set the C++ standard
+ set(CMAKE_CXX_STANDARD 17)
+ 
++# Find CUDA
++find_package(CUDAToolkit REQUIRED)
++
+ # Include directories and link libraries
+-include_directories(${CMAKE_BINARY_DIR}/include)
+-link_directories(${CMAKE_BINARY_DIR}/lib)
++include_directories(${CMAKE_BINARY_DIR}/include ${CUDAToolkit_INCLUDE_DIRS})
++link_directories(${CMAKE_BINARY_DIR}/lib ${CUDAToolkit_LIBRARY_DIR})
+ 
+ # Add the main executable
+ add_executable(C++CudaTransformerX
+@@ -19,15 +22,23 @@
+         include/ActivationFunction.h
+         include/Optimizer.h
+         include/LossFunction.h
+-        src/Optimizer.cpp
+-        src/DenseLayer.cpp
+-        src/LossFunction.cpp
++        src/Optimizer.tpp
++        src/DenseLayer.tpp
++        src/LossFunction.tpp
+         src/ActivationFunction.tpp
+ )
+ 
++# Link the main executable with CUDA
++target_link_libraries(C++CudaTransformerX ${CUDAToolkit_LIBRARIES})
++
+ # Add the test executable
+-add_executable(global_tests tests/test_tensor.cpp
+-        tests/test_activation_function.cpp)
++add_executable(global_tests
++        tests/test_tensor.cpp
++        tests/test_activation_function.cpp
++        tests/test_loss_function.cpp
++        tests/test_optimizer.cpp
++        tests/test_dense_layer.cpp
++)
+ 
+ # Link the test executable with Google Test libraries
+-target_link_libraries(global_tests gtest gtest_main)
++target_link_libraries(global_tests gtest gtest_main)
+\ No newline at end of file
+Index: include/Tensor.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#ifndef TENSOR_H\r\n#define TENSOR_H\r\n\r\n#pragma once\r\n#include <vector>\r\n#include <string>\r\n#include <algorithm>\r\n#include <stdexcept>\r\n#include <numeric>\r\n#include <type_traits>\r\n#include <numeric>\r\n#include <cassert>\r\n#include <cmath>\r\n#include <functional>\r\n#include \"MixedPrecisionFloat16.h\"\r\n#include <random>\r\n\r\ntemplate <typename T>\r\nclass Tensor {\r\npublic:\r\n    std::vector<T> data;\r\n\r\n    Tensor() = default;\r\n\r\n    // Constructor to initialize the tensor with dimensions and optionally with data\r\n    template<typename D>\r\n    Tensor(const std::vector<int>& dims, const D& data);\r\n\r\n    // Constructor to initialize the tensor with data\r\n    template<typename D>\r\n    explicit Tensor(const D& data);\r\n\r\n    // Constructor to initialize the tensor with dimensions only\r\n    explicit Tensor(const std::vector<int>& dims);\r\n\r\n    // Constructor to initialize the tensor with dimensions from an initializer list\r\n    Tensor(std::initializer_list<int> dims);\r\n\r\n    // Default constructor to initialize an empty tensor\r\n    Tensor(const std::vector<int>& dims, const int& newSize);\r\n\r\n    // Helper functions to get the dimensions and size of the tensor\r\n\r\n    [[nodiscard]] const std::vector<int>& shape() const;\r\n\r\n    [[nodiscard]] int size() const;\r\n\r\n    void print() const;\r\n\r\n    // Manipulation structure functions\r\n\r\n    void set(const std::vector<int>& indices, T value);\r\n\r\n    T get(const std::vector<int>& indices) const;\r\n\r\n    void fill(T value);\r\n\r\n    Tensor<T> sqrt();\r\n\r\n    Tensor<T> sum(int axis) const;\r\n\r\n    Tensor<T> slice(int axis, int start, int end, int step) const;\r\n\r\n    Tensor<T> slice(int axis, int start, int end) const;\r\n\r\n    Tensor<T> slice(int axis, int start) const;\r\n\r\n    Tensor<T> slice(int axis) const;\r\n\r\n    Tensor<T> concatenate(const Tensor<T>& other) const;\r\n\r\n    Tensor<T> concatenate(const Tensor<T>& other, int axis) const;\r\n\r\n    Tensor<T> expandDims(int axis) const;\r\n\r\n    Tensor<T> squeeze() const;\r\n\r\n    Tensor<T> reshape(int newShape) const;\r\n\r\n    Tensor<T> reshape(const std::vector<int>& newDimensions) const;\r\n\r\n    Tensor<T> transpose(const std::vector<int>& permutation = std::vector<int>()) const;\r\n\r\n    static Tensor<T> zeros(const std::vector<int>& dims);\r\n\r\n    static Tensor<T> ones(const std::vector<int>& dims);\r\n\r\n    static Tensor<T> uniform(const std::vector<int>& dims, T lower = 0.0, T upper = 1.0);\r\n\r\n    Tensor<T> tril(const int& axis = 0);\r\n\r\n    Tensor<T> triu(const int& axis = 0);\r\n\r\n    Tensor<T> dot(const Tensor<T>& other) const ;\r\n\r\n    Tensor<T> operator+(const Tensor<T>& other) const;\r\n\r\n    Tensor<T> operator-(const Tensor<T>& other) const;\r\n\r\n    Tensor<T> operator*(const Tensor<T>& other) const;\r\n\r\n    Tensor<T> operator/(const Tensor<T>& other) const;\r\n\r\n    Tensor<T> operator+(T scalar) const;\r\n\r\n    Tensor<T> operator-(T scalar) const;\r\n\r\n    Tensor<T> operator*(T scalar) const;\r\n\r\n    Tensor<T> operator/(T scalar) const;\r\n\r\n    Tensor<T>& operator-=(const Tensor<T>& other);\r\n\r\n    Tensor<T>& operator+=(const Tensor<T>& other);\r\n\r\n    Tensor<T>& operator*=(const Tensor<T>& other);\r\n\r\n    Tensor<T>& operator/=(const Tensor<T>& other);\r\n\r\n    Tensor<T>& operator-=(T& scalar);\r\n\r\n    Tensor<T>& operator+=(T& scalar);\r\n\r\n    Tensor<T>& operator*=(T& scalar);\r\n\r\n    Tensor<T>& operator/=(T& scalar);\r\n\r\n    Tensor<T> operator[](const std::vector<int>& indices);\r\n\r\n    T& operator()(int indices);\r\n\r\n    T& operator()(const std::vector<int>& indices);\r\n\r\n    bool operator==(const Tensor<T>& other) const;\r\n\r\n    bool operator!=(const Tensor<T>& other) const;\r\n\r\n    // Method to serialize the tensor to a stream\r\n    void serialize(std::ostream& os) const;\r\n\r\n    // Method to deserialize the tensor from a stream\r\n    void deserialize(std::istream& is);\r\n\r\nprivate:\r\n    std::vector<int> dimensions;\r\n    std::vector<int> strides;\r\n\r\n    [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const {\r\n        if (indices.size() != dimensions.size()) {\r\n            throw std::invalid_argument(\"Number of indices must match number of dimensions\");\r\n        }\r\n\r\n        int index = 0;\r\n        int stride = 1;\r\n        for (int i = dimensions.size() - 1; i >= 0; --i) {\r\n            index += indices[i] * stride;\r\n            stride *= dimensions[i];\r\n        }\r\n        return index;\r\n    }\r\n\r\n    [[nodiscard]] std::vector<int> calculateStrides() const {\r\n        std::vector<int> localStrides(dimensions.size());\r\n        int stride = 1;\r\n        for (int i = dimensions.size() - 1; i >= 0; --i) {\r\n            localStrides[i] = stride;\r\n            stride *= dimensions[i];\r\n        }\r\n        return localStrides;\r\n    }\r\n\r\n    static int getTotalSize(const std::vector<int>& dims) {\r\n        return std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<>());\r\n    }\r\n\r\n    // Primary template for is_vector\r\n    template <typename D>\r\n    struct is_vector : std::false_type {};\r\n\r\n    // Specialization for std::vector\r\n    template <typename D, typename Allocator>\r\n    struct is_vector<std::vector<D, Allocator>> : std::true_type {};\r\n\r\n    // Base case: handle the innermost type\r\n    template <typename D>\r\n    struct ExtractType {\r\n        using Type = T; // This is the innermost type\r\n    };\r\n\r\n    // Recursive case: handle the outer dimensions\r\n    template <typename D>\r\n    struct ExtractType<std::vector<D>> {\r\n        using Type = typename ExtractType<D>::Type; // Recursively extract inner type\r\n    };\r\n\r\n    // Recursive traversal to the innermost type\r\n    template <typename D>\r\n    void flatten(const D& vec, std::vector<T>& result) {\r\n        if constexpr (is_vector<D>::value) {\r\n            for (const auto& elem : vec) {\r\n                flatten(elem, result);\r\n            }\r\n        } else {\r\n            result.push_back(vec);\r\n        }\r\n    }\r\n\r\n    template <typename D>\r\n     std::vector<int> compute_shape(const D& vec) {\r\n        if constexpr (is_vector<D>::value) {\r\n            if (vec.empty()) {\r\n                return {0};\r\n            }\r\n            std::vector<int> shape;\r\n            shape.push_back(vec.size());\r\n            auto inner_shape = compute_shape(vec[0]);\r\n            shape.insert(shape.end(), inner_shape.begin(), inner_shape.end());\r\n            return shape;\r\n        } else {\r\n            return {};\r\n        }\r\n    }\r\n\r\n    static std::vector<int> combineIndices(const std::vector<int>& this_indices, const std::vector<int>& other_indices, const int this_rank, const int other_rank) {\r\n        std::vector<int> result_indices(this_rank + (other_rank - 1), 0);\r\n\r\n        // Copy dimensions from this_indices\r\n        for (int i = 0; i < this_rank - 1; ++i) {\r\n            result_indices[i] = this_indices[i];\r\n        }\r\n\r\n        // Insert dimensions from other_indices\r\n        for (int i = 0; i < other_rank - 1; ++i) {\r\n            result_indices[this_rank - 1 + i] = other_indices[i + 1];\r\n        }\r\n\r\n        return result_indices;\r\n    }\r\n\r\n    [[nodiscard]] int toFlatIndex(const std::vector<int>& indices) const {\r\n        size_t flatIndex = 0;\r\n        size_t product = 1;\r\n        for (size_t i = indices.size(); i > 0; --i) {\r\n            const auto index = static_cast<size_t>(indices[i - 1]);\r\n            flatIndex += index * product;\r\n            product *= dimensions[i - 1];\r\n        }\r\n        return static_cast<int>(flatIndex);\r\n    }\r\n};\r\n\r\n#include \"../src/Tensor.tpp\"\r\n\r\ntemplate class Tensor<float>;\r\ntemplate class Tensor<int>;\r\ntemplate class Tensor<double>;\r\n\r\n#endif // TENSOR_H\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/Tensor.h b/include/Tensor.h
+--- a/include/Tensor.h	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/include/Tensor.h	(date 1722320395497)
+@@ -19,6 +19,7 @@
+ class Tensor {
+ public:
+     std::vector<T> data;
++    std::vector<int> dimensions;
+ 
+     Tensor() = default;
+ 
+@@ -142,7 +143,6 @@
+     void deserialize(std::istream& is);
+ 
+ private:
+-    std::vector<int> dimensions;
+     std::vector<int> strides;
+ 
+     [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const {
+Index: include/MixedPrecisionFloat16.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#ifndef MixedPrecisionFloat16_H\r\n#define MixedPrecisionFloat16_H\r\n\r\n#include <cstdint>\r\n\r\nclass float_16 {\r\npublic:\r\n    uint16_t value;\r\n\r\n    float_16();\r\n    explicit float_16(float f);\r\n\r\n    explicit operator float() const;\r\n\r\nprivate:\r\n    static uint16_t float32_to_float16(float f);\r\n    static float float16_to_float32(uint16_t f);\r\n};\r\n\r\nfloat_16 operator+(const float_16& a, const float_16&b);\r\nfloat_16 operator-(const float_16& a, const float_16&b);\r\nfloat_16 operator*(const float_16& a, const float_16&b);\r\nfloat_16 operator/(const float_16& a, const float_16&b);\r\n\r\n#endif // MixedPrecisionFloat16_H\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/MixedPrecisionFloat16.h b/include/MixedPrecisionFloat16.h
+--- a/include/MixedPrecisionFloat16.h	(revision 3f72982cb847893f98480da874991ec75e1e8151)
++++ b/include/MixedPrecisionFloat16.h	(date 1721999208780)
+@@ -1,25 +1,27 @@
+-#ifndef MixedPrecisionFloat16_H
+-#define MixedPrecisionFloat16_H
+-
+-#include <cstdint>
+-
+-class float_16 {
+-public:
+-    uint16_t value;
+-
+-    float_16();
+-    explicit float_16(float f);
+-
+-    explicit operator float() const;
+-
+-private:
+-    static uint16_t float32_to_float16(float f);
+-    static float float16_to_float32(uint16_t f);
+-};
+-
+-float_16 operator+(const float_16& a, const float_16&b);
+-float_16 operator-(const float_16& a, const float_16&b);
+-float_16 operator*(const float_16& a, const float_16&b);
+-float_16 operator/(const float_16& a, const float_16&b);
+-
+-#endif // MixedPrecisionFloat16_H
++// #pragma once
++//
++// #ifndef MixedPrecisionFloat16_H
++// #define MixedPrecisionFloat16_H
++//
++// #include <cstdint>
++//
++// class float_16 {
++// public:
++//     uint16_t value;
++//
++//     float_16();
++//     explicit float_16(float f);
++//
++//     explicit operator float() const;
++//
++// private:
++//     static uint16_t float32_to_float16(float f);
++//     static float float16_to_float32(uint16_t f);
++// };
++//
++// float_16 operator+(const float_16& a, const float_16&b);
++// float_16 operator-(const float_16& a, const float_16&b);
++// float_16 operator*(const float_16& a, const float_16&b);
++// float_16 operator/(const float_16& a, const float_16&b);
++//
++// #endif // MixedPrecisionFloat16_H
+diff --git a/docs/CONTRIBUTING.md b/docs/CONTRIBUTING.md
+deleted file mode 100644
