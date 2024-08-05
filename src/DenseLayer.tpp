@@ -9,7 +9,8 @@ template <typename T>
 void DenseLayer<T>::initializeWeights(Tensor<T>& inputWeights) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::normal_distribution<T> dist(0, std::sqrt(2.0 / inputUnits));
+    T limit = std::sqrt(6.0 / (inputUnits + outputUnits));
+    std::uniform_real_distribution<T> dist(-limit, limit);
 
     for (int i = 0; i < inputWeights.size(); ++i) {
         inputWeights.data[i] = dist(gen);
@@ -17,58 +18,61 @@ void DenseLayer<T>::initializeWeights(Tensor<T>& inputWeights) {
 }
 
 template <typename T>
-Tensor<T> DenseLayer<T>::forward(const Tensor<T>& input) {
-    // Cache the input for use in the backward pass
+Tensor<T> DenseLayer<T>::forward(Tensor<T>& input) {
     input_cache = input;
+    Tensor<T> output({outputUnits});
 
-    // Initialize the output tensor with the appropriate shape
-    Tensor<T> output({input.shape()[0], outputUnits});
+    // Direct access to data pointers for better performance
+    const T* __restrict__ input_data = input_cache.data.data();
+    const T* __restrict__ weights_data = weights.data.data();
+    T* __restrict__ output_data = output.data.data();
+    const T* __restrict__ bias_data = bias.data.data();
 
-    // Compute the weighted sum and add the bias
-    for (size_t i = 0; i < input.shape()[0]; ++i) {
-        for (size_t j = 0; j < outputUnits; ++j) {
-            T sum = 0;
-            for (size_t k = 0; k < inputUnits; ++k) {
-                sum += input.data[i * inputUnits + k] * weights.data[k * outputUnits + j];
-            }
-            output.data[i * outputUnits + j] = sum + bias.data[j];
+    // Prefetch data to minimize latency (if necessary)
+    // _mm_prefetch((const char*)(weights_data), _MM_HINT_T0);
+
+    #pragma omp parallel for simd
+    for (size_t j = 0; j < outputUnits; ++j) {
+        T sum = bias_data[j];  // Initialize with bias
+        
+        // Vectorization-friendly loop
+        #pragma omp simd
+        for (size_t k = 0; k < inputUnits; ++k) {
+            sum += input_data[k] * weights_data[k * outputUnits + j];
         }
+        output_data[j] = sum;
     }
 
     // Apply the activation function
-    output = activation->forward(output);
+    activation->forward(output);
 
     return output;
 }
 
 template <typename T>
-Tensor<T> DenseLayer<T>::backward(const Tensor<T>& grad_output) {
-    std::vector<int> input_shape = input_cache.shape();
-    input_shape.pop_back();
-    input_shape.push_back(inputUnits);
-    Tensor<T> input_gradient(input_shape);
+void DenseLayer<T>::backward(Tensor<T>& grad_output) {
+    // Initialize gradients to zero
+    biasGradients.fill(0);
+    weightGradients.fill(0);
+    
+    // Apply the activation function's backward to modify grad_output
+    activation->backward(grad_output);
 
-    // Initialize bias gradients to zero
-    std::fill(biasGradients.data.begin(), biasGradients.data.end(), T(0));
+    // Initialize input gradients tensor
+    Tensor<T> input_gradient(input_cache.shape());
 
-    for (size_t i = 0; i < grad_output.shape()[0]; ++i) {
-        for (size_t j = 0; j < outputUnits; ++j) {
-            T grad = grad_output.data[i * outputUnits + j];
-            biasGradients.data[j] += grad; // Update bias gradients
-            for (size_t k = 0; k < inputUnits; ++k) {
-                weightGradients.data[k * outputUnits + j] += grad * input_cache.data[i * inputUnits + k];
-                input_gradient.data[i * inputUnits + k] += grad * weights.data[k * outputUnits + j];
-            }
+    // Compute gradients with respect to weights, biases, and input
+    for (size_t j = 0; j < outputUnits; ++j) {
+        T grad = grad_output.data[j];
+        biasGradients.data[j] += grad;
+        for (size_t k = 0; k < inputUnits; ++k) {
+            input_gradient.data[k] += grad * weights.data[k * outputUnits + j];
+            weightGradients.data[k * outputUnits + j] += grad * input_cache.data[k];
         }
     }
-    input_gradient = activation->backward(input_gradient);
-    return input_gradient;
-}
 
-template <typename T>
-void DenseLayer<T>::updateParameters(Optimizer<T>* optimizer, size_t epoch) {
-    optimizer->update(weights, weightGradients, epoch);
-    optimizer->update(bias, biasGradients, epoch);
+    // Update grad_output to be the gradient with respect to the input
+    grad_output = input_gradient;
 }
 
 #endif // DENSELAYER_TPP
