@@ -72,7 +72,7 @@ template<typename T>
 Tensor<T>::Tensor(const std::vector<int>& dims) : Tensor<T>(dims, std::vector<T>()) {
     int dims_size = getTotalSize(dims);
     this->dimensions = dims;
-    this->data.resize(dims_size);
+    this->data.resize(dims_size, T(0));
 
     if (dims_size != this->data.size()) {
         throw std::invalid_argument("Data size does not match the specified dimensions");
@@ -85,7 +85,7 @@ template <typename T>
 Tensor<T>::Tensor(const std::initializer_list<int> dims) : Tensor<T>(std::vector<int>(dims), std::vector<T>()) {
     int dims_size = getTotalSize(dims);
     std::vector<int> dims_vec(dims);
-    this->data.resize(dims_size);
+    this->data.resize(dims_size, T(0));
 
     if (dims_size != this->data.size()) {
         throw std::invalid_argument("Data size does not match the specified dimensions");
@@ -317,7 +317,14 @@ Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const
         }
     }
 
-    return sliced_tensor.squeeze();
+    // Optional: Handle squeezing of dimensions
+    for (const int& dim : new_dims) {
+        if (dim < 1) {
+            return sliced_tensor.squeeze(); // Assuming squeeze returns by value
+        }
+    }
+
+    return sliced_tensor; // Return by value
 }
 
 template<typename T>
@@ -434,81 +441,81 @@ Tensor<T> Tensor<T>::expandDims(int axis) const {
     return result;
 }
 
-
 template<typename T>
 Tensor<T> Tensor<T>::squeeze() const {
-    // Find the number of dimensions to be removed
-    int numDimsToRemove = 0;
-    for (int dim : dimensions) {
-        if (dim == 1) {
-            ++numDimsToRemove;
-        }
-    }
-
-    // Create new dimensions for the squeezed tensor
+    // Step 1: Calculate the number of dimensions to be removed and the new dimensions.
     std::vector<int> newDimensions;
-    for (int dim : dimensions) {
-        if (dim != 1) {
-            newDimensions.push_back(dim);
+    newDimensions.reserve(dimensions.size());
+
+    // Use size_t for indices and iterators
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+        if (dimensions[i] != 1) {
+            newDimensions.push_back(dimensions[i]);
         }
     }
 
-    // Create a new tensor for the squeezed result
+    // Step 2: Create a new tensor for the squeezed result.
     Tensor<T> result(newDimensions);
 
-    // Copy data from the current tensor
-    std::vector<int> indices(newDimensions.size(), 0);
-    for (size_t i = 0; i < data.size(); ++i) {
-        // Calculate current indices
-        size_t temp = i;
-        for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = static_cast<int>(temp) % newDimensions[j];
-            temp /= newDimensions[j];
-        }
+    // Step 3: Efficiently copy data to the new tensor.
+    if (newDimensions.size() == dimensions.size()) {
+        // If no dimensions were removed, directly copy the data
+        result.data = data;
+        return result;
+    }
 
-        // Copy data into the result tensor
-        result.set(indices, data[i]);
+    size_t oldStride = 1;
+    std::vector<size_t> oldStrides(dimensions.size());
+    std::vector<size_t> newStrides(newDimensions.size());
+
+    // Calculate strides for old dimensions
+    for (int i = static_cast<int>(dimensions.size()) - 1; i >= 0; --i) {
+        oldStrides[i] = oldStride;
+        oldStride *= dimensions[i];
+    }
+
+    // Calculate strides for new dimensions
+    size_t newStride = 1;
+    for (int i = static_cast<int>(newDimensions.size()) - 1; i >= 0; --i) {
+        newStrides[i] = newStride;
+        newStride *= newDimensions[i];
+    }
+
+    // Use a single loop with accumulated strides to copy data efficiently
+    for (size_t i = 0; i < data.size(); ++i) {
+        size_t newIndex = 0;
+        size_t oldIndex = i;
+        for (size_t j = 0, newDimIndex = 0; j < dimensions.size(); ++j) {
+            if (dimensions[j] != 1) {
+                newIndex += (oldIndex / oldStrides[j]) * newStrides[newDimIndex++];
+            }
+            oldIndex %= oldStrides[j];
+        }
+        result.data[newIndex] = data[i];
     }
 
     return result;
 }
 
-template<typename T>
+template <typename T>
 Tensor<T> Tensor<T>::reshape(const std::vector<int>& newDimensions) const {
     // Calculate the total size of the new dimensions
     int newTotalSize = 1;
-    for (int dim : newDimensions) {
+    for (const int dim : newDimensions) {
         newTotalSize *= dim;
-    }
-
-    // Ensure the total size remains the same
-    if (newTotalSize != size()) {
-        throw std::invalid_argument("Total size of new dimensions must remain the same");
     }
 
     // Create a new tensor for the reshaped result
     Tensor<T> result(newDimensions);
 
     // Copy data from the current tensor
-    std::vector<int> indices(newDimensions.size(), 0);
-    for (size_t i = 0; i < data.size(); ++i) {
-        // Calculate current indices
-        size_t temp = i;
-        for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = static_cast<int>(temp) % newDimensions[j];
-            temp /= newDimensions[j];
-        }
-
-        // Copy data into the result tensor
-        result.set(indices, data[i]);
-    }
+    result.data = data;
 
     return result;
-
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::reshape(int newShape) const {
+Tensor<T> Tensor<T>::reshape(const int newShape) const {
     return reshape(std::vector<int>{newShape});
 }
 
@@ -675,67 +682,60 @@ Tensor<T> Tensor<T>::triu(const int& axis) {
 
 template <typename T>
 Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
-    // Create a copy of the dimensions to avoid modifying the original tensors
+    // Copy dimensions to handle broadcasting
     std::vector<int> this_dims = dimensions;
     std::vector<int> other_dims = other.dimensions;
 
+    // Handle broadcasting dimensions
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
         other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
-    // Ensure tensors have the same number of dimensions
-    if (this_dims.size() != other_dims.size()) {
-        throw std::invalid_argument("Tensors must have the same number of dimensions.");
-    }
-
-    // Ensure the last dimension of the first tensor matches the second-to-last dimension of the second tensor
+    // Ensure compatible dimensions for dot product
     if (this_dims.back() != other_dims[other_dims.size() - 2]) {
         throw std::invalid_argument("The last dimension of the first tensor must match the second-to-last dimension of the second tensor.");
     }
 
     // Compute result dimensions
-    std::vector<int> resultDimensions;
-    for (size_t i = 0; i < this_dims.size() - 1; ++i) {
-        resultDimensions.push_back(this_dims[i]);
-    }
-    for (size_t i = 0; i < other_dims.size() - 2; ++i) {
-        resultDimensions.push_back(other_dims[i]);
-    }
+    std::vector<int> resultDimensions(this_dims.begin(), this_dims.end() - 1);
+    resultDimensions.insert(resultDimensions.end(), other_dims.begin(), other_dims.end() - 2);
     resultDimensions.push_back(other_dims.back());
 
-    // Compute total size of the result tensor
-    size_t resultSize = 1;
-    for (const int dim : resultDimensions) {
-        resultSize *= dim;
-    }
+    // Initialize result tensor
+    Tensor<T> result(resultDimensions);
+    T* result_data = result.data.data();
 
-    // Initialize result data
-    std::vector<T> resultData(resultSize, static_cast<T>(0));
+    // Perform the dot product
+    const int M = this_dims[0]; // Batch size or outer dimension
+    const int N = other_dims.back(); // The final output dimension
+    const int K = this_dims.back(); // The shared dimension for the dot product
 
-    // Compute the dot product
-    const int A_lastDim = this_dims.back();
-    const int B_penultimateDim = other_dims[other_dims.size() - 2];
-    const int B_lastDim = other_dims.back();
+    // Access data pointers for faster access
+    const T* A = data.data();
+    const T* B = other.data.data();
 
-    for (int i = 0; i < this_dims[0]; ++i) {
-        for (int j = 0; j < B_lastDim; ++j) {
-            for (int k = 0; k < A_lastDim; ++k) {
-                resultData[i * B_lastDim + j] += data[i * A_lastDim + k] * other.data[k * B_lastDim + j];
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < N; ++j) {
+            T sum = static_cast<T>(0);
+            for (int k = 0; k < K; ++k) {
+                sum += A[i * K + k] * B[k * N + j];
             }
+            result_data[i * N + j] = sum;
         }
     }
 
-    // Return the resulting tensor
-    return Tensor<T>(resultDimensions, resultData).squeeze();
+    // Return the squeezed result tensor
+    return result.squeeze();
 }
 
 template<typename T>
 Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
-    // Check if dimensions are compatible for broadcasting
+    // Ensure dimensions are broadcast-compatible
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
+
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
@@ -748,40 +748,37 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
         }
     }
 
-    // Calculate resulting dimensions
+    // Determine resulting dimensions
     std::vector<int> result_dims(this_dims.size());
     for (size_t i = 0; i < this_dims.size(); ++i) {
         result_dims[i] = std::max(this_dims[i], other_dims[i]);
     }
 
-    // Create a new tensor to hold the result
+    // Create result tensor
     Tensor<T> result(result_dims);
+    size_t result_size = result.data.size();
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
 
     // Perform element-wise addition with broadcasting
-    for (size_t i = 0; i < result.data.size(); ++i) {
-        std::vector<int> result_indices(result_dims.size());
-        size_t temp = i;
-        for (size_t j = result_indices.size(); j-- > 0;) {
-            result_indices[j] = temp % result_dims[j];
-            temp /= result_dims[j];
-        }
-
-        std::vector<int> this_indices(this_dims.size());
-        std::vector<int> other_indices(other_dims.size());
-        for (size_t j = 0; j < result_indices.size(); ++j) {
-            this_indices[j] = (this_dims[j] == 1) ? 0 : result_indices[j];
-            other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
-        }
-
+    for (size_t i = 0; i < result_size; ++i) {
         int this_index = 0;
-        int this_stride = 1;
         int other_index = 0;
-        int other_stride = 1;
-        for (int j = this_dims.size() - 1; j >= 0; --j) {
-            this_index += this_indices[j] * this_stride;
-            this_stride *= this_dims[j];
-            other_index += other_indices[j] * other_stride;
-            other_stride *= other_dims[j];
+        size_t temp = i;
+
+        for (size_t j = result_dims.size(); j-- > 0;) {
+            int result_idx = temp % result_dims[j];
+            temp /= result_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
         }
 
         result.data[i] = this->data[this_index] + other.data[other_index];
@@ -991,119 +988,62 @@ Tensor<T>& Tensor<T>::operator/=(T& scalar) {
     return *this;
 }
 
-template <typename T>
-Tensor<T>& Tensor<T>::operator*=(T& scalar) {
-    *this = *this * scalar;
-    return *this;
+template<typename T>
+Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) {
+    // Check for index out of bounds and adjust for negative indices
+    std::vector<int> positiveIndices = indices;
+    for (size_t i = 0; i < indices.size(); ++i) {
+        int dimSize = dimensions[i];
+        if (std::abs(indices[i]) >= dimSize) {
+            throw std::invalid_argument("Index out of bounds");
+        }
+        if (indices[i] < 0) {
+            positiveIndices[i] = dimSize + indices[i];
+        }
+    }
+
+    // Calculate the shape of the resulting tensor
+    std::vector<int> resultDimensions;
+    for (size_t i = indices.size(); i < dimensions.size(); ++i) {
+        resultDimensions.push_back(dimensions[i]);
+    }
+
+    // Calculate strides for efficient indexing
+    std::vector<int> strides(dimensions.size(), 1);
+    for (int i = dimensions.size() - 2; i >= 0; --i) {
+        strides[i] = strides[i + 1] * dimensions[i + 1];
+    }
+
+    // Calculate the starting offset in the flattened data array
+    int offset = 0;
+    for (size_t i = 0; i < indices.size(); ++i) {
+        offset += positiveIndices[i] * strides[i];
+    }
+
+    // Extract the required data from the original data array
+    int resultSize = 1;
+    for (int dim : resultDimensions) {
+        resultSize *= dim;
+    }
+
+    std::vector<T> newData(resultSize);
+    for (int i = 0; i < resultSize; ++i) {
+        int linearIndex = offset;
+        int temp = i;
+        for (size_t j = 0; j < resultDimensions.size(); ++j) {
+            linearIndex += (temp % resultDimensions[j]) * strides[j + indices.size()];
+            temp /= resultDimensions[j];
+        }
+        newData[i] = data[linearIndex];
+    }
+
+    // Return the new Tensor by value
+    return Tensor<T>(resultDimensions, newData);
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) {
-    for (int i = 0; i < indices.size(); ++i){
-        if (std::abs(indices[i]) >= dimensions[i]) {
-            throw std::invalid_argument("Index out of bounds");
-        }
-    }
-
-    /*
-        * Explanation:
-        *
-        * This function is designed to index a multi-dimensional tensor using a vector of indices.
-        *
-        * Parameters:
-        * - indices: A vector of integers specifying the indices along each dimension of the tensor.
-        *            Indices can be positive or negative. Negative indices are converted to their
-        *            corresponding positive indices by adding the dimension size.
-        *
-        * Internal Concepts:
-        *
-        * 1. newIndices:
-        *    - Represents the indices for the new tensor with specified dimensions.
-        *    - If the number of provided indices is less than the total number of dimensions,
-        *      the remaining dimensions are assumed to include all possible indices.
-        *    - The unspecified dimensions are filled with -1, indicating that the entire slice along
-        *      those dimensions should be included in the resulting tensor.
-        *
-        * 2. coreDimensions:
-        *    - These dimensions remain unchanged and are not directly indexed.
-        *    - They represent the base dimensions of the tensor that are not affected by the
-        *      current indexing operation.
-        *
-        * 3. targetDimensions:
-        *    - These dimensions are affected by the indexing operation.
-        *    - They correspond to the dimensions where indices are provided.
-        *
-        * Pseudocode Example:
-        *
-        * Given a tensor with dimensions [4, 3, 3], and indices [2, 1]:
-        *
-        * - If the indices are [2, 1], this means we are selecting a slice of the tensor where:
-        *   - The first dimension is fixed at index 2.
-        *   - The second dimension is fixed at index 1.
-        *   - The resulting tensor has dimensions [3], corresponding to the last remaining dimension.
-        *
-        * - If the indices are not fully specified (e.g., [2]), the new tensor will include all
-        *   indices along the unspecified dimensions.
-        *
-        * - Example Iteration:
-        *   - For core dimension [0, 0, 0, 0] and target dimension [3, 3]:
-        *     - core - [0, 0, 0, 0], target - [3, 3]
-        *     - core - [0, 0, 0, 1], target - [3, 3]
-        *     - core - [0, 0, 1, 0], target - [3, 3]
-        *     - core - [1, 1, 1, 1], target - [3, 3]
-        *   - This iteration explains how the tensor's core dimensions interact with the target dimensions
-        *     and how the resulting size is computed.
-        *
-        * The final size of the resulting tensor should match the expected dimensions after
-        * applying the indexing operation.
-    */
-    std::vector<int> newIndices;
-    std::vector<int> coreDimensions(dimensions.size() - 2, 0);
-    std::vector<int> targetDimensions = {dimensions[dimensions.size() - 2], dimensions[dimensions.size() - 1]};
-    int linear_index = indices[0];
-
-    if (indices.size() != dimensions.size()) {
-        newIndices = std::vector<int>(dimensions.size(), -1);
-        for (int i = 0; i < indices.size(); ++i) {
-            newIndices[i] = indices[i];
-        }
-    }
-    for (int i = 0; i < dimensions.size() - 1; ++i) {
-        if (dimensions.size() - 2 >= i) {
-            coreDimensions[i] = dimensions[i];
-        }
-    }
-
-    for (int i = 1; i < dimensions.size(); ++i) {
-        if (newIndices[i] == -1) {
-            linear_index *= dimensions[i];
-        } else {
-            linear_index *= indices[i];
-        }
-    }
-
-    std::vector<int> mama{};
-    for (int i = 0; i < dimensions.size(); ++i) {
-        if (i >= indices.size()) {
-            mama.push_back(dimensions[i]);
-        }
-    }
-    int dataSize = getTotalSize(mama);
-
-    std::vector<int> newData(dataSize, T(0));
-    for (int i = 0; i < dataSize; ++i) {
-        newData[i] = data[i];
-    }
-
-    std::vector<int> resultDimensions{};
-    for (size_t i = 0; i < dimensions.size(); ++i) {
-        if (newIndices[i] == -1) {
-            resultDimensions.push_back(dimensions[i]);
-        }
-    }
-
-    Tensor<T> result(resultDimensions, newData);
-    return result;
+Tensor<T> Tensor<T>::operator[](const std::vector<int>& indices) const {
+    return const_cast<Tensor<T>&>(*this)[indices];
 }
 
 template<typename T>

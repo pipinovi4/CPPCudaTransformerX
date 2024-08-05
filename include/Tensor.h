@@ -2,11 +2,12 @@
 #define TENSOR_H
 
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <stdexcept>
-#include <numeric>
+#include <functional>
 #include <type_traits>
 #include <numeric>
 #include <cassert>
@@ -19,6 +20,7 @@ template <typename T>
 class Tensor {
 public:
     std::vector<T> data;
+    std::vector<int> dimensions;
 
     Tensor() = default;
 
@@ -38,6 +40,7 @@ public:
 
     // Default constructor to initialize an empty tensor
     Tensor(const std::vector<int>& dims, const int& newSize);
+
 
     // Helper functions to get the dimensions and size of the tensor
 
@@ -127,6 +130,8 @@ public:
 
     Tensor<T> operator[](const std::vector<int>& indices);
 
+    Tensor<T> operator[](const std::vector<int>& indices) const;
+
     T& operator()(int indices);
 
     T& operator()(const std::vector<int>& indices);
@@ -142,7 +147,6 @@ public:
     void deserialize(std::istream& is);
 
 private:
-    std::vector<int> dimensions;
     std::vector<int> strides;
 
     [[nodiscard]] int calculateIndex(const std::vector<int>& indices) const {
