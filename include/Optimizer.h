@@ -17,11 +17,11 @@ public:
         class ExponentialDecaySchedule;
     };
 
-    explicit Optimizer(T learning_rate, LearningRateSchedule& lr_schedule = nullptr)
-     : beta1(T(0.9)), beta2(T(0.999)), epsilon(T(1e-8)), learning_rate(learning_rate), lr_schedule(lr_schedule) {}
+    explicit Optimizer(T beta1, T beta2, T epsilon, T learning_rate, LearningRateSchedule& lr_schedule)
+     : beta1(beta1), beta2(beta2), epsilon(epsilon), learning_rate(learning_rate), lr_schedule(lr_schedule) {}
 
-    virtual void initialize(std::vector<int> param_shape) = 0;
-    virtual void update(Tensor<T>& params, const Tensor<T>& grads, size_t epoch) = 0;
+    virtual void initialize(const std::vector<std::vector<int>>& param_shape) = 0;
+    virtual void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params, const std::vector<std::reference_wrapper<Tensor<T>>>& grads, const size_t& epoch) = 0;
     virtual ~Optimizer() = default;
 
     class Adam;
@@ -34,8 +34,8 @@ protected:
     T epsilon;
 
     size_t time_step = 0;
-    Tensor<T> first_moment_vector;
-    Tensor<T> second_moment_vector;
+    std::vector<Tensor<T>> first_moment_vector;
+    std::vector<Tensor<T>> second_moment_vector;
     Tensor<T> mean_squared_gradients;
 
     T learning_rate;
