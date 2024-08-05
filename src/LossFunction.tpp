@@ -32,18 +32,32 @@ Tensor<T> LossFunction<T>::binaryCrossEntropyLoss::backward(const Tensor<T>& pre
 template<typename T>
 T LossFunction<T>::crossEntropyLoss::forward(const Tensor<T>& predictions, const Tensor<T>& targets) {
     T loss = 0;
+    const T epsilon = static_cast<T>(1e-15);
+
     for (size_t i = 0; i < predictions.size(); ++i) {
-        loss += -targets.data[i] * std::log(clamp(predictions.data[i], static_cast<T>(1e-15), static_cast<T>(1.0 - 1e-15)));
+        // Clamp the prediction value to avoid log(0) or log(negative)
+        T pred_value = std::max(epsilon, std::min(predictions.data[i], static_cast<T>(1.0) - epsilon));
+        
+        // Calculate the cross-entropy loss
+        loss += -targets.data[i] * std::log(pred_value);
     }
-    return loss / predictions.shape()[0];
+
+    // Normalize loss by the number of samples
+    size_t num_samples = predictions.shape()[0];
+    return loss / static_cast<T>(num_samples);
 }
 
 template<typename T>
 Tensor<T> LossFunction<T>::crossEntropyLoss::backward(const Tensor<T>& predictions, const Tensor<T>& targets) {
     Tensor<T> grad_output(predictions.shape());
+    const T epsilon = static_cast<T>(1e-15);
+    const T one_minus_epsilon = static_cast<T>(1.0) - epsilon;
+
     for (size_t i = 0; i < predictions.size(); ++i) {
-        grad_output.data[i] = -targets.data[i] / clamp(predictions.data[i], static_cast<T>(1e-15), static_cast<T>(1.0 - 1e-15));
+        T clamped_pred = clamp(predictions.data[i], epsilon, one_minus_epsilon);
+        grad_output.data[i] = (clamped_pred - targets.data[i]) / predictions.shape()[0];
     }
+
     return grad_output;
 }
 
