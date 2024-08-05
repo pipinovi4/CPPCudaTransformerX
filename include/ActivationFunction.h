@@ -7,8 +7,8 @@ template <typename T>
 class ActivationFunction
 {
 public:
-    virtual Tensor<float> forward(const Tensor<T>& x) = 0;
-    virtual Tensor<float> backward(const Tensor<T>& x) = 0;
+    virtual void forward(Tensor<T>& x) = 0;
+    virtual void backward(Tensor<T>& x) = 0;
     virtual ~ActivationFunction() = default;
 
     class Sigmoid;
