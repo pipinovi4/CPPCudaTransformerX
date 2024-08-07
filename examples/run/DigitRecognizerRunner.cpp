@@ -1,7 +1,8 @@
-#include "DigitRecognizer.h"
-#include "../include/Optimizer.h"
-#include "../include/Tensor.h"
-#include "../include/LossFunction.h"
+#include "../DigitRecognizer.h"
+#include "../../include/Optimizer.h"
+#include "../../include/Tensor.h"
+#include "../../include/LossFunction.h"
+#include "../utils/loadMNIST.cpp"
 #include <vector>
 #include <iostream>
 
@@ -23,12 +24,12 @@ int main() {
         constexpr int BATCH_SIZE = 64;
 
         // Load train data of the MNIST
-        const std::vector<std::vector<std::uint8_t>> train_images = DigitRecognizer<float>::loadMNISTImages("../data/mnist/train-images-idx3-ubyte.txt");
-        const std::vector<std::uint8_t> train_targets = DigitRecognizer<float>::loadMNISTLabels("../data/mnist/train-labels-idx1-ubyte.txt");
+        const std::vector<std::vector<std::uint8_t>> train_images = loadMNISTImages("../data/mnist/train-images-idx3-ubyte.txt");
+        const std::vector<std::uint8_t> train_targets = loadMNISTLabels("../data/mnist/train-labels-idx1-ubyte.txt");
 
         // Load test data of the MNIST
-        const std::vector<std::vector<std::uint8_t>> test_images = DigitRecognizer<float>::loadMNISTImages("../data/mnist/t10k-images-idx3-ubyte.txt");
-        const std::vector<std::uint8_t> test_targets = DigitRecognizer<float>::loadMNISTLabels("../data/mnist/t10k-labels-idx1-ubyte.txt");
+        const std::vector<std::vector<std::uint8_t>> test_images = loadMNISTImages("../data/mnist/t10k-images-idx3-ubyte.txt");
+        const std::vector<std::uint8_t> test_targets = loadMNISTLabels("../data/mnist/t10k-labels-idx1-ubyte.txt");
 
         // Convert normalized train data to floated Tensor with extra dimension for channel
         Tensor<float> train_data = Tensor<float>(train_images).reshape({60000, 784});
