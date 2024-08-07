@@ -3,7 +3,20 @@
 
 #include "../include/Tensor.h"
 #include "../include/DenseLayer.h"
-#include "../include/Optimizer.h"
+
+template <typename T>
+DenseLayer<T>::DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation, T biasInitValue)
+    : inputUnits(input_units), outputUnits(output_units), activation(activation) {
+    weights = Tensor<T>({input_units, output_units});
+    weightGradients = Tensor<T>({input_units, output_units});
+
+    bias = Tensor<T>({output_units});
+    biasGradients = Tensor<T>({output_units});
+
+    initializeWeights(weights);
+    bias.fill(biasInitValue);
+}
+
 
 template <typename T>
 void DenseLayer<T>::initializeWeights(Tensor<T>& inputWeights) {

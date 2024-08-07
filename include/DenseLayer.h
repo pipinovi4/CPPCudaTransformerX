@@ -4,11 +4,18 @@
 #pragma once
 #include "../include/Tensor.h"
 #include "../include/ActivationFunction.h"
-#include "../include/Optimizer.h"
+#include "../include/DenseLayer.h"
 
 template <typename T>
 class DenseLayer {
 public:
+    DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation, T biasInitValue = 0.0);
+
+    void initializeWeights(Tensor<T>& inputWeights);
+
+    Tensor<T> forward(Tensor<T>& input);
+    void backward(Tensor<T>& grad_output);
+
     int inputUnits;
     int outputUnits;
 
@@ -22,22 +29,6 @@ public:
     Tensor<T> weightGradients;
     Tensor<T> biasGradients;
     Tensor<T> inputGradients;
-    void initializeWeights(Tensor<T>& inputWeights);
-
-    DenseLayer(const int input_units, const int output_units, ActivationFunction<T>* activation, T biasInitValue = 0.0)
-        : inputUnits(input_units), outputUnits(output_units), activation(activation) {
-        weights = Tensor<T>({input_units, output_units});
-        weightGradients = Tensor<T>({input_units, output_units});
-
-        bias = Tensor<T>({output_units});
-        biasGradients = Tensor<T>({output_units});
-
-        initializeWeights(weights);
-        bias.fill(biasInitValue);
-    }
-
-    Tensor<T> forward(Tensor<T>& input);
-    void backward(Tensor<T>& grad_output);
 };
 
 #include "../src/DenseLayer.tpp"

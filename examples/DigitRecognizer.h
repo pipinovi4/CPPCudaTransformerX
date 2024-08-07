@@ -2,14 +2,10 @@
 #define DIGIT_RECOGNIZER_H
 
 #include <vector>
-#include <string>
 #include "../include/Tensor.h"
 #include "../include/Optimizer.h"
 #include "../include/LossFunction.h"
 #include "../include/DenseLayer.h"
-#include <fstream>
-#include <algorithm>
-#include "../include/ActivationFunction.h"
 
 template <typename T>
 class DigitRecognizer {
@@ -64,22 +60,6 @@ public:
       * \return Vector of references to the gradient of the paranerts.
       */
    std::vector<std::reference_wrapper<Tensor<T>>> gradients();
-
-    /**
-     * \brief Loads MNIST images from a file.
-     *
-     * \param filename Path to the MNIST images file.
-     * \return Vector of images, each represented as a vector of uint8_t.
-     */
-    static std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filename);
-
-    /**
-     * \brief Loads MNIST labels from a file.
-     *
-     * \param filename Path to the MNIST labels file.
-     * \return Vector of labels.
-     */
-    static std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename);
 
 private:
     int input_dims; ///< Number of input dimensions.
