@@ -1,70 +1,48 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
-#include <cassert>
+#include <cstdint>
+#include <regex>
+#include <string>
 #include "../include/Tensor.h"
-#include "../include/ActivationFunction.h"
+#include "../include/DenseLayer.h"
 #include "../include/LossFunction.h"
 #include "../include/Optimizer.h"
-#include "../include/DenseLayer.h"
-
+#include "ActivationFunction.tpp"
+#include "../include/Embedding.h"
+#include "../examples/EmbeddingModel.h"
+#include "../include/MultiHeadAttention.h"
 
 int main() {
     try {
-        // Define input and output sizes
-        constexpr int input_units = 64;
-        constexpr int output_units = 64;
-        constexpr size_t num_samples = 2;
-        constexpr size_t num_epochs = 10000;
+        // Load the datasets
+        const std::vector<std::vector<std::vector<std::string>>> dataset = EmbeddingModel<float>::loadDataset();
 
-        // Create activation function and optimizer
-        ActivationFunction<float>::LeakyReLU activation_function;
-        LossFunction<float>::meanSquaredError loss_function;
-        Optimizer<float>::SGD optimizer(0.01, *new Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule(0.01, 0.95));
+        // Separate the train and test data
+        const std::vector<std::vector<std::string>>& train_data = dataset[0];
+        const std::vector<std::vector<std::string>>& test_data = dataset[1];
 
-        // Create DenseLayer instance
-        DenseLayer<float> dense_layer(input_units, output_units, &activation_function);
-
-        // Generate uniform data and labels
-        const Tensor<float> input_data = Tensor<float>::uniform({num_samples, input_units}, 0.0f, 1.0f);
-        const Tensor<float> labels = input_data * std::sqrt(2.0f) + 1.0f;
-
-        // Training loop
-        for (size_t epoch = 0; epoch < num_epochs; ++epoch) {
-            // Forward pass
-            Tensor<float> output_data = dense_layer.forward(input_data);
-
-            // Compute loss (assuming Mean Squared Error)
-            const float loss = loss_function.forward(output_data, labels);
-
-            // Backward pass
-            Tensor<float> grad_output = loss_function.backward(output_data, labels);
-            Tensor<float> grad_input = dense_layer.backward(grad_output);
-
-            // Update parameters
-            dense_layer.updateParameters(&optimizer, epoch);
-
-            // Print loss every 100 epochs
-            if (epoch % 100 == 0) {
-                std::cout << "Epoch " << epoch << ", Loss: " << loss << std::endl;
+        // Example usage: Print the first 5 lines of the training data
+        std::cout << "\nFirst 5 lines of the training data:\n";
+        for (size_t i = 0; i < 5 && i < train_data.size(); ++i) {
+            for (const auto& word : train_data[i]) {
+                std::cout << word << " ";
             }
+            std::cout << std::endl;
         }
 
-        // Print labels
-        std::cout << "Labels: ";
-        labels.print();
+        std::cout << "\n\nFirst 5 lines of the testing data:\n";
+        for (size_t i = 0; i < 5 && i < test_data.size(); ++i) {
+            for (const auto& word : test_data[i]) {
+                std::cout << word << " ";
+            }
+            std::cout << std::endl;
+        }
 
-        Tensor<float> preds = dense_layer.forward(input_data);
-
-        std::cout << "Preds: ";
-        preds.print();
-
-        std::cout << "Loss preds: ";
-        std::cout << loss_function.forward(preds, labels) << std::endl;
-
-        std::cout << "Training completed successfully." << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Exception occurred: " << e.what() << std::endl;
+        // Similarly, you can access and work with test_data
+    } catch (const std::exception& ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+        return 1;
     }
-
     return 0;
 }
