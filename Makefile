@@ -3,9 +3,11 @@ BUILD_DIR = build
 
 # Specify the name of the executable
 TEST_EXECUTABLE = global_tests
+DIGIT_RECOGNIZER_EXECUTABLE = digit_recognizer
+EMBEDDING_MODEL_EXECUTABLE = embedding_model
 
-# The 'all' target will run 'venv', 'build', 'test', and 'clean' targets
-all: venv build test clean
+# The 'all' target will run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets
+all: venv build test digit_recognizer clean
 
 # The 'venv' target to create and activate the Python virtual environment
 venv:
@@ -26,6 +28,16 @@ build:
 test:
 	cd ${BUILD_DIR} && cmake --build . && ./$(TEST_EXECUTABLE)
 
+# The 'digit_recognizer' target to run the DigitRecognizer executable
+digit_recognizer:
+	cd ${BUILD_DIR} && cmake --build . && ./$(DIGIT_RECOGNIZER_EXECUTABLE)
+
+embedding_model:
+	cd ${BUILD_DIR} && cmake --build . && ./$(EMBEDDING_MODEL_EXECUTABLE)
+
 # The 'clean' target to remove build artifacts
 clean:
 	rm -rf $(BUILD_DIR)
+
+# Phony targets
+.PHONY: all venv build test digit_recognizer clean

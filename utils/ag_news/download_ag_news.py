@@ -1,6 +1,4 @@
-import logging
 import os
-import re
 import requests
 
 DATASET_NAME = "ag_news"

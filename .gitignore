@@ -1,26 +1,20 @@
-# Default ignored files
 /shelf/
 /workspace.xml
-# Editor-based HTTP Client requests
 /httpRequests/
-# Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
 
-# Python virtual environment
 .venv/
 
-# CMake build directories
+data/
 build/
 cmake-build-debug/
 CMakeUserPresets.json
 CMakeFiles
 
-# Системні файли
 *.log
 *.tmp
 
-# Інші непотрібні файли
 *.swp
 *.swo
 *.swn

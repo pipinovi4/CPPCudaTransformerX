@@ -12,7 +12,8 @@ DATA_DIR = "data"
 if __name__ == "__main__":
     print("Downloading and processing MNIST dataset...")
     if not all(os.path.exists(f"{MNIST_DIR}/{file}.txt") for file in
-           ["train-images-idx3-ubyte", "train-labels-idx1-ubyte", "t10k-images-idx3-ubyte", "t10k-labels-idx1-ubyte"]):
+               ["train-images-idx3-ubyte", "train-labels-idx1-ubyte", "t10k-images-idx3-ubyte",
+                "t10k-labels-idx1-ubyte"]):
         # Download the MNIST dataset if not already downloaded
         download_mnist(DATA_DIR)
 
@@ -45,7 +46,7 @@ if __name__ == "__main__":
         print("MNIST dataset already downloaded and processed")
 
     print("Downloading and processing AG_NEWS dataset...")
-    if all(os.path.exists(f"{DATA_DIR}/ag_news/{file}") for file in ["train.csv", "test.csv"]):
+    if not all(os.path.exists(f"{DATA_DIR}/ag_news/{file}") for file in ["train.csv", "test.csv"]):
         # Download the AG_NEWS dataset if not already downloaded
         download_ag_news(DATA_DIR)
 
