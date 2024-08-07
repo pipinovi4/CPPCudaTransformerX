@@ -8,7 +8,8 @@
 template <typename T>
 class Embedding {
 public:
-    Embedding(const int& input_dim, const int& output_dim, const T& learning_rate, const T& decay_rate, const size_t& decay_step, std::function<void(Tensor<T>&)> init_func = nullptr);
+    Embedding(const int& input_dim, const int& output_dim, std::function<void(Tensor<T>&)> init_func,
+    typename Optimizer<T>::LearningRateSchedule& lr_schedule);
 
     Tensor<T> forward(const Tensor<T>& input_data);
     void backward(const Tensor<T>& grad_data);
@@ -19,11 +20,11 @@ public:
     void zero_grad();
     void setWeights(const Tensor<T>& new_weights);
 
-    Tensor<T> getWeights() const;
-    Tensor<T> getGrad() const;
+    Tensor<T> getWeights();
+    Tensor<T> getGrad();
 
 private:
-    Optimizer<float>::LearningRateSchedule::StepDecaySchedule learning_rate_scheduler;
+    Optimizer<float>::LearningRateSchedule& lr_schedule;
 
     Tensor<T> weights;
     Tensor<T> grad;

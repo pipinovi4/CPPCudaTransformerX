@@ -9,14 +9,15 @@
  *
  * @param input_dim The size of the input dimension (vocabulary size).
  * @param output_dim The size of the output dimension (embedding vector size).
- * @param learning_rate The initial learning rate for updating the weights.
- * @param decay_rate The rate at which the learning rate decays.
- * @param decay_step The number of steps after which the learning rate decays.
  * @param init_func Optional custom initialization function for weights.
+ * @param lr_schedule The learning rate scheduler to use for updating the learning rate over epochs.
+ * @tparam T Data type of the input tensor.
  */
 template <typename T>
-Embedding<T>::Embedding(const int& input_dim, const int& output_dim, const T& learning_rate, const T& decay_rate, const size_t& decay_step, std::function<void(Tensor<T>&)> init_func)
-: learning_rate_scheduler(learning_rate, decay_rate, decay_step), input_dim(input_dim), output_dim(output_dim) {
+Embedding<T>::Embedding(const int& input_dim, const int& output_dim,
+    std::function<void(Tensor<T>&)> init_func, typename Optimizer<T>::LearningRateSchedule& lr_schedule)
+    : lr_schedule(lr_schedule),
+    input_dim(input_dim), output_dim(output_dim) {
     this->weights = Tensor<T>({input_dim, output_dim});
     this->grad = Tensor<T>({input_dim, output_dim});
 
@@ -27,6 +28,7 @@ Embedding<T>::Embedding(const int& input_dim, const int& output_dim, const T& le
         initializeWeights();
     }
 }
+
 
 /**
  * @brief Initializes the weights of the Embedding layer using Xavier initialization.
@@ -96,7 +98,7 @@ void Embedding<T>::backward(const Tensor<T>& grad_data) {
  */
 template <typename T>
 void Embedding<T>::update(const int& epoch) {
-    T learning_rate = learning_rate_scheduler.getLearningRate(epoch);
+    T learning_rate = lr_schedule.getLearningRate(epoch);
 
     #pragma omp parallel for  // Use OpenMP for parallel processing if supported
     for (int i = 0; i < input_dim; ++i) {
@@ -133,7 +135,7 @@ void Embedding<T>::setWeights(const Tensor<T>& new_weights) {
  * @return Tensor<T> The weights tensor.
  */
 template <typename T>
-Tensor<T> Embedding<T>::getWeights() const {
+Tensor<T> Embedding<T>::getWeights() {
     return this->weights;
 }
 
@@ -143,7 +145,7 @@ Tensor<T> Embedding<T>::getWeights() const {
  * @return Tensor<T> The gradient tensor.
  */
 template <typename T>
-Tensor<T> Embedding<T>::getGrad() const {
+Tensor<T> Embedding<T>::getGrad() {
     return this->grad;
 }
 
