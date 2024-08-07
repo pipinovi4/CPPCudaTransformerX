@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def update_files(file_paths, new_data, update_type='data'):
     """
     Update files with new data.
@@ -39,12 +40,14 @@ def update_files(file_paths, new_data, update_type='data'):
 
             if update_type == 'data':
                 if new_data.shape != data.shape:
-                    raise ValueError(f"Shape mismatch: new_data shape {new_data.shape} does not match existing data shape {data.shape}")
+                    raise ValueError(
+                        f"Shape mismatch: new_data shape {new_data.shape} does not match existing data shape {data.shape}")
                 new_data = new_data.astype(data.dtype)  # Convert new_data to the same dtype as data
                 np.copyto(data, new_data, where=new_data != 0)
             elif update_type == 'labels':
                 if new_data.shape != data.shape:
-                    raise ValueError(f"Shape mismatch: new_data shape {new_data.shape} does not match existing data shape {data.shape}")
+                    raise ValueError(
+                        f"Shape mismatch: new_data shape {new_data.shape} does not match existing data shape {data.shape}")
                 data = new_data.astype(data.dtype)  # Ensure new_data is the same dtype as data
 
             with open(file_path, 'wb') as f:
