@@ -2,6 +2,7 @@
 #include "../include/Tensor.h"
 #include "../include/ActivationFunction.h"
 #include "../include/DenseLayer.h"
+#include "../include/Optimizer.h"
 
 TEST(DenseLayerTest, InitializeWeights) {
     ActivationFunction<float>::ReLU activation_function;
