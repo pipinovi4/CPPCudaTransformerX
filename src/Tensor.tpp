@@ -228,8 +228,17 @@ Tensor<T> Tensor<T>::sqrt() {
     return result;
 }
 
+template <typename T>
+Tensor<T> Tensor<T>::apply(std::function<T(T)> func) const {
+    Tensor<T> result(dimensions);
+    for (int i = 0; i < data.size(); ++i) {
+        result.data[i] = func(data[i]);
+    }
+    return result;
+}
+
 template<typename T>
-Tensor<T> Tensor<T>::sum(int axis) const {
+Tensor<T> Tensor<T>::sum(const int axis) const {
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
     }
@@ -403,7 +412,7 @@ Tensor<T> Tensor<T>::concatenate(const Tensor<T> &other) const {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::expandDims(int axis) const {
+Tensor<T> Tensor<T>::expandDims(const int axis) const {
     // Ensure axis is valid
     if (axis < 0 || axis > dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
@@ -448,9 +457,9 @@ Tensor<T> Tensor<T>::squeeze() const {
     newDimensions.reserve(dimensions.size());
 
     // Use size_t for indices and iterators
-    for (size_t i = 0; i < dimensions.size(); ++i) {
-        if (dimensions[i] != 1) {
-            newDimensions.push_back(dimensions[i]);
+    for (int dimension : dimensions) {
+        if (dimension != 1) {
+            newDimensions.push_back(dimension);
         }
     }
 
@@ -971,19 +980,25 @@ Tensor<T>& Tensor<T>::operator*=(const Tensor<T>& other) {
 }
 
 template <typename T>
-Tensor<T>& Tensor<T>::operator-=(T& scalar) {
+Tensor<T>& Tensor<T>::operator-=(const T& scalar) {
     *this = *this - scalar;
     return *this;
 }
 
 template <typename T>
-Tensor<T>& Tensor<T>::operator+=(T& scalar) {
+Tensor<T>& Tensor<T>::operator+=(const T& scalar) {
     *this = *this + scalar;
     return *this;
 }
 
 template <typename T>
-Tensor<T>& Tensor<T>::operator/=(T& scalar) {
+Tensor<T>& Tensor<T>::operator*=(const T& scalar) {
+    *this = *this * scalar;
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator/=(const T& scalar) {
     *this = *this / scalar;
     return *this;
 }

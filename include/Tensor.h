@@ -60,6 +60,8 @@ public:
 
     Tensor<T> sqrt();
 
+    Tensor<T> apply(std::function<T(T)> func) const;
+
     Tensor<T> sum(int axis) const;
 
     Tensor<T> slice(int axis, int start, int end, int step) const;
@@ -120,13 +122,13 @@ public:
 
     Tensor<T>& operator/=(const Tensor<T>& other);
 
-    Tensor<T>& operator-=(T& scalar);
+    Tensor<T>& operator-=(const T& scalar);
 
-    Tensor<T>& operator+=(T& scalar);
+    Tensor<T>& operator+=(const T& scalar);
 
-    Tensor<T>& operator*=(T& scalar);
+    Tensor<T>& operator*=(const T& scalar);
 
-    Tensor<T>& operator/=(T& scalar);
+    Tensor<T>& operator/=(const T& scalar);
 
     Tensor<T> operator[](const std::vector<int>& indices);
 
