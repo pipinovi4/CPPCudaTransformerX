@@ -1,18 +1,15 @@
+#ifndef LOADMNIST_H
+#define LOADMNIST_H
+
 #include <string>
-#include <fstream>
-#include <sstream>
 #include <vector>
+#include <cstdint>
+#include <fstream>
 #include <stdexcept>
-#include <chrono>
 #include "readUInt32.h"
 
-/**
- * \brief Loads MNIST images from a file.
- *
- * \param filename Path to the MNIST images file.
- * \return Vector of images, each represented as a vector of uint8_t.
- */
-std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filename) {
+// Declare the function as inline to avoid multiple definitions across different translation units
+inline std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filename) {
     std::ifstream imageStream(filename, std::ios::binary);
     if (!imageStream.is_open()) {
         throw std::runtime_error("Could not open image file.");
@@ -34,13 +31,7 @@ std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filena
     return images;
 }
 
-/**
- * \brief Loads MNIST labels from a file.
- *
- * \param filename Path to the MNIST labels file.
- * \return Vector of labels.
- */
-std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
+inline std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
     std::ifstream labelStream(filename, std::ios::binary);
     if (!labelStream.is_open()) {
         throw std::runtime_error("Could not open label file.");
@@ -57,3 +48,5 @@ std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
 
     return labels;
 }
+
+#endif // LOADMNIST_H

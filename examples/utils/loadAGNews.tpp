@@ -1,15 +1,19 @@
-#include <string>
+#include "loadAGNews.h"
 #include <fstream>
 #include <sstream>
-#include <vector>
 #include <stdexcept>
 
-std::vector<std::vector<std::vector<std::string>>> loadDataset() {
+/**
+ * \brief Loads the AG News dataset from files.
+ *
+ * \return A vector containing training and test datasets, each represented as a vector of strings.
+ */
+inline std::vector<std::vector<std::vector<std::string>>> loadAGNews(const std::string& dataset_dir) {
     std::vector<std::vector<std::string>> train_data;
     std::vector<std::vector<std::string>> test_data;
 
     // Load the training data
-    std::ifstream train_file("data/ag_news/train.txt");
+    std::ifstream train_file(dataset_dir + "/train.txt");
     if (!train_file.is_open()) {
         throw std::runtime_error("Failed to open the file: data/ag_news/train.txt");
     }
@@ -28,7 +32,7 @@ std::vector<std::vector<std::vector<std::string>>> loadDataset() {
     }
 
     // Load the test data
-    std::ifstream test_file("data/ag_news/test.txt");
+    std::ifstream test_file(dataset_dir + "/test.txt");
     if (!test_file.is_open()) {
         throw std::runtime_error("Failed to open the file: data/ag_news/test.txt");
     }
