@@ -28,7 +28,10 @@ add_executable(C++CudaTransformerX
         src/ActivationFunction.tpp
         include/Embedding.h
         src/Embedding.tpp
-        examples/utils/loadMNIST.cpp
+        examples/utils/loadMNIST.tpp
+        include/Tokenizer.h
+        src/Tokenizer.tpp
+        examples/utils/loadAGNews.tpp
 )
 
 # Link the main executable with CUDA
@@ -53,14 +56,16 @@ add_executable(digit_recognizer
         examples/utils/readUInt32.cpp
         examples/utils/swapEndian.h
         examples/utils/swapEndian.cpp
-        examples/utils/loadAGNeaws.cpp
-        examples/utils/loadMNIST.cpp
+        examples/utils/loadMNIST.tpp
+        examples/utils/loadAGNews.h
+        examples/utils/loadMNIST.h
 )
 
 add_executable(embedding_model
         examples/run/EmbeddingModelRunner.cpp
         examples/EmbeddingModel.h
         examples/EmbeddingModel.tpp
+        src/Tokenizer.tpp
 )
 
 # Link the test executable with CUDA
