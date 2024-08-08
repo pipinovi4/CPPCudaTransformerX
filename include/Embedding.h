@@ -8,7 +8,7 @@
 template <typename T>
 class Embedding {
 public:
-    Embedding(const int& input_dim, const int& output_dim, std::function<void(Tensor<T>&)> init_func,
+    Embedding(const int& vocab_size, const int& embedding_dims, std::function<void(Tensor<T>&)> init_func,
     typename Optimizer<T>::LearningRateSchedule& lr_schedule);
 
     Tensor<T> forward(const Tensor<T>& input_data);
@@ -20,8 +20,8 @@ public:
     void zero_grad();
     void setWeights(const Tensor<T>& new_weights);
 
-    Tensor<T> getWeights();
-    Tensor<T> getGrad();
+    Tensor<T>& getWeights();
+    Tensor<T>& getGrad();
 
 private:
     Optimizer<float>::LearningRateSchedule& lr_schedule;
@@ -32,8 +32,10 @@ private:
     Tensor<T> input;
     Tensor<T> output;
 
-    int input_dim;
-    int output_dim;
+    int vocab_size{};
+    int embedding_dims{};
+
+    Tensor<T> input_cache;
 };
 
 #include "../src/Embedding.tpp"

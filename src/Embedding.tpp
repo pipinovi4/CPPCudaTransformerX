@@ -7,19 +7,18 @@
 /**
  * @brief Constructs an Embedding layer with the specified dimensions and learning rate parameters.
  *
- * @param input_dim The size of the input dimension (vocabulary size).
- * @param output_dim The size of the output dimension (embedding vector size).
  * @param init_func Optional custom initialization function for weights.
  * @param lr_schedule The learning rate scheduler to use for updating the learning rate over epochs.
+ * @param vocab_size The size of the input dimension (vocabulary size).
+ * @param embedding_dims The size of the output dimension (embedding vector size).
  * @tparam T Data type of the input tensor.
  */
 template <typename T>
-Embedding<T>::Embedding(const int& input_dim, const int& output_dim,
+Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
     std::function<void(Tensor<T>&)> init_func, typename Optimizer<T>::LearningRateSchedule& lr_schedule)
-    : lr_schedule(lr_schedule),
-    input_dim(input_dim), output_dim(output_dim) {
-    this->weights = Tensor<T>({input_dim, output_dim});
-    this->grad = Tensor<T>({input_dim, output_dim});
+    : lr_schedule(lr_schedule), vocab_size(vocab_size), embedding_dims(embedding_dims) {
+    this->weights = Tensor<T>({vocab_size, embedding_dims});
+    this->grad = Tensor<T>({vocab_size, embedding_dims});
 
     // Use custom initialization if provided, otherwise use default Xavier initialization
     if (init_func) {
@@ -29,14 +28,13 @@ Embedding<T>::Embedding(const int& input_dim, const int& output_dim,
     }
 }
 
-
 /**
  * @brief Initializes the weights of the Embedding layer using Xavier initialization.
  */
 template <typename T>
 void Embedding<T>::initializeWeights() {
-    T fan_in = static_cast<T>(input_dim);
-    T fan_out = static_cast<T>(output_dim);
+    T fan_in = static_cast<T>(vocab_size);
+    T fan_out = static_cast<T>(embedding_dims);
     T limit = std::sqrt(6.0 / (fan_in + fan_out));
 
     std::random_device rd;
@@ -54,21 +52,21 @@ void Embedding<T>::initializeWeights() {
  */
 template <typename T>
 Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
-    if (input_data.shape().size() != 1 || input_data.shape()[0] > input_dim) {
-        throw std::invalid_argument("Input data dimensions do not match embedding input dimensions.");
-    }
+    this->input_cache = input_data; // Store input data for backward pass
 
-    int batch_size = input_data.shape()[0];
-    this->input = input_data;
-    this->output = Tensor<T>({batch_size, output_dim});
+    // Define output shape as [batch_size, sequence_length, embedding_dims]
+    std::vector<int> output_shape = {input_data.shape()[0], input_data.shape()[1], embedding_dims};
+    Tensor<T> output(output_shape);
 
-    #pragma omp parallel
-    for (int i = 0; i < batch_size; ++i) {
-        for (int j = 0; j < output_dim; ++j) {
-            output.data[i * output_dim + j] = weights.data[input_data.data[i] * output_dim + j];
+    // Iterate over batch size and sequence length
+    for (int i = 0; i < input_data.shape()[0]; ++i) {
+        for (int j = 0; j < input_data.shape()[1]; ++j) {
+            const int index = static_cast<int>(input_data.data[i * input_data.shape()[1] + j]);
+            for (int k = 0; k < embedding_dims; ++k) {
+                output.data[(i * input_data.shape()[1] + j) * embedding_dims + k] = weights.data[index * embedding_dims + k];
+            }
         }
     }
-
     return output;
 }
 
@@ -77,18 +75,19 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
  *
  * @param grad_data The gradient of the loss with respect to the output of the Embedding layer.
  */
+
 template <typename T>
 void Embedding<T>::backward(const Tensor<T>& grad_data) {
-    if (grad_data.shape().size() != 2 || grad_data.shape()[1] != output_dim) {
-        throw std::invalid_argument("Gradient data dimensions do not match embedding output dimensions.");
-    }
+    // Zero the gradient tensor before accumulating new gradients
+    zero_grad();
 
-    int batch_size = grad_data.shape()[0];
-
-    #pragma omp parallel for
-    for (int i = 0; i < batch_size; ++i) {
-        for (int j = 0; j < output_dim; ++j) {
-            this->grad.data[input.data[i] * output_dim + j] += grad_data.data[i * output_dim + j];
+    // Iterate over batch size and sequence length
+    for (int i = 0; i < grad_data.shape()[0]; ++i) {
+        for (int j = 0; j < grad_data.shape()[1]; ++j) {
+            const int index = static_cast<int>(input_cache.data[i * input_cache.shape()[1] + j]);
+            for (int k = 0; k < embedding_dims; ++k) {
+                grad.data[index * embedding_dims + k] += grad_data.data[(i * grad_data.shape()[1] + j) * grad_data.shape()[2] + k];
+            }
         }
     }
 }
@@ -101,9 +100,9 @@ void Embedding<T>::update(const int& epoch) {
     T learning_rate = lr_schedule.getLearningRate(epoch);
 
     #pragma omp parallel for  // Use OpenMP for parallel processing if supported
-    for (int i = 0; i < input_dim; ++i) {
-        for (int j = 0; j < output_dim; ++j) {
-            weights.data[i * output_dim + j] -= learning_rate * grad.data[i * output_dim + j];
+    for (int i = 0; i < vocab_size; ++i) {
+        for (int j = 0; j < embedding_dims; ++j) {
+            weights.data[i * embedding_dims + j] -= learning_rate * grad.data[i * embedding_dims + j];
         }
     }
 }
@@ -135,7 +134,7 @@ void Embedding<T>::setWeights(const Tensor<T>& new_weights) {
  * @return Tensor<T> The weights tensor.
  */
 template <typename T>
-Tensor<T> Embedding<T>::getWeights() {
+Tensor<T>& Embedding<T>::getWeights() {
     return this->weights;
 }
 
@@ -145,7 +144,7 @@ Tensor<T> Embedding<T>::getWeights() {
  * @return Tensor<T> The gradient tensor.
  */
 template <typename T>
-Tensor<T> Embedding<T>::getGrad() {
+Tensor<T>& Embedding<T>::getGrad() {
     return this->grad;
 }
 

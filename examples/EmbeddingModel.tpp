@@ -3,66 +3,69 @@
 
 #include "EmbeddingModel.h"
 
+/**
+ * @brief Constructs an EmbeddingModel with specified parameters.
+ *
+ * @param vocab_size Size of the vocabulary.
+ * @param embedding_dim Dimension of the embedding layer.
+ * @param lr_schedule Learning rate scheduler for the model.
+ * @param init_func Initialization function for the embeddings.
+ */
 template <typename T>
-EmbeddingModel<T>::EmbeddingModel(const int& hidden_dim, const int& output_dim, const size_t& vocab_size,
-    const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
-    std::function<void(Tensor<T>&)> init_func, const int& num_layers)
-    : hidden_dim(hidden_dim), output_dim(output_dim),
-      vocab_size(vocab_size), embedding_dim(embedding_dim),
-      embedding(vocab_size, embedding_dim, init_func, lr_schedule) {
-    // Initialize the input layer
-    layers.push_back(DenseLayer<T>(embedding_dim, hidden_dim, new typename ActivationFunction<T>::ReLU() , 0.0));
+EmbeddingModel<T>::EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
+    std::function<void(Tensor<T>&)> init_func)
+    : vocab_size(vocab_size), embedding_dim(embedding_dim),
+      embedding(vocab_size, embedding_dim, init_func, lr_schedule) {}
 
-    // Initialize the hidden layers
-    for (int i = 0; i < num_layers - 2; ++i) {
-        layers.push_back(DenseLayer<T>(hidden_dim, hidden_dim, new typename ActivationFunction<T>::ReLU(), 0.0));
-    }
-
-    // Initialize the output layer
-    layers.push_back(DenseLayer<T>(hidden_dim, output_dim, new typename ActivationFunction<T>::Softmax(), 0.0));
-}
-
+/**
+ * @brief Performs the forward pass of the EmbeddingModel.
+ *
+ * @param input_data The input data tensor to be passed through the model.
+ * @return Tensor<T> The output tensor after passing through the model layers.
+ */
 template <typename T>
 Tensor<T> EmbeddingModel<T>::forward(Tensor<T>& input_data) {
-    Tensor<T> embedding_output = embedding.forward(input_data);
-    Tensor<T> output = layers[0].forward(embedding_output);
-
-    for (int i = 1; i < layers.size(); ++i) {
-        output = layers[i].forward(output);
-    }
-
+    Tensor<T> output = embedding.forward(input_data);
+    ActivationFunction<float>::Sigmoid().forward(output);
     return output;
 }
 
+/**
+ * @brief Performs the backward pass of the EmbeddingModel, computing gradients.
+ *
+ * @param grad_data The gradient tensor from the loss function to be backpropagated.
+ */
 template <typename T>
 void EmbeddingModel<T>::backward(Tensor<T>& grad_data) {
-    layers[layers.size() - 1].backward(grad_data);
-
-    for (int i = layers.size() - 2; i >= 0; --i) {
-       layers[i].backward(grad_data);
-    }
-
     embedding.backward(grad_data);
+    ActivationFunction<float>::Sigmoid().backward(grad_data);
 }
 
+/**
+ * @brief Retrieves the model parameters for optimization.
+ *
+ * @return std::vector<std::reference_wrapper<Tensor<T>>> A vector of references to the model's parameters.
+ */
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::parameters() {
     std::vector<std::reference_wrapper<Tensor<T>>> param_refs;
-    for (auto& layer : layers) {
-        param_refs.push_back(std::ref(layer.weights));
-        param_refs.push_back(std::ref(layer.bias));
-    }
+    auto& weights = embedding.getWeights();
+    param_refs.push_back(std::ref(weights));
     return param_refs;
 }
 
+/**
+ * @brief Retrieves the model gradients for optimization.
+ *
+ * @return std::vector<std::reference_wrapper<Tensor<T>>> A vector of references to the model's gradients.
+ */
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::gradients() {
     std::vector<std::reference_wrapper<Tensor<T>>> grad_refs;
-    for (auto& layer : layers) {
-        grad_refs.push_back(std::ref(layer.weightGradients));
-        grad_refs.push_back(std::ref(layer.biasGradients));
-    }
+    auto& grads = embedding.getGrad();
+    grad_refs.push_back(std::ref(grads));
     return grad_refs;
 }
+
 
 #endif // EMBEDDINGMODEL_TPP

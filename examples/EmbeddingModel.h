@@ -22,9 +22,8 @@
 template <typename T>
 class EmbeddingModel {
 public:
-    EmbeddingModel(const int& hidden_dim, const int& output_dim, const size_t& vocab_size,
-                   const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
-                   std::function<void(Tensor<T>&)> init_func, const int& num_layers);
+    EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
+                   std::function<void(Tensor<T>&)> init_func);
 
     Tensor<T> forward(Tensor<T>& input_data);
     void backward(Tensor<T>& grad_data);
@@ -33,14 +32,10 @@ public:
     std::vector<std::reference_wrapper<Tensor<T>>> gradients();
 
 private:
-    int hidden_dim;
-    int output_dim;
-
     size_t vocab_size;
     int embedding_dim;
 
     Embedding<T> embedding;
-    std::vector<DenseLayer<T>> layers;
 };
 
 #include "EmbeddingModel.tpp"
