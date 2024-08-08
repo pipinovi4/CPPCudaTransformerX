@@ -12,21 +12,28 @@ constexpr T clamp(const T& value, const T& low, const T& high) {
 
 template<typename T>
 T LossFunction<T>::binaryCrossEntropyLoss::forward(const Tensor<T>& predictions, const Tensor<T>& targets) {
-    T loss = 0;
-    for (size_t i = 0; i < predictions.size(); ++i) {
-        loss += -targets.data[i] * std::log(clamp(predictions.data[i], static_cast<T>(1e-15), static_cast<T>(1.0 - 1e-15)))
-            - (1 - targets.data[i]) * std::log(clamp(1 - predictions.data[i], static_cast<T>(1e-15), static_cast<T>(1.0 - 1e-15)));
+    T loss = 0.0;
+    size_t output_size = predictions.size();
+
+    for (size_t i = 0; i < output_size; ++i) {
+        T y_pred = std::max(static_cast<T>(1e-7), std::min(static_cast<T>(1.0 - 1e-7), predictions.data[i]));
+        loss += -targets.data[i] * std::log(y_pred) - (1.0 - targets.data[i]) * std::log(1.0 - y_pred);
     }
-    return loss / predictions.shape()[0];
+
+    return loss / static_cast<T>(output_size);
 }
 
 template<typename T>
 Tensor<T> LossFunction<T>::binaryCrossEntropyLoss::backward(const Tensor<T>& predictions, const Tensor<T>& targets) {
-    Tensor<T> grad_output(predictions.shape());
-    for (size_t i = 0; i < predictions.size(); ++i) {
-        grad_output.data[i] = (predictions.data[i] - targets.data[i]) / (predictions.data[i] * (1 - predictions.data[i]));
-    }
-    return grad_output;
+    std::vector<T> grad(predictions.size());
+
+    std::transform(predictions.data.begin(), predictions.data.end(), targets.data.begin(), grad.begin(),
+        [](T y_pred, T y_true) {
+            y_pred = std::max(static_cast<T>(1e-7), std::min(static_cast<T>(1.0 - 1e-7), y_pred));
+            return (y_pred - y_true) / (y_pred * (1.0 - y_pred) + 1e-7);
+        });
+
+    return Tensor<T>(grad); // Assuming you have a constructor for Tensor that takes a std::vector<T>
 }
 
 template<typename T>
