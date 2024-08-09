@@ -62,6 +62,8 @@ public:
 
     Tensor<T> apply(std::function<T(T)> func) const;
 
+    void add(const Tensor<T>& other);
+
     Tensor<T> sum(int axis) const;
 
     Tensor<T> slice(int axis, int start, int end, int step) const;

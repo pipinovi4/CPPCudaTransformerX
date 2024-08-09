@@ -237,6 +237,23 @@ Tensor<T> Tensor<T>::apply(std::function<T(T)> func) const {
     return result;
 }
 
+template <typename T>
+void Tensor<T>::add(const Tensor<T>& other) {
+    // Check if need to broadcast
+    if (dimensions == other.dimensions) {
+        for (size_t i = 0; i < data.size(); ++i) {
+            data[i] += other.data[i];
+        }
+    } else {
+        // Handle broadcasting manually
+        for (int i = 0; i < dimensions[0]; ++i) {
+            for (int j = 0; j < dimensions[1]; ++j) {
+                data[i * dimensions[1] + j] += other.data[j];
+            }
+        }
+    }
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::sum(const int axis) const {
     if (axis < 0 || axis >= dimensions.size()) {
