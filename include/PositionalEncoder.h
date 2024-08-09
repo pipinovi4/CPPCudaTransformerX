@@ -4,17 +4,22 @@
 #pragma once
 #include "../include/Tensor.h"
 
+template <typename T>
 class PositionalEncoder {
 public:
-    PositionalEncoder(const int& max_seq_len, const int& hidden_dim);
+    // Constructor to initialize the positional encoder with max sequence length and hidden dimension
+    PositionalEncoder(int max_seq_len, int hidden_dim);
 
-    Tensor<float> forward(const Tensor<float>& input_data);
-    void backward(const Tensor<float>& grad_data);
+    // Forward pass to apply positional encoding to the input data
+    void forward(Tensor<T>& input_data);
 
-    Tensor<float> positional_encodings;
+private:
+    int maxSeqLen; // Maximum sequence length
+    int hiddenDim; // Dimensionality of the hidden layer
 
-    int maxSeqLen;
-    int hiddenDim;
+    Tensor<T> positional_encodings; // Positional encodings tensor
+
+    void initialize_positional_encodings(); // Method to initialize encodings
 };
 
 #include "../src/PositionalEncoder.tpp"
