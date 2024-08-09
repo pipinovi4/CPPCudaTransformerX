@@ -23,7 +23,7 @@ std::pair<Tensor<float>, Tensor<float>> generate_synthetic_data(int num_samples,
     Tensor<float> X = Tensor<float>::uniform({num_samples, sequence_length}, 0, static_cast<float>(vocab_size));
 
     // Generate random binary labels (0 or 1)
-    Tensor<float> y = Tensor<float>::uniform({5120*4}, 0, 2).apply([](const float val) { return val > 0.5 ? 1.0 : 0.0; });
+    Tensor<float> y = Tensor<float>::uniform({5120}, 0, 2).apply([](const float val) { return val > 0.5 ? 1.0 : 0.0; });
 
     return std::make_pair(X, y);
 }
@@ -31,7 +31,7 @@ std::pair<Tensor<float>, Tensor<float>> generate_synthetic_data(int num_samples,
 int main() {
     try {
         // Constants for the model
-        constexpr int NUM_SAMPLES = 128;
+        constexpr int NUM_SAMPLES = 32;
         constexpr int VOCAB_SIZE = 10000;
         constexpr int SEQ_LENGTH = 10;
         constexpr int EMBEDDING_DIM = 16;
@@ -69,7 +69,7 @@ int main() {
             // Compute loss
             float loss = loss_function.forward(output.reshape(static_cast<int>(output.data.size())), train_labels);
 
-            std::cout << "Epoch " << epoch << " Loss: " << loss << std::endl;
+            std::cout << "Epoch " << epoch + 1 << " Loss: " << loss << std::endl;
 
             // Perform backward pass
             Tensor<float> grad = loss_function.backward(output, train_labels);

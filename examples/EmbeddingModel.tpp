@@ -26,7 +26,7 @@ EmbeddingModel<T>::EmbeddingModel(const size_t& vocab_size, const int& embedding
 template <typename T>
 Tensor<T> EmbeddingModel<T>::forward(Tensor<T>& input_data) {
     Tensor<T> output = embedding.forward(input_data);
-    ActivationFunction<float>::Sigmoid().forward(output);
+    typename ActivationFunction<T>::Sigmoid().forward(output);  // Added typename
     return output;
 }
 
@@ -38,7 +38,7 @@ Tensor<T> EmbeddingModel<T>::forward(Tensor<T>& input_data) {
 template <typename T>
 void EmbeddingModel<T>::backward(Tensor<T>& grad_data) {
     embedding.backward(grad_data);
-    ActivationFunction<float>::Sigmoid().backward(grad_data);
+    typename ActivationFunction<T>::Sigmoid().backward(grad_data);  // Added typename
 }
 
 /**
@@ -66,6 +66,5 @@ std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::gradients() {
     grad_refs.push_back(std::ref(grads));
     return grad_refs;
 }
-
 
 #endif // EMBEDDINGMODEL_TPP

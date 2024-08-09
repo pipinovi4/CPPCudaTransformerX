@@ -10,14 +10,9 @@
 #include <vector>
 
 /**
- * @brief Constructs an Embedding layer with the specified dimensions and learning rate parameters.
+ * @brief A class representing an EmbeddingModel.
  *
- * @param input_dim The size of the input dimension (vocabulary size).
- * @param output_dim The size of the output dimension (embedding vector size).
- * @param learning_rate The initial learning rate for updating the weights.
- * @param decay_rate The rate at which the learning rate decays.
- * @param decay_step The number of steps after which the learning rate decays.
- * @param init_func Optional custom initialization function for weights.
+ * @tparam T Data type for the model.
  */
 template <typename T>
 class EmbeddingModel {
