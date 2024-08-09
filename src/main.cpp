@@ -1,48 +1,74 @@
-#include <iostream>
-#include <fstream>
 #include <vector>
-#include <cstdint>
-#include <regex>
-#include <string>
+#include <iostream>
 #include "../include/Tensor.h"
-#include "../include/DenseLayer.h"
-#include "../include/LossFunction.h"
-#include "../include/Optimizer.h"
-#include "ActivationFunction.tpp"
-#include "../include/Embedding.h"
-#include "../examples/EmbeddingModel.h"
 #include "../include/MultiHeadAttention.h"
+#include "../include/Optimizer.h"
+#include "../include/LossFunction.h"
 
 int main() {
-    try {
-        // Load the datasets
-        const std::vector<std::vector<std::vector<std::string>>> dataset = EmbeddingModel<float>::loadDataset();
+    // Constants for the test
+    constexpr int HIDDEN_DIM = 8;
+    constexpr int NUM_HEADS = 2;
+    constexpr int HEAD_DIM = HIDDEN_DIM / NUM_HEADS;
+    constexpr float LEARNING_RATE = 0.001;
+    constexpr float DECAY_RATE = 0.6;
+    constexpr int NUM_EPOCHS = 20;
 
-        // Separate the train and test data
-        const std::vector<std::vector<std::string>>& train_data = dataset[0];
-        const std::vector<std::vector<std::string>>& test_data = dataset[1];
+    // Create a MultiHeadAttention object
+    MultiHeadAttention<float> mha(HIDDEN_DIM, NUM_HEADS, HEAD_DIM);
 
-        // Example usage: Print the first 5 lines of the training data
-        std::cout << "\nFirst 5 lines of the training data:\n";
-        for (size_t i = 0; i < 5 && i < train_data.size(); ++i) {
-            for (const auto& word : train_data[i]) {
-                std::cout << word << " ";
-            }
-            std::cout << std::endl;
-        }
+    // Initialize parameters
+    Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule learning_rate_scheduler(LEARNING_RATE, DECAY_RATE);
 
-        std::cout << "\n\nFirst 5 lines of the testing data:\n";
-        for (size_t i = 0; i < 5 && i < test_data.size(); ++i) {
-            for (const auto& word : test_data[i]) {
-                std::cout << word << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        // Similarly, you can access and work with test_data
-    } catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-        return 1;
+    // Initialize the optimizer and compute shape of the model parameters for initializing biases and weights
+    std::vector<std::vector<int>> params_shape;
+    for (const auto& ref : mha.parameters()) {
+        auto param_shape = ref.get().shape();
+        params_shape.push_back(param_shape);
     }
+    Optimizer<float>::Adam optimizer(params_shape, LEARNING_RATE, learning_rate_scheduler);
+
+    // Initialize the loss function (e.g., Mean Squared Error)
+    LossFunction<float>::meanSquaredError loss_function;
+
+    for (int epoch = 0; epoch < NUM_EPOCHS; ++epoch) {
+        std::cout << "Epoch " << epoch + 1 << "/" << NUM_EPOCHS << ":\n";
+
+        // Generate some random input data and target data for each epoch
+        const Tensor<float> input_data = Tensor<float>::uniform({4, HIDDEN_DIM}, 0, 1);
+        const Tensor<float> target_data = Tensor<float>::uniform({4, HIDDEN_DIM}, 0, 1);  // Dummy target data
+
+        std::cout << "Input:\n";
+        input_data.print();
+
+        // Perform the forward pass
+        const Tensor<float> output = mha.forward(input_data);
+        std::cout << "Output:\n";
+        output.print();
+
+        // Compute the loss
+        const float loss = loss_function.forward(output, target_data);
+        std::cout << "Loss: " << loss << std::endl;
+
+        // Perform the backward pass
+        Tensor<float> grad_output = loss_function.backward(output, target_data);
+        mha.backward(grad_output);
+        std::cout << "Backward pass completed.\n";
+
+        // Update the model parameters
+        optimizer.update(mha.parameters(), mha.gradients(), epoch);
+
+        std::cout << "Parameters updated.\n";
+        std::cout << "--------------------------------------\n";
+    }
+
+    // Display predictions after training loop
+    std::cout << "Predictions after training:\n";
+    const Tensor<float> test_input_data = Tensor<float>::uniform({4, HIDDEN_DIM}, 0, 1);
+    test_input_data.print();
+
+    const Tensor<float> predictions = mha.forward(test_input_data);
+    predictions.print();
+
     return 0;
 }
