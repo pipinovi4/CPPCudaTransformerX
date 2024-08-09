@@ -33,19 +33,18 @@ std::vector<std::string> Tokenizer<T>::tokenize() {
                 pos += token.length() + 2;
             }
         }
-        processed_text.erase(std::remove_if(processed_text.begin(), processed_text.end(),
-            [](const unsigned char c) { return std::ispunct(c) && c != '<' && c != '>'; }), processed_text.end());
+        processed_text.erase(
+            std::remove_if(processed_text.begin(), processed_text.end(),
+            [](const unsigned char c) { return std::ispunct(c) && c != '<' && c != '>'; }),
+            processed_text.end()
+        );
     }
 
     // Tokenization logic
-    size_t start = processed_text.find_first_not_of(delimiters), end = 0;
+    size_t start = processed_text.find_first_not_of(delimiters);
     while (start != std::string::npos) {
-        end = processed_text.find_first_of(delimiters, start);
-        std::string token = processed_text.substr(start, end - start);
-
-        // Handle special tokens
-        tokens.push_back(token);
-
+        size_t end = processed_text.find_first_of(delimiters, start);
+        tokens.emplace_back(processed_text.substr(start, end - start));
         start = processed_text.find_first_not_of(delimiters, end);
     }
 
@@ -56,12 +55,12 @@ std::vector<std::string> Tokenizer<T>::tokenize() {
 template <typename T>
 std::vector<int> Tokenizer<T>::textToIds(const std::vector<std::string>& tokens) const {
     std::vector<int> token_ids;
-    for (const auto& token : tokens) {
-        // Print the token being processed
-        std::cout << "Processing token: '" << token << "'" << std::endl;
+    token_ids.reserve(tokens.size()); // Reserve space in advance
 
-        if (vocab.find(token) != vocab.end()) {
-            token_ids.push_back(vocab.at(token));
+    for (const auto& token : tokens) {
+        auto it = vocab.find(token);
+        if (it != vocab.end()) {
+            token_ids.push_back(it->second);
         } else {
             token_ids.push_back(vocab.at("<UNK>"));
         }
@@ -77,14 +76,14 @@ std::unordered_map<std::string, int> Tokenizer<T>::buildVocabulary(const std::ve
 
     // Add special tokens first
     for (const auto& token : special_tokens) {
-        vocab[token] = index++;
+        vocab.emplace(token, index++);
     }
 
     // Add tokens from the dataset
     for (const auto& sentence : dataset) {
         for (const auto& token : sentence) {
             if (vocab.find(token) == vocab.end()) {
-                vocab[token] = index++;
+                vocab.emplace(token, index++);
             }
         }
     }
@@ -97,7 +96,7 @@ template <typename T>
 std::unordered_map<int, std::string> Tokenizer<T>::buildInverseVocabulary(const std::unordered_map<std::string, int>& vocab) {
     std::unordered_map<int, std::string> inv_vocab;
     for (const auto& pair : vocab) {
-        inv_vocab[pair.second] = pair.first;
+        inv_vocab.emplace(pair.second, pair.first);
     }
     return inv_vocab;
 }
