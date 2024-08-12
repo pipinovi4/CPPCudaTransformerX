@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <immintrin.h>
+#include <omp.h>
 #include <stdexcept>
 #include <functional>
 #include <type_traits>

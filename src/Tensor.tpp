@@ -745,6 +745,7 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     const T* A = data.data();
     const T* B = other.data.data();
 
+#pragma omp parallel for
     for (int i = 0; i < M; ++i) {
         for (int j = 0; j < N; ++j) {
             T sum = static_cast<T>(0);
@@ -1048,12 +1049,14 @@ Tensor<T>& Tensor<T>::operator+=(const Tensor<T>& other) {
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
 
+    // Adjust dimensions for broadcasting
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
         other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
+    // Verify compatibility for broadcasting
     for (size_t i = 0; i < this_dims.size(); ++i) {
         if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
             throw std::invalid_argument("Tensors are not broadcastable for addition");
@@ -1077,10 +1080,10 @@ Tensor<T>& Tensor<T>::operator+=(const Tensor<T>& other) {
         size_t temp = i;
 
         for (size_t j = this_dims.size(); j-- > 0;) {
-            int result_idx = static_cast<int>(temp) % this_dims[j];
+            int result_idx = temp % this_dims[j];
             temp /= this_dims[j];
 
-            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            this_index += result_idx * this_strides[j];
             other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
         }
 
