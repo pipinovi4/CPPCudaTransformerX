@@ -555,42 +555,44 @@ Tensor<T> Tensor<T>::zeros(const std::vector<int> &dims) {
 template<typename T>
 Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
     // Create new dimensions for the transposed tensor
-    std::vector<int> newDimensions;
+    std::vector<int> newDimensions(dimensions.size());
+    std::vector<int> inversePermutation(dimensions.size());
+
     if (permutation.empty()) {
-        newDimensions = std::vector<int>(dimensions.rbegin(), dimensions.rend());
+        std::reverse_copy(dimensions.begin(), dimensions.end(), newDimensions.begin());
+        std::iota(inversePermutation.begin(), inversePermutation.end(), 0);
+        std::reverse(inversePermutation.begin(), inversePermutation.end());
     } else {
         for (size_t i = 0; i < permutation.size(); ++i) {
-            newDimensions.push_back(dimensions[permutation[i]]);
+            newDimensions[i] = dimensions[permutation[i]];
+            inversePermutation[permutation[i]] = static_cast<int>(i);
         }
     }
 
     // Create a new tensor for the transposed result
     Tensor<T> result(newDimensions);
 
-    // Copy data from the current tensor
-    std::vector<int> indices(dimensions.size(), 0);
+    // Precompute strides for the original and transposed tensors
+    std::vector<int> originalStrides(dimensions.size(), 1);
+    std::vector<int> newStrides(newDimensions.size(), 1);
+
+    for (int i = dimensions.size() - 2; i >= 0; --i) {
+        originalStrides[i] = originalStrides[i + 1] * dimensions[i + 1];
+        newStrides[i] = newStrides[i + 1] * newDimensions[i + 1];
+    }
+
+    // Perform the transposition by iterating over the original data array
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
-        // Calculate current indices in the original tensor
-        size_t temp = i;
-        for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = temp % dimensions[j];
-            temp /= dimensions[j];
+        const size_t originalIndex = i;
+        size_t newIndex = 0;
+
+        for (size_t j = 0; j < dimensions.size(); ++j) {
+            const int index = (originalIndex / originalStrides[j]) % dimensions[j];
+            newIndex += index * newStrides[inversePermutation[j]];
         }
 
-        // Calculate transposed indices
-        std::vector<int> transposedIndices(indices.size());
-        if (permutation.empty()) {
-            for (size_t j = 0; j < indices.size(); ++j) {
-                transposedIndices[j] = indices[indices.size() - 1 - j];
-            }
-        } else {
-            for (size_t j = 0; j < permutation.size(); ++j) {
-                transposedIndices[j] = indices[permutation[j]];
-            }
-        }
-
-        // Copy data into the result tensor
-        result.set(transposedIndices, data[i]);
+        result.data[newIndex] = data[i];
     }
 
     return result;
@@ -721,6 +723,7 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
     // Ensure compatible dimensions for dot product
     if (this_dims.back() != other_dims[other_dims.size() - 2]) {
+        std::cout << this_dims.back() << " != " << other_dims[other_dims.size() - 2] << std::endl;
         throw std::invalid_argument("The last dimension of the first tensor must match the second-to-last dimension of the second tensor.");
     }
 
@@ -753,7 +756,7 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     }
 
     // Return the squeezed result tensor
-    return result.squeeze();
+    return result;
 }
 
 template<typename T>
@@ -782,7 +785,7 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 
     // Create result tensor
     Tensor<T> result(result_dims);
-    size_t result_size = result.data.size();
+    const size_t result_size = result.data.size();
 
     // Precompute strides for efficient indexing
     std::vector<int> this_strides(this_dims.size(), 1);
@@ -800,7 +803,7 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
         size_t temp = i;
 
         for (size_t j = result_dims.size(); j-- > 0;) {
-            int result_idx = temp % result_dims[j];
+            int result_idx = static_cast<int>(temp) % result_dims[j];
             temp /= result_dims[j];
 
             this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
@@ -814,11 +817,11 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const
-{
+Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
     // Check if dimensions are compatible for broadcasting
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
+
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
@@ -840,31 +843,27 @@ Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const
     // Create a new tensor to hold the result
     Tensor<T> result(result_dims);
 
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
     // Perform element-wise subtraction with broadcasting
     for (size_t i = 0; i < result.data.size(); ++i) {
-        std::vector<int> result_indices(result_dims.size());
-        size_t temp = i;
-        for (size_t j = result_indices.size(); j-- > 0;) {
-            result_indices[j] = temp % result_dims[j];
-            temp /= result_dims[j];
-        }
-
-        std::vector<int> this_indices(this_dims.size());
-        std::vector<int> other_indices(other_dims.size());
-        for (size_t j = 0; j < result_indices.size(); ++j) {
-            this_indices[j] = (this_dims[j] == 1) ? 0 : result_indices[j];
-            other_indices[j] = (other_dims[j] == 1) ? 0 : result_indices[j];
-        }
-
         int this_index = 0;
-        int this_stride = 1;
         int other_index = 0;
-        int other_stride = 1;
-        for (int j = this_dims.size() - 1; j >= 0; --j) {
-            this_index += this_indices[j] * this_stride;
-            this_stride *= this_dims[j];
-            other_index += other_indices[j] * other_stride;
-            other_stride *= other_dims[j];
+        size_t temp = i;
+
+        for (size_t j = result_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % result_dims[j];
+            temp /= result_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
         }
 
         result.data[i] = this->data[this_index] - other.data[other_index];
@@ -875,48 +874,115 @@ Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const
 
 template<typename T>
 Tensor<T> Tensor<T>::operator*(const Tensor<T>& other) const {
-    // Assuming tensors are of the same shape for simplicity
-    Tensor<T> result(dimensions, std::vector<T>(data.size(), T()));
+    // Determine broadcast-compatible dimensions
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
 
-    if (dimensions != other.shape()) {
-        throw std::invalid_argument("Dimensions mismatch");
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
-    // Perform element-wise multiplication
-    const size_t size = Tensor<T>::getTotalSize(dimensions);
-    for (size_t i = 0; i < size; ++i) {
-        std::vector<int> indices(dimensions.size());
-        size_t temp = i;
-        for (size_t d = dimensions.size(); d > 0; --d) {
-            indices[d - 1] = temp % dimensions[d - 1];
-            temp /= dimensions[d - 1];
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for multiplication");
         }
-        result(indices) = data[i] * other.get(indices);
     }
+
+    // Calculate resulting dimensions
+    std::vector<int> result_dims(this_dims.size());
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        result_dims[i] = std::max(this_dims[i], other_dims[i]);
+    }
+
+    // Create a new tensor to hold the result
+    Tensor<T> result(result_dims);
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform element-wise multiplication with broadcasting
+    #pragma omp parallel for
+    for (size_t i = 0; i < result.data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = result_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % result_dims[j];
+            temp /= result_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        result.data[i] = this->data[this_index] * other.data[other_index];
+    }
+
     return result;
 }
 
-
 template<typename T>
 Tensor<T> Tensor<T>::operator/(const Tensor<T>& other) const {
-    // Assuming tensors are of the same shape for simplicity
-    Tensor<T> result(dimensions, std::vector<T>(data.size(), T()));
+    // Determine broadcast-compatible dimensions
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
 
-    if (dimensions != other.shape()) {
-        throw std::invalid_argument("Dimensions mismatch");
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
-    // Perform element-wise multiplication
-    const size_t size = Tensor<T>::getTotalSize(dimensions);
-    for (size_t i = 0; i < size; ++i) {
-        std::vector<int> indices(dimensions.size());
-        size_t temp = i;
-        for (size_t d = dimensions.size(); d > 0; --d) {
-            indices[d - 1] = temp % dimensions[d - 1];
-            temp /= dimensions[d - 1];
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for division");
         }
-        result(indices) = data[i] / other.get(indices);
     }
+
+    // Calculate resulting dimensions
+    std::vector<int> result_dims(this_dims.size());
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        result_dims[i] = std::max(this_dims[i], other_dims[i]);
+    }
+
+    // Create a new tensor to hold the result
+    Tensor<T> result(result_dims);
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform element-wise division with broadcasting
+    #pragma omp parallel for
+    for (size_t i = 0; i < result.data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = result_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % result_dims[j];
+            temp /= result_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        result.data[i] = this->data[this_index] / other.data[other_index];
+    }
+
     return result;
 }
 
@@ -926,6 +992,7 @@ Tensor<T> Tensor<T>::operator+(T scalar) const {
     Tensor<T> result(dimensions);
 
     // Perform element-wise addition with scalar
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
         result.data[i] = data[i] + scalar;
     }
@@ -939,6 +1006,7 @@ Tensor<T> Tensor<T>::operator-(T scalar) const {
     Tensor<T> result(dimensions);
 
     // Perform element-wise subtraction with scalar
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
         result.data[i] = data[i] - scalar;
     }
@@ -952,6 +1020,7 @@ Tensor<T> Tensor<T>::operator*(T scalar) const {
     Tensor<T> result(dimensions);
 
     // Perform element-wise multiplication with scalar
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
         result.data[i] = data[i] * scalar;
     }
@@ -965,6 +1034,7 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
     Tensor<T> result(dimensions);
 
     // Perform element-wise division with scalar
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
         result.data[i] = data[i] / scalar;
     }
@@ -972,51 +1042,231 @@ Tensor<T> Tensor<T>::operator/(T scalar) const {
     return result;
 }
 
-template <typename T>
-Tensor<T>& Tensor<T>::operator-=(const Tensor<T>& other) {
-    *this = *this - other;
-    return *this;
-}
-
-template <typename T>
+template<typename T>
 Tensor<T>& Tensor<T>::operator+=(const Tensor<T>& other) {
-    *this = *this + other;
+    // Ensure dimensions are broadcast-compatible
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for addition");
+        }
+    }
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform in-place element-wise addition with broadcasting using parallel processing
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = this_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % this_dims[j];
+            temp /= this_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        this->data[this_index] += other.data[other_index];
+    }
+
     return *this;
 }
 
-template <typename T>
-Tensor<T>& Tensor<T>::operator/=(const Tensor<T>& other) {
-    *this = *this / other;
+template<typename T>
+Tensor<T>& Tensor<T>::operator-=(const Tensor<T>& other) {
+    // Ensure dimensions are broadcast-compatible
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for subtraction");
+        }
+    }
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform in-place element-wise subtraction with broadcasting
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = this_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % this_dims[j];
+            temp /= this_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        this->data[this_index] -= other.data[other_index];
+    }
+
     return *this;
 }
 
 template <typename T>
 Tensor<T>& Tensor<T>::operator*=(const Tensor<T>& other) {
-    *this = *this * other;
+    // Ensure dimensions are broadcast-compatible
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for multiplication");
+        }
+    }
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform in-place element-wise multiplication with broadcasting
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = this_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % this_dims[j];
+            temp /= this_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        this->data[this_index] *= other.data[other_index];
+    }
+
     return *this;
 }
 
 template <typename T>
-Tensor<T>& Tensor<T>::operator-=(const T& scalar) {
-    *this = *this - scalar;
+Tensor<T>& Tensor<T>::operator/=(const Tensor<T>& other) {
+    // Ensure dimensions are broadcast-compatible
+    auto this_dims = this->dimensions;
+    auto other_dims = other.dimensions;
+
+    if (this_dims.size() < other_dims.size()) {
+        this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
+    } else if (other_dims.size() < this_dims.size()) {
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
+    }
+
+    for (size_t i = 0; i < this_dims.size(); ++i) {
+        if (this_dims[i] != other_dims[i] && this_dims[i] != 1 && other_dims[i] != 1) {
+            throw std::invalid_argument("Tensors are not broadcastable for division");
+        }
+    }
+
+    // Precompute strides for efficient indexing
+    std::vector<int> this_strides(this_dims.size(), 1);
+    std::vector<int> other_strides(other_dims.size(), 1);
+
+    for (int i = this_dims.size() - 2; i >= 0; --i) {
+        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
+        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
+    }
+
+    // Perform in-place element-wise division with broadcasting
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        int this_index = 0;
+        int other_index = 0;
+        size_t temp = i;
+
+        for (size_t j = this_dims.size(); j-- > 0;) {
+            int result_idx = static_cast<int>(temp) % this_dims[j];
+            temp /= this_dims[j];
+
+            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
+            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+        }
+
+        this->data[this_index] /= other.data[other_index];
+    }
+
     return *this;
 }
 
 template <typename T>
 Tensor<T>& Tensor<T>::operator+=(const T& scalar) {
-    *this = *this + scalar;
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        this->data[i] += scalar;
+    }
+    return *this;
+}
+
+template <typename T>
+Tensor<T>& Tensor<T>::operator-=(const T& scalar) {
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        this->data[i] -= scalar;
+    }
     return *this;
 }
 
 template <typename T>
 Tensor<T>& Tensor<T>::operator*=(const T& scalar) {
-    *this = *this * scalar;
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        this->data[i] *= scalar;
+    }
     return *this;
 }
 
 template <typename T>
 Tensor<T>& Tensor<T>::operator/=(const T& scalar) {
-    *this = *this / scalar;
+    #pragma omp parallel for
+    for (size_t i = 0; i < this->data.size(); ++i) {
+        this->data[i] /= scalar;
+    }
     return *this;
 }
 

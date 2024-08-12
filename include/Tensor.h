@@ -98,7 +98,7 @@ public:
 
     Tensor<T> triu(const int& axis = 0);
 
-    Tensor<T> dot(const Tensor<T>& other) const ;
+    Tensor<T> dot(const Tensor<T>& other) const;
 
     Tensor<T> operator+(const Tensor<T>& other) const;
 
@@ -124,9 +124,9 @@ public:
 
     Tensor<T>& operator/=(const Tensor<T>& other);
 
-    Tensor<T>& operator-=(const T& scalar);
-
     Tensor<T>& operator+=(const T& scalar);
+
+    Tensor<T>& operator-=(const T& scalar);
 
     Tensor<T>& operator*=(const T& scalar);
 
