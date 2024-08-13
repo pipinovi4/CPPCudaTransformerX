@@ -17,6 +17,7 @@ public:
     class LeakyReLU;
     class ELU;
     class Tanh;
+    class Linear;
 };
 
 template class ActivationFunction<float>;

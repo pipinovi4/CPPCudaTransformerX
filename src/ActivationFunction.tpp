@@ -169,4 +169,19 @@ public:
     }
 };
 
+template <typename T>
+class ActivationFunction<T>::Linear final : public ActivationFunction<T> {
+public:
+    // The forward pass just returns the input unchanged
+    Tensor<T> forward(const Tensor<T>& input) override {
+        return input;
+    }
+
+    // The backward pass returns the gradient unchanged
+    Tensor<T> backward(const Tensor<T>& input, const Tensor<T>& grad_output) override {
+        return grad_output;
+    }
+};
+
+
 #endif // ACTIVATIONFUNCTION_TPP
