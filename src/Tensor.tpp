@@ -718,45 +718,53 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
-        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
-    }
-
-    // Ensure compatible dimensions for dot product
-    if (this_dims.back() != other_dims[other_dims.size() - 2]) {
-        std::cout << this_dims.back() << " != " << other_dims[other_dims.size() - 2] << std::endl;
-        throw std::invalid_argument("The last dimension of the first tensor must match the second-to-last dimension of the second tensor.");
+        other_dims.insert(other_dims.begin(), this_dims.size() - this_dims.size(), 1);
     }
 
     // Compute result dimensions
-    std::vector<int> resultDimensions(this_dims.begin(), this_dims.end() - 1);
-    resultDimensions.insert(resultDimensions.end(), other_dims.begin(), other_dims.end() - 2);
-    resultDimensions.push_back(other_dims.back());
+    std::vector<int> resultDimensions;
+    for (int i = 0; i < other_dims.size() - 2; ++i) {
+        resultDimensions.emplace_back(other_dims[i]);
+    }
+    resultDimensions.emplace_back(other_dims[other_dims.size() - 2]);
+    for (int i = 0; i < this_dims.size() - 2; ++i) {
+        resultDimensions.emplace_back(this_dims[i]);
+    }
+    resultDimensions.emplace_back(this_dims.back());
 
     // Initialize result tensor
     Tensor<T> result(resultDimensions);
     T* result_data = result.data.data();
 
-    // Perform the dot product
-    const int M = this_dims[0]; // Batch size or outer dimension
-    const int N = other_dims.back(); // The final output dimension
-    const int K = this_dims.back(); // The shared dimension for the dot product
+    // Calculate outer dimensions for easier indexing
+    int batch_size = 1;
+    for (size_t i = 0; i < this_dims.size() - 2; ++i) {
+        batch_size *= this_dims[i];
+    }
+    for (size_t i = 0; i < other_dims.size() - 2; ++i) {
+        batch_size *= other_dims[i];
+    }
+    const int M = this_dims.back(); // Outer dimension for the first tensor
+    const int N = other_dims[other_dims.size() - 2]; // Outer dimension for the second tensor
 
     // Access data pointers for faster access
     const T* A = data.data();
     const T* B = other.data.data();
 
-#pragma omp parallel for
-    for (int i = 0; i < M; ++i) {
-        for (int j = 0; j < N; ++j) {
-            T sum = static_cast<T>(0);
-            for (int k = 0; k < K; ++k) {
-                sum += A[i * K + k] * B[k * N + j];
+    // Perform the dot product using generalized indexing
+    #pragma omp parallel for
+    for (int b = 0; b < batch_size; ++b) {
+        for (int i = 0; i < M; ++i) {
+            for (int j = 0; j < N; ++j) {
+                T sum = static_cast<T>(0);
+                int a_idx = b * M + i;
+                int b_idx = b * N + j;
+                sum += A[a_idx] * B[b_idx];
+                result_data[b * M * N + i * N + j] = sum;
             }
-            result_data[i * N + j] = sum;
         }
     }
 
-    // Return the squeezed result tensor
     return result;
 }
 
