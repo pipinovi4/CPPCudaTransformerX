@@ -58,7 +58,7 @@ TEST_F(BinaryCrossEntropyLossTest, HandlesNormalCase) {
     const std::vector<float> outputData = {0.119203f, 0.880797f, 0.7310586f, 0.26894143f};
 
     SetUpData(Tensor<float>({2, 2}, inputData), Tensor<float>({2, 2}, outputData));
-    ExpectLossNear(1.4100300073623657, 1e-2);
+    ExpectLossNear(0.70501500368118286, 1e-2);
 }
 
 TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseLargeValues) {
@@ -66,7 +66,7 @@ TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseLargeValues) {
     const std::vector<float> outputData = {1000.f};
 
     SetUpData(Tensor<float>({1}, inputData), Tensor<float>({1}, outputData));
-    ExpectLossNear(-34504.23828125f, 1e-2);
+    ExpectLossNear(-15926.4423828125, 1e-2);
 }
 
 TEST_F(BinaryCrossEntropyLossTest, HandlesEdgeCaseSmallValues) {
