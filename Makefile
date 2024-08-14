@@ -2,9 +2,11 @@
 BUILD_DIR = build
 
 # Specify the name of the executable
+MAIN_EXECUTABLE = C++CudaTransformerX
 TEST_EXECUTABLE = global_tests
 DIGIT_RECOGNIZER_EXECUTABLE = digit_recognizer
 EMBEDDING_MODEL_EXECUTABLE = embedding_model
+MULTI_HEAD_ATTENTION_MODEL_EXECUTABLE = multi_head_attention_model
 
 # The 'all' target will run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets
 all: venv build test digit_recognizer clean
@@ -24,6 +26,14 @@ build:
 	conan install . --output-folder=build --build=missing
 	cd ${BUILD_DIR} && cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release && cmake --build .
 
+# The 'clean' target to remove build artifacts
+clean:
+	rm -rf $(BUILD_DIR)
+
+# The 'clean_venv' target to remove the Python virtual environment
+clean_venv:
+	rm -rf .venv
+
 # The 'test' target
 test:
 	cd ${BUILD_DIR} && cmake --build . && ./$(TEST_EXECUTABLE)
@@ -32,12 +42,16 @@ test:
 digit_recognizer:
 	cd ${BUILD_DIR} && cmake --build . && ./$(DIGIT_RECOGNIZER_EXECUTABLE)
 
+# The 'embedding_model' target to run the EmbeddingModel executable
 embedding_model:
 	cd ${BUILD_DIR} && cmake --build . && ./$(EMBEDDING_MODEL_EXECUTABLE)
 
-# The 'clean' target to remove build artifacts
-clean:
-	rm -rf $(BUILD_DIR)
+# The 'multi_head_attention_model' target to run the MultiHeadAttentionModel executable
+multi_head_attention_model:
+	cd ${BUILD_DIR} && cmake --build . && ./$(MULTI_HEAD_ATTENTION_MODEL_EXECUTABLE)
 
+# Profile targets
+profile_main:
+	make build && cd ${BUILD_DIR} && ulimit -s 16384 && valgrind --tool=callgrind ./$(MAIN_EXECUTABLE)
 # Phony targets
-.PHONY: all venv build test digit_recognizer clean
+.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model
