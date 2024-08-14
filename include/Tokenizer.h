@@ -1,40 +1,51 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-#pragma once
-#include "../include/Tokenizer.h"
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <algorithm>
-#include <iostream>
-#include <string>
 #include <vector>
 
 template <typename T>
 class Tokenizer {
 public:
-    explicit Tokenizer(std::string  text, std::string  delimiters = " \t\n", bool to_lower = true, bool strip_punctuation = true);
+    // Constructor: Initializes the tokenizer with various options
+    explicit Tokenizer(int max_len = 0, std::string delimiters = " \t\n", bool pad = true,
+        bool truncate = true, bool to_lower = true, bool strip_punctuation = true);
 
-    std::vector<std::string> tokenize();
+    // Tokenizes the input text into a vector of tokens
+    std::vector<std::string> tokenize(const std::string& text);
+
+    // Converts a vector of tokens into a vector of token IDs using the vocabulary
     std::vector<int> textToIds(const std::vector<std::string>& tokens) const;
 
+    // Builds a vocabulary from a dataset of tokenized sentences
     static std::unordered_map<std::string, int> buildVocabulary(const std::vector<std::vector<std::string>>& dataset);
+
+    // Builds an inverse vocabulary (ID to token mapping) from a given vocabulary
     static std::unordered_map<int, std::string> buildInverseVocabulary(const std::unordered_map<std::string, int>& vocab);
 
-    void setVocabulary(const std::unordered_map<std::string, int>& vocab) {
-        this->vocab = vocab;
-    }
+    // Sets the vocabulary for the tokenizer
+    void setVocabulary(const std::unordered_map<std::string, int>& vocab);
 
-    static std::unordered_set<std::string> special_tokens;
+    // Saves the vocabulary to a file
+    void saveVocabulary(const std::string& filename) const;
+
+    // Loads the vocabulary from a file
+    void loadVocabulary(const std::string& filename);
 
 private:
-    std::string text;
-    std::string delimiters;
-    bool to_lower;
-    bool strip_punctuation;
+    // Pads or truncates the token sequence to the specified maximum length
+    static void applyPadding(std::vector<std::string>& tokens, int max_len);
 
-    std::unordered_map<std::string, int> vocab;
-    std::unordered_map<int, std::string> inv_vocab;
+    int max_len;  // Maximum length for tokenized sequences
+    std::string delimiters;  // Characters used to delimit tokens in the text
+    bool pad;  // Whether to pad sequences to max_len
+    bool truncate;  // Whether to truncate sequences to max_len
+    bool to_lower;  // Whether to convert text to lowercase
+    bool strip_punctuation;  // Whether to remove punctuation from the text
+    std::unordered_map<std::string, int> vocab;  // Vocabulary mapping tokens to IDs
+    static std::unordered_set<std::string> special_tokens;  // Set of special tokens like <PAD>, <UNK>
 };
 
 #include "../src/Tokenizer.tpp"
