@@ -11,23 +11,55 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="C++CudaTransformerX" targetName="test_tensor" />
+      <config projectName="C++CudaTransformerX" targetName="embedding_model" />
+      <config projectName="C++CudaTransformerX" targetName="multi_head_attention_model" />
       <config projectName="C++CudaTransformerX" targetName="C++CudaTransformerX" />
+      <config projectName="C++CudaTransformerX" targetName="digit_recognizer" />
+      <config projectName="C++CudaTransformerX" targetName="global_tests" />
     </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="conan-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build" />
+      <configuration PROFILE_NAME="conan-release - conan-release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Minor update Linear activation function for brevity and memory control.&#10;&#10;Was deleted return statement and just created methods without code only comments.">
+      <change afterPath="$PROJECT_DIR$/examples/run/MultiHeadAttentionModelRunner.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/MixedPrecisionFloat16.tpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_multi_head_attention.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_tokenizer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_7_30_24_5_06_PM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_7_30_24_5_06_PM__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/EmbeddingModel.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/examples/EmbeddingModel.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/MultiHeadAttentionModel.h" beforeDir="false" afterPath="$PROJECT_DIR$/examples/MultiHeadAttentionModel.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/MultiHeadAttentionModel.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/examples/MultiHeadAttentionModel.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/run/DigitRecognizerRunner.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/examples/run/DigitRecognizerRunner.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/DenseLayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DenseLayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Embedding.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Embedding.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MixedPrecisionFloat16.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MixedPrecisionFloat16.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/MultiHeadAttention.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/MultiHeadAttention.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Tokenizer.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Tokenizer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Tensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tensor.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ActivationFunction.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActivationFunction.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Embedding.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Embedding.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MixedPrecisionFloat16.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MultiHeadAttention.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/MultiHeadAttention.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tensor.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tensor.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Tokenizer.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tokenizer.tpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_loss_function.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_loss_function.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_tensor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_tensor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data/mnist/t10k-images-idx3-ubyte.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data/mnist/t10k-labels-idx1-ubyte.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data/mnist/train-images-idx3-ubyte.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/data/mnist/train-labels-idx1-ubyte.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,20 +92,50 @@
     &quot;assignee&quot;: &quot;pipinovi4&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/pipinovi4/CPPCudaTransformerX",
-    "accountId": "1b9524dd-7cfa-4648-87af-37595fe29dfb"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/pipinovi4/CPPCudaTransformerX&quot;,
+    &quot;accountId&quot;: &quot;1b9524dd-7cfa-4648-87af-37595fe29dfb&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/examples/EmbeddingModel.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/examples/EmbeddingModel.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/examples/run/DigitRecognizerRunner.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/examples/run/DigitRecognizerRunner.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/examples/utils/loadAGNews.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/ActivationFunction.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/DenseLayer.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/Embedding.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/Embedding.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/LossFunction.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/MixedPrecisionFloat16.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/MultiHeadAttention.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/Optimizer.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/include/PositionalEncoder.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Tensor.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/ActivationFunction.tpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/ActivationFunction.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DenseLayer.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Embedding.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/LossFunction.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/MultiHeadAttention.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Optimizer.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Tensor.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/Tokenizer.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file:///usr/include/c++/9/bits/stl_vector.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file:///usr/include/c++/9/iosfwd" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file:///usr/include/c++/9/iostream" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="InvalidFacetManager">
     <ignored-facets>
       <facet id="C++CudaTransformerX/invalid/Python facet" />
     </ignored-facets>
+  </component>
+  <component name="JsbtTreeLayoutManager">
+    <layout place="tools.popupGrunt">
+      <scroll-view-position x="0" y="0" />
+    </layout>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -91,45 +153,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ File.main.cpp - WSL.executor": "Run",
-    "C/C++ File.main.cpp.executor": "Run",
-    "C/C++ File.src\\main.cpp.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/pipin/C++CudaTransformerX",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "CMakeSettings",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ File.main.cpp - WSL.executor&quot;: &quot;Run&quot;,
+    &quot;C/C++ File.main.cpp.executor&quot;: &quot;Run&quot;,
+    &quot;C/C++ File.src\\main.cpp.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ToolWindowGitHub Copilot Chat.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/pipin/C++CudaTransformerX/utils/preparing_dataset.py&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/build" />
-      <recent name="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX\docs" />
-      <recent name="\\wsl.localhost\AI-cmd\home\pipin\C++CudaTransformerX" />
+      <recent name="$PROJECT_DIR$/utils/mnist" />
+      <recent name="$PROJECT_DIR$/examples/run" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/examples" />
+      <recent name="$PROJECT_DIR$/utils" />
     </key>
   </component>
   <component name="RunManager" selected="C/C++ File.main.cpp">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -142,7 +202,19 @@
         <option name="BeforeTestRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="test_tensor" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="test_tensor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="test_tensor" TEST_MODE="SUITE_TEST">
+    <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="global_tests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="global_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="global_tests" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="global_tests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="global_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="global_tests" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
         <option name="BeforeTestRunTask" enabled="true" />
@@ -158,6 +230,36 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="C++CudaTransformerX" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="C++CudaTransformerX" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="C++CudaTransformerX">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="digit_recognizer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="digit_recognizer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="digit_recognizer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="digit_recognizer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="digit_recognizer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="digit_recognizer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="embedding_model" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="embedding_model" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="embedding_model">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="embedding_model" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="embedding_model" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="embedding_model">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="multi_head_attention_model" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="multi_head_attention_model" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C++CudaTransformerX" RUN_TARGET_NAME="multi_head_attention_model">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="main.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="main.cpp" CONFIG_NAME="main.cpp">
       <option name="sourceFile" value="src/main.cpp" />
       <method v="2">
@@ -169,6 +271,35 @@
       <method v="2">
         <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="main.cpp" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C++CudaTransformerX" TARGET_NAME="main.cpp" CONFIG_NAME="main.cpp">
+      <option name="sourceFile" value="src/main.cpp" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="python" type="PythonConfigurationType" factoryName="Python">
+      <module name="C++CudaTransformerX" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (C++CudaTransformerX)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
     <configuration name="python3" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="C++CudaTransformerX" />
@@ -208,6 +339,29 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/.venv/bin/python3" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="python" type="PythonConfigurationType" factoryName="Python">
+      <module name="C++CudaTransformerX" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (C++CudaTransformerX)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -219,9 +373,13 @@
     <list>
       <item itemvalue="C/C++ File.main.cpp" />
       <item itemvalue="CMake Application.C++CudaTransformerX" />
-      <item itemvalue="Google Test.test_tensor" />
+      <item itemvalue="CMake Application.digit_recognizer" />
+      <item itemvalue="CMake Application.embedding_model" />
+      <item itemvalue="CMake Application.multi_head_attention_model" />
+      <item itemvalue="Google Test.global_tests" />
       <item itemvalue="Google Test.Tensor_Constructor_Test" />
       <item itemvalue="Python.python3" />
+      <item itemvalue="Python.python" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -261,177 +419,431 @@
       <workItem from="1721747116242" duration="3938000" />
       <workItem from="1721751205943" duration="130000" />
       <workItem from="1721802902560" duration="2000" />
-      <workItem from="1721803164527" duration="16923000" />
+      <workItem from="1721803164527" duration="122433000" />
+      <workItem from="1722191008418" duration="9000" />
+      <workItem from="1722191535526" duration="8000" />
+      <workItem from="1722191624902" duration="53103000" />
+      <workItem from="1722338154536" duration="884000" />
+      <workItem from="1722339084283" duration="130000" />
+      <workItem from="1722339225727" duration="84000" />
+      <workItem from="1722339410864" duration="33000" />
+      <workItem from="1722424323882" duration="554000" />
+      <workItem from="1722425783028" duration="10000" />
+      <workItem from="1722425923024" duration="13000" />
+      <workItem from="1722426320104" duration="710000" />
+      <workItem from="1722427079334" duration="52000" />
+      <workItem from="1722518472841" duration="10178000" />
+      <workItem from="1722530805774" duration="57000" />
+      <workItem from="1722530879136" duration="32000" />
+      <workItem from="1722531055593" duration="33997000" />
+      <workItem from="1722608350222" duration="24103000" />
+      <workItem from="1722678396630" duration="14288000" />
+      <workItem from="1722755798170" duration="56613000" />
+      <workItem from="1722949794310" duration="40675000" />
+      <workItem from="1723115957801" duration="25989000" />
+      <workItem from="1723189929803" duration="51197000" />
+      <workItem from="1723444636875" duration="38000" />
+      <workItem from="1723446168314" duration="21782000" />
+      <workItem from="1723472695274" duration="15000" />
+      <workItem from="1723472802409" duration="11000" />
+      <workItem from="1723472861767" duration="309000" />
+      <workItem from="1723473331331" duration="14562000" />
+      <workItem from="1723536449042" duration="22573000" />
+      <workItem from="1723565663575" duration="2691000" />
     </task>
-    <task id="LOCAL-00001" summary="Initializing project">
+    <task id="LOCAL-00046" summary="Added default initialization Tensor class">
       <option name="closed" value="true" />
-      <created>1721290067867</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
+      <created>1722266626578</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
       <option name="project" value="LOCAL" />
-      <updated>1721290067867</updated>
+      <updated>1722266626578</updated>
     </task>
-    <task id="LOCAL-00002" summary="Made in Mixed Precision with (float 16 | float 32)">
+    <task id="LOCAL-00047" summary="feat: Update LossFunction class with forward and backward methods&#10;&#10;- Added forward method for loss predictions&#10;- Added backward method for gradients of the loss&#10;- Implemented BinaryCrossEntropyLoss, CrossEntropyLoss, MeanSquaredError, and MeanAbsoluteError&#10;- Updated tests for BinaryCrossEntropyLoss to handle normal and edge cases&#10;- Added Python tests for BinaryCrossEntropyLoss&#10;&#10;All tests have been updated and verified.">
       <option name="closed" value="true" />
-      <created>1721290293659</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
+      <created>1722270067638</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
       <option name="project" value="LOCAL" />
-      <updated>1721290293659</updated>
+      <updated>1722270067638</updated>
     </task>
-    <task id="LOCAL-00003" summary="Made in Mixed Precision with (float 16 | float 32)">
+    <task id="LOCAL-00048" summary="Implemented DenseLayer class with full unit tests using Google Test. Added a single-layer MLP example in main.cpp.">
       <option name="closed" value="true" />
-      <created>1721290311091</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
+      <created>1722327665717</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
       <option name="project" value="LOCAL" />
-      <updated>1721290311091</updated>
+      <updated>1722327665717</updated>
     </task>
-    <task id="LOCAL-00004" summary="The Tensor class has been created, in the process of implementing the class">
+    <task id="LOCAL-00049" summary="Created baseline on the Python in the file BaseLineDigitRecognition.ipynb and downloaded MNIST dataset into directory &quot;data&quot;.">
       <option name="closed" value="true" />
-      <created>1721290437172</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
+      <created>1722346960946</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
       <option name="project" value="LOCAL" />
-      <updated>1721290437172</updated>
+      <updated>1722346960946</updated>
     </task>
-    <task id="LOCAL-00005" summary="Updated CMakeLists.txt">
+    <task id="LOCAL-00050" summary="Created baseline on the Python in the file BaseLineDigitRecognition.ipynb and downloaded MNIST dataset into directory &quot;data&quot;.">
       <option name="closed" value="true" />
-      <created>1721290501799</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
+      <created>1722347096775</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
       <option name="project" value="LOCAL" />
-      <updated>1721290501799</updated>
+      <updated>1722347096776</updated>
     </task>
-    <task id="LOCAL-00006" summary="Updated CMakeLists.txt">
+    <task id="LOCAL-00051" summary="Updated requirements.txt and made Minor update README.md with some corrections `Getting started`.">
       <option name="closed" value="true" />
-      <created>1721290713062</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
+      <created>1722347622485</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
       <option name="project" value="LOCAL" />
-      <updated>1721290713062</updated>
+      <updated>1722347622485</updated>
     </task>
-    <task id="LOCAL-00007" summary="Made README file">
+    <task id="LOCAL-00052" summary="Written LICENSE.md and other documentations for the project.">
       <option name="closed" value="true" />
-      <created>1721290772948</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
+      <created>1722348373752</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
       <option name="project" value="LOCAL" />
-      <updated>1721290772948</updated>
+      <updated>1722348373752</updated>
     </task>
-    <task id="LOCAL-00008" summary="The file structure in the `docs' directory is made">
+    <task id="LOCAL-00053" summary="Written LICENSE.md and other documentations for the project.">
       <option name="closed" value="true" />
-      <created>1721291421282</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
+      <created>1722348397220</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
       <option name="project" value="LOCAL" />
-      <updated>1721291421282</updated>
+      <updated>1722348397220</updated>
     </task>
-    <task id="LOCAL-00009" summary="Minor update README.md">
+    <task id="LOCAL-00054" summary="Minor update Getting started. Was changed path to the repository.">
       <option name="closed" value="true" />
-      <created>1721302367464</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
+      <created>1722426680108</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
       <option name="project" value="LOCAL" />
-      <updated>1721302367464</updated>
+      <updated>1722426680108</updated>
     </task>
-    <task id="LOCAL-00010" summary="Implemented transpose method of class Tensor.cpp">
+    <task id="LOCAL-00055" summary="Add download_mnist.py to utils directory for downloading and preprocessing MNIST dataset">
       <option name="closed" value="true" />
-      <created>1721303801454</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
+      <created>1722428054845</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
       <option name="project" value="LOCAL" />
-      <updated>1721303801454</updated>
+      <updated>1722428054845</updated>
     </task>
-    <task id="LOCAL-00011" summary="Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added.">
+    <task id="LOCAL-00056" summary="Add download_mnist.py to utils directory for downloading and preprocessing MNIST dataset">
       <option name="closed" value="true" />
-      <created>1721649672488</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
+      <created>1722430390345</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
       <option name="project" value="LOCAL" />
-      <updated>1721649672488</updated>
+      <updated>1722430390346</updated>
     </task>
-    <task id="LOCAL-00012" summary="Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml">
+    <task id="LOCAL-00057" summary="Add download_mnist.py to utils directory for downloading and preprocessing MNIST dataset">
       <option name="closed" value="true" />
-      <created>1721649813920</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
+      <created>1722431046204</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
       <option name="project" value="LOCAL" />
-      <updated>1721649813920</updated>
+      <updated>1722431046204</updated>
     </task>
-    <task id="LOCAL-00013" summary="- Updated Tensor class constructors to ensure correct parameter matching and initialization.">
+    <task id="LOCAL-00058" summary="Add utils directory for dataset management and preprocessing scripts on the Python.">
       <option name="closed" value="true" />
-      <created>1721722876019</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
+      <created>1722494411090</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
       <option name="project" value="LOCAL" />
-      <updated>1721722876019</updated>
+      <updated>1722494411090</updated>
     </task>
-    <task id="LOCAL-00014" summary="Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory.">
+    <task id="LOCAL-00059" summary="Refactored Tensor class and slice method for improved performance. Corrected tests, addressed issues, and optimized code. Several parts of the code were reworked to enhance efficiency and accuracy.">
       <option name="closed" value="true" />
-      <created>1721723862121</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
+      <created>1722870332471</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
       <option name="project" value="LOCAL" />
-      <updated>1721723862121</updated>
+      <updated>1722870332486</updated>
     </task>
-    <task id="LOCAL-00015" summary="Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other">
+    <task id="LOCAL-00060" summary="Refactored Activation class for improved performance. Corrected tests, resolved issues, and optimized code. Reworked several parts to enhance efficiency and ensure accuracy.">
       <option name="closed" value="true" />
-      <created>1721725093535</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
+      <created>1722871593618</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
       <option name="project" value="LOCAL" />
-      <updated>1721725093535</updated>
+      <updated>1722871593618</updated>
     </task>
-    <task id="LOCAL-00016" summary="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning.">
+    <task id="LOCAL-00061" summary="Update Optimizer class and derived classes with consistent vector sizing and initialization&#10;&#10;- Refactored `Adam`, `RMSprop`, and `SGD` optimizers to ensure consistent sizing between parameter vectors and moment vectors.&#10;- Added assertions to check vector sizes and prevent out-of-bounds access, which resolves segmentation faults during test execution.&#10;- Implemented proper initialization of `first_moment_vector` and `second_moment_vector` in the `Adam` optimizer to match the number of parameters being optimized.&#10;- Enhanced test cases for `Adam` optimizer, including handling of normal, zero, and large gradients, to verify correctness and stability of updates.&#10;- Applied bounds checking and improved error handling in `update` methods across all optimizers to ensure robust and predictable behavior.">
       <option name="closed" value="true" />
-      <created>1721812602565</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
+      <created>1722875294473</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
       <option name="project" value="LOCAL" />
-      <updated>1721812602565</updated>
+      <updated>1722875294473</updated>
     </task>
-    <task id="LOCAL-00017" summary="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories.">
+    <task id="LOCAL-00062" summary="Update DenseLayer class and add test for parameter updates using SGD optimizer&#10;&#10;- Added a test case `DenseLayerTest.UpdateParameters` to verify that the weights of the DenseLayer are correctly updated using the SGD optimizer.&#10;- Utilized `std::make_shared` for better memory management of the learning rate schedule in the optimizer.&#10;- Ensured proper wrapping of `weights` and `weightGradients` in `std::reference_wrapper` to correctly pass them to the optimizer's `update` method.&#10;- Improved memory safety by removing manual memory management and relying on automatic scope-based destruction.&#10;- Included assertions to check that weights are updated and not left at their initial values, ensuring the optimizer is functioning as expected.">
       <option name="closed" value="true" />
-      <created>1721813535070</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
+      <created>1722875810135</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
       <option name="project" value="LOCAL" />
-      <updated>1721813535070</updated>
+      <updated>1722875810135</updated>
     </task>
-    <task id="LOCAL-00018" summary="Updated .gitignore configuration.">
+    <task id="LOCAL-00063" summary="Update LossFunctions class and add comprehensive tests for loss calculation&#10;&#10;- Refactored the `LossFunctions` class to include improved implementations of common loss functions such as Mean Squared Error (MSE) and Cross Entropy Loss.&#10;- Added tests to verify the correctness of loss calculations with various input scenarios, including normal, edge, and random cases.&#10;- Ensured numerical stability in loss calculations by adding safeguards against division by zero and log of zero.&#10;- Included checks to handle different batch sizes and output shapes, ensuring flexibility and robustness in real-world applications.&#10;- Enhanced test coverage with assertions that compare expected and actual loss values, ensuring the class performs as intended.">
       <option name="closed" value="true" />
-      <created>1721813827086</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
+      <created>1722875978656</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
       <option name="project" value="LOCAL" />
-      <updated>1721813827086</updated>
+      <updated>1722875978657</updated>
     </task>
-    <task id="LOCAL-00019" summary="Updated .gitignore configuration.">
+    <task id="LOCAL-00064" summary="Implement DigitRecognizer and utility functions for byte operations&#10;&#10;- Fully implemented the `DigitRecognizer` class with corresponding logic in `DigitRecognizer.h` and `DigitRecognizer.tpp` files.&#10;- Added utility functions for reading unsigned 32-bit integers and handling byte order (endianness) in `readUInt32` and `swapEndian` classes, located in `examples/utils`.&#10;- The `readUInt32.cpp` and `readUInt32.h` files handle reading unsigned 32-bit integers, ensuring correct interpretation of binary data.&#10;- The `swapEndian.cpp` and `swapEndian.h` files provide functionality to swap the byte order of data, ensuring compatibility across different systems with varying endianness.&#10;- Verified that these utilities integrate correctly with the `DigitRecognizer` class, enhancing the robustness of the overall implementation.">
       <option name="closed" value="true" />
-      <created>1721813962317</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
+      <created>1722876239700</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
       <option name="project" value="LOCAL" />
-      <updated>1721813962317</updated>
+      <updated>1722876239700</updated>
     </task>
-    <task id="LOCAL-00020" summary="Updated .gitignore configuration.">
+    <task id="LOCAL-00065" summary="Implement DigitRecognizer application with MNIST dataset loading, training, and evaluation&#10;&#10;- Added `main()` function to execute the full pipeline of the DigitRecognizer model.&#10;- Implemented MNIST dataset loading for both training and test sets, converting data into tensors.&#10;- Set up the DigitRecognizer model with specified input, hidden, and output layers using a cross-entropy loss function.&#10;- Integrated Adam optimizer with an exponential decay schedule for learning rate, initializing model parameters.&#10;- Added training loop to iterate over the training data for a defined number of epochs.&#10;- Implemented model testing by predicting labels on the test set and calculating overall accuracy.&#10;- Achieved a model accuracy of 97% on the MNIST test dataset.&#10;- Included exception handling to manage and report errors during the execution process.&#10;- Cleaned up dynamically allocated memory for loss function and optimizer objects to prevent memory leaks.&#10;- Finalized implementation with accuracy reporting to verify model performance.&#10;- A checkpoint of the model achieving 97% accuracy will be added soon for reproducibility and further use.">
       <option name="closed" value="true" />
-      <created>1721813968728</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
+      <created>1722876350632</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
       <option name="project" value="LOCAL" />
-      <updated>1721813968728</updated>
+      <updated>1722876350632</updated>
     </task>
-    <task id="LOCAL-00021" summary="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp.">
+    <task id="LOCAL-00066" summary="feat: Add Embedding class with Xavier initialization and gradient support&#10;&#10;- Implemented the Embedding class to handle input and output dimensions with learning rate scheduling.&#10;- Included support for custom weight initialization, Xavier initialization by default.&#10;- Added methods for forward pass, backward pass, weight updates, and zeroing gradients.&#10;- Added error checking for tensor dimensions to ensure robustness.&#10;- Planned to create unit tests and examples for demonstrating the usage of the Embedding class in the next commit.">
       <option name="closed" value="true" />
-      <created>1721824192605</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
+      <created>1722932993351</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
       <option name="project" value="LOCAL" />
-      <updated>1721824192605</updated>
+      <updated>1722932993351</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00067" summary="feat: Add notebook for BaselineEmbedding implementation and training example&#10;&#10;- Implemented a simple BaselineEmbedding class using PyTorch.&#10;- Demonstrated the usage of the embedding layer in a neural network model.&#10;- Created a synthetic dataset and trained the model to perform binary classification.&#10;- Included explanations and code comments to guide through the implementation.&#10;- This notebook serves as a starting point for understanding and experimenting with embedding layers in NLP tasks.">
+      <option name="closed" value="true" />
+      <created>1722934040742</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1722934040742</updated>
+    </task>
+    <task id="LOCAL-00068" summary="feat: Implement download and extraction functions for AG_NEWS dataset&#10;&#10;- Added `download_ag_news` function to download the AG_NEWS dataset.&#10;- Implemented `extract_ag_news` function to extract and clean the dataset.&#10;- Cleaned dataset by removing unnecessary labels and characters from the `.csv` files.&#10;- Ensured that extracted files are saved as `.txt` and original `.csv` files are removed.&#10;- Added logging for extraction and cleaning process.">
+      <option name="closed" value="true" />
+      <created>1723017042097</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1723017042097</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Made minor updates structure of the project and implemented some correction something methods for better developer experience .">
+      <option name="closed" value="true" />
+      <created>1723019720514</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019720514</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Made minor updates structure of the project and implemented some correction something methods for better developer experience .">
+      <option name="closed" value="true" />
+      <created>1723019737741</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019737741</updated>
+    </task>
+    <task id="LOCAL-00071" summary="Minor update in the part of the arguments at the moment initialization class and small changed types arguments for avoid some errors">
+      <option name="closed" value="true" />
+      <created>1723019855935</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019855935</updated>
+    </task>
+    <task id="LOCAL-00072" summary="Minor update in the part of the arguments at the moment initialization class and small changed types arguments for avoid some errors">
+      <option name="closed" value="true" />
+      <created>1723019866031</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019866031</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Created new scop of classes for future realization LLM model. Made basic structure and added some includes for future realization">
+      <option name="closed" value="true" />
+      <created>1723019929225</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019929225</updated>
+    </task>
+    <task id="LOCAL-00074" summary="- Implemented the Embedding class.&#10;  - Embedding.h: Header file for the Embedding class.&#10;  - Embedding.tpp: Implementation file for the Embedding class.&#10;  - The Embedding class handles embedding operations for the model.">
+      <option name="closed" value="true" />
+      <created>1723019991820</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1723019991820</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Restructure helper functions for loading datasets&#10;&#10;- Moved dataset loading functions to a dedicated `utils` directory for better organization and modularity.&#10;  - Functions for downloading, extracting, and preparing datasets (e.g., MNIST, AG_NEWS) are now located in `utils`.&#10;  - This change improves the maintainability and clarity of the codebase.&#10;&#10;- Updated relevant imports in main scripts to reflect the new paths for dataset loading functions.&#10;&#10;- Ensured all paths and function calls were adjusted to align with the new directory structure.">
+      <option name="closed" value="true" />
+      <created>1723020123483</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1723020123483</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Some updates in the test files for test_dense_layer.cpp and test_mixed_precission_float16.cpp for new cases using these methods">
+      <option name="closed" value="true" />
+      <created>1723020176302</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1723020176302</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Added Tokenizer class with support for special tokens and tokenization features. Implemented methods for building vocabulary and converting text tokens to numerical IDs. Improved error handling and added functionality for case conversion and punctuation stripping during tokenization. Adjusted main function to demonstrate tokenizer usage and validate token processing. Fixed out-of-range exception by ensuring tokens are correctly mapped to vocabulary IDs.">
+      <option name="closed" value="true" />
+      <created>1723023005546</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1723023005546</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Added apply method to Tensor class&#10;&#10;The apply method accepts a mutable function that operates on the Tensor's data and returns a new Tensor with the modified data. This allows for flexible, element-wise operations on Tensor data, improving the versatility of the Tensor class.">
+      <option name="closed" value="true" />
+      <created>1723118047762</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1723118047762</updated>
+    </task>
+    <task id="LOCAL-00079" summary="feat: Add Embedding, Embedding Model, and Embedding Model Runner&#10;&#10;- Created the Embedding class for handling input embeddings&#10;- Developed the Embedding Model to process embedded inputs&#10;- Implemented the Embedding Model Runner to execute model training and evaluation&#10;&#10;This commit introduces the core components for embedding handling, model training, and evaluation, setting the foundation for further development and enhancements.">
+      <option name="closed" value="true" />
+      <created>1723134008537</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1723134008537</updated>
+    </task>
+    <task id="LOCAL-00080" summary="refactor: Restructure examples directory and add utils directory for auxiliary methods&#10;&#10;- Restructured the examples directory for better organization&#10;- Added a utils directory to house methods that are not part of the main processing logic">
+      <option name="closed" value="true" />
+      <created>1723134173658</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1723134173658</updated>
+    </task>
+    <task id="LOCAL-00081" summary="Minor updates BCELoss function, added clipping.">
+      <option name="closed" value="true" />
+      <created>1723134218256</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1723134218256</updated>
+    </task>
+    <task id="LOCAL-00082" summary="Updated CMakeLists with new classes and examples.">
+      <option name="closed" value="true" />
+      <created>1723134246660</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1723134246662</updated>
+    </task>
+    <task id="LOCAL-00083" summary="Added method add to class Tensor which adding another Tensor to flow Tensor which was called method. M">
+      <option name="closed" value="true" />
+      <created>1723187305341</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187305342</updated>
+    </task>
+    <task id="LOCAL-00084" summary="Added the `add` method to the `Tensor` class, which adds another `Tensor` to the calling `Tensor` instance.">
+      <option name="closed" value="true" />
+      <created>1723187670008</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1723187670008</updated>
+    </task>
+    <task id="LOCAL-00085" summary="feat: Add PositionalEncoder class for transformer model&#10;&#10;- Added PositionalEncoder.h: Declares the PositionalEncoder class template&#10;  - Constructor to initialize positional encodings based on maximum sequence length and hidden dimension&#10;  - Method to initialize positional encodings using sine and cosine functions&#10;  - Forward method to apply positional encodings to input data&#10;  &#10;- Added PositionalEncoder.tpp: Implements the PositionalEncoder class template&#10;  - Definition of the constructor and its functionality&#10;  - Implementation of the initialization method for positional encodings&#10;  - Implementation of the forward method to add positional encodings to input embeddings">
+      <option name="closed" value="true" />
+      <created>1723188695345</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1723188695345</updated>
+    </task>
+    <task id="LOCAL-00086" summary="Minor update Tokenizer.tpp.">
+      <option name="closed" value="true" />
+      <created>1723188718565</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1723188718565</updated>
+    </task>
+    <task id="LOCAL-00087" summary="Implemented MultiHeadAttention class with forward, backward, and training loop functionality. Added support for masked attention and integrated loss function for training over 20 epochs. Displayed predictions after training.">
+      <option name="closed" value="true" />
+      <created>1723215410291</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1723215410293</updated>
+    </task>
+    <task id="LOCAL-00088" summary="Minor updates example EmbeddingModel and him runner.">
+      <option name="closed" value="true" />
+      <created>1723219680241</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1723219680242</updated>
+    </task>
+    <task id="LOCAL-00089" summary="Added training loop and logging for MultiHeadAttentionModel.&#10;&#10;- Implemented a training loop with 20 epochs for the MultiHeadAttentionModel.&#10;- Integrated Adam optimizer with exponential decay learning rate schedule.&#10;- Added loss computation using mean squared error.&#10;- Included logging of loss and parameter updates for each epoch.&#10;- Displayed predictions after training.">
+      <option name="closed" value="true" />
+      <created>1723220964028</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1723220964029</updated>
+    </task>
+    <task id="LOCAL-00090" summary="Optimized algebraic operators for the Tensor class addition, subtraction, multiplication, and division.">
+      <option name="closed" value="true" />
+      <created>1723463029333</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1723463029333</updated>
+    </task>
+    <task id="LOCAL-00091" summary="Optimized operator+= approximately in 0.2 times.">
+      <option name="closed" value="true" />
+      <created>1723469212673</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1723469212673</updated>
+    </task>
+    <task id="LOCAL-00092" summary="Update method dot in the Tensor class for multidimensional Tensors.">
+      <option name="closed" value="true" />
+      <created>1723533956406</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1723533956406</updated>
+    </task>
+    <task id="LOCAL-00093" summary="Added Linear activation function which doesn't change input data.">
+      <option name="closed" value="true" />
+      <created>1723536499571</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1723536499572</updated>
+    </task>
+    <task id="LOCAL-00094" summary="Minor update Linear activation function for brevity and memory control.&#10;&#10;Was deleted return statement and just created methods without code only comments.">
+      <option name="closed" value="true" />
+      <created>1723613217917</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1723613217920</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,24 +855,32 @@
     <isAutomaticReloadCMake value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Initializing project" />
-    <MESSAGE value="Made in Mixed Precision with (float 16 | float 32)" />
-    <MESSAGE value="The Tensor class has been created, in the process of implementing the class" />
-    <MESSAGE value="Updated CMakeLists.txt" />
-    <MESSAGE value="Made README file" />
-    <MESSAGE value="The file structure in the `docs' directory is made" />
-    <MESSAGE value="Minor update README.md" />
-    <MESSAGE value="Implemented transpose method of class Tensor.cpp" />
-    <MESSAGE value="Updated Tensor.cpp class constructor. The function of converting a multidimensional vector to Tensor has been added." />
-    <MESSAGE value="Pushed clion-Debug-log.txt and CMakeConfigureLog.yaml" />
-    <MESSAGE value="- Updated Tensor class constructors to ensure correct parameter matching and initialization." />
-    <MESSAGE value="Implemented `operator[]` overloads for Tensor class&#10;&#10;- Added support for single-dimensional indexing (`operator[](int index)`) for tensors with one dimension.&#10;- Enhanced multidimensional indexing (`operator[](const std::vector&lt;int&gt;&amp; indices)`) to handle slicing and sub-tensor extraction based on provided indices.&#10;- Validated indices and calculated appropriate starting index and dimensions for sub-tensor extraction.&#10;&#10;Note: Multi-dimensional slicing currently assumes that the slice is contiguous in memory." />
-    <MESSAGE value="Created operators for algebraic calculations, without implemented multiplication and division of Tensors by each other" />
-    <MESSAGE value="Setup Python virtual environment, configure Conan, and create Makefile&#10;&#10;- Initialized Python virtual environment (.venv) for project dependencies.&#10;- Installed and configured Conan for C++ package management.&#10;- Added Conan configuration for Google Test libraries.&#10;- Created a Makefile for build automation with targets for building, testing, and cleaning." />
-    <MESSAGE value="Minor updates to project settings, including adding a .gitignore file for better management of build artifacts and virtual environment directories." />
-    <MESSAGE value="Updated .gitignore configuration." />
-    <MESSAGE value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed Tensor.cpp to Tensor.tpp extension. Minor updates of the Tensor.tpp." />
+    <MESSAGE value="feat: Implement download and extraction functions for AG_NEWS dataset&#10;&#10;- Added `download_ag_news` function to download the AG_NEWS dataset.&#10;- Implemented `extract_ag_news` function to extract and clean the dataset.&#10;- Cleaned dataset by removing unnecessary labels and characters from the `.csv` files.&#10;- Ensured that extracted files are saved as `.txt` and original `.csv` files are removed.&#10;- Added logging for extraction and cleaning process." />
+    <MESSAGE value="Made minor updates structure of the project and implemented some correction something methods for better developer experience ." />
+    <MESSAGE value="Minor update in the part of the arguments at the moment initialization class and small changed types arguments for avoid some errors" />
+    <MESSAGE value="Created new scop of classes for future realization LLM model. Made basic structure and added some includes for future realization" />
+    <MESSAGE value="- Implemented the Embedding class.&#10;  - Embedding.h: Header file for the Embedding class.&#10;  - Embedding.tpp: Implementation file for the Embedding class.&#10;  - The Embedding class handles embedding operations for the model." />
+    <MESSAGE value="Restructure helper functions for loading datasets&#10;&#10;- Moved dataset loading functions to a dedicated `utils` directory for better organization and modularity.&#10;  - Functions for downloading, extracting, and preparing datasets (e.g., MNIST, AG_NEWS) are now located in `utils`.&#10;  - This change improves the maintainability and clarity of the codebase.&#10;&#10;- Updated relevant imports in main scripts to reflect the new paths for dataset loading functions.&#10;&#10;- Ensured all paths and function calls were adjusted to align with the new directory structure." />
+    <MESSAGE value="Some updates in the test files for test_dense_layer.cpp and test_mixed_precission_float16.cpp for new cases using these methods" />
+    <MESSAGE value="Added Tokenizer class with support for special tokens and tokenization features. Implemented methods for building vocabulary and converting text tokens to numerical IDs. Improved error handling and added functionality for case conversion and punctuation stripping during tokenization. Adjusted main function to demonstrate tokenizer usage and validate token processing. Fixed out-of-range exception by ensuring tokens are correctly mapped to vocabulary IDs." />
+    <MESSAGE value="Added apply method to Tensor class&#10;&#10;The apply method accepts a mutable function that operates on the Tensor's data and returns a new Tensor with the modified data. This allows for flexible, element-wise operations on Tensor data, improving the versatility of the Tensor class." />
+    <MESSAGE value="feat: Add Embedding, Embedding Model, and Embedding Model Runner&#10;&#10;- Created the Embedding class for handling input embeddings&#10;- Developed the Embedding Model to process embedded inputs&#10;- Implemented the Embedding Model Runner to execute model training and evaluation&#10;&#10;This commit introduces the core components for embedding handling, model training, and evaluation, setting the foundation for further development and enhancements." />
+    <MESSAGE value="refactor: Restructure examples directory and add utils directory for auxiliary methods&#10;&#10;- Restructured the examples directory for better organization&#10;- Added a utils directory to house methods that are not part of the main processing logic" />
+    <MESSAGE value="Minor updates BCELoss function, added clipping." />
+    <MESSAGE value="Updated CMakeLists with new classes and examples." />
+    <MESSAGE value="Added method add to class Tensor which adding another Tensor to flow Tensor which was called method. M" />
+    <MESSAGE value="Added the `add` method to the `Tensor` class, which adds another `Tensor` to the calling `Tensor` instance." />
+    <MESSAGE value="feat: Add PositionalEncoder class for transformer model&#10;&#10;- Added PositionalEncoder.h: Declares the PositionalEncoder class template&#10;  - Constructor to initialize positional encodings based on maximum sequence length and hidden dimension&#10;  - Method to initialize positional encodings using sine and cosine functions&#10;  - Forward method to apply positional encodings to input data&#10;  &#10;- Added PositionalEncoder.tpp: Implements the PositionalEncoder class template&#10;  - Definition of the constructor and its functionality&#10;  - Implementation of the initialization method for positional encodings&#10;  - Implementation of the forward method to add positional encodings to input embeddings" />
+    <MESSAGE value="Minor update Tokenizer.tpp." />
+    <MESSAGE value="Implemented MultiHeadAttention class with forward, backward, and training loop functionality. Added support for masked attention and integrated loss function for training over 20 epochs. Displayed predictions after training." />
+    <MESSAGE value="Minor updates example EmbeddingModel and him runner." />
+    <MESSAGE value="Added training loop and logging for MultiHeadAttentionModel.&#10;&#10;- Implemented a training loop with 20 epochs for the MultiHeadAttentionModel.&#10;- Integrated Adam optimizer with exponential decay learning rate schedule.&#10;- Added loss computation using mean squared error.&#10;- Included logging of loss and parameter updates for each epoch.&#10;- Displayed predictions after training." />
+    <MESSAGE value="Optimized algebraic operators for the Tensor class addition, subtraction, multiplication, and division." />
+    <MESSAGE value="Optimized operator+= approximately in 0.2 times." />
+    <MESSAGE value="Update method dot in the Tensor class for multidimensional Tensors." />
+    <MESSAGE value="Added Linear activation function which doesn't change input data." />
+    <MESSAGE value="Minor update Linear activation function for brevity and memory control.&#10;&#10;Was deleted return statement and just created methods without code only comments." />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor update Linear activation function for brevity and memory control.&#10;&#10;Was deleted return statement and just created methods without code only comments." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

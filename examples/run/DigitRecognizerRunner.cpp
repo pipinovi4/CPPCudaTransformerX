@@ -2,7 +2,7 @@
 #include "../../include/Optimizer.h"
 #include "../../include/Tensor.h"
 #include "../../include/LossFunction.h"
-#include "../utils/loadMNIST.cpp"
+#include "../utils/loadMNIST.tpp"
 #include <vector>
 #include <iostream>
 
