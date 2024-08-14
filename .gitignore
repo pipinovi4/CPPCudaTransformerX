@@ -11,6 +11,18 @@ build/
 cmake-build-debug/
 CMakeUserPresets.json
 CMakeFiles
+profile_logs/
+.venv
+.idea
+.vscode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dll
+*.exe
+*.out
 
 *.log
 *.tmp
