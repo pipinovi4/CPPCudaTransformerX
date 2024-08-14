@@ -15,7 +15,7 @@ template <typename T>
 EmbeddingModel<T>::EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
     std::function<void(Tensor<T>&)> init_func)
     : vocab_size(vocab_size), embedding_dim(embedding_dim),
-      embedding(vocab_size, embedding_dim, init_func, lr_schedule) {}
+      embedding(vocab_size, embedding_dim, lr_schedule, init_func) {}
 
 /**
  * @brief Performs the forward pass of the EmbeddingModel.
