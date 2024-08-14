@@ -5,35 +5,57 @@
 #include "../include/MultiHeadAttention.h"
 
 template <typename T>
-MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim)
-    : hidden_dim(hidden_dim), num_heads(num_heads), head_dim(head_dim) {
-    // Initialize the weight matrices with appropriate dimensions
-    this->W_q = Tensor<T>({hidden_dim, num_heads * head_dim});
-    this->W_k = Tensor<T>({hidden_dim, num_heads * head_dim});
-    this->W_v = Tensor<T>({hidden_dim, num_heads * head_dim});
-    this->W_o = Tensor<T>({num_heads * head_dim, hidden_dim});
+MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation)
+    : hidden_dim(hidden_dim), num_heads(num_heads), head_dim(head_dim), activation(activation) {
 
-    // Initialize the weights (e.g., with a normal distribution or other suitable initialization)
-    initializeWeights(W_q);
-    initializeWeights(W_k);
-    initializeWeights(W_v);
-    initializeWeights(W_o);
+    // Initialize the parameters matrices with appropriate dimensions and sizes
+    this->W_q = Tensor<T>({hidden_dim, num_heads * head_dim}, hidden_dim * num_heads * head_dim);
+    this->W_k = Tensor<T>({hidden_dim, num_heads * head_dim}, hidden_dim * num_heads * head_dim);
+    this->W_v = Tensor<T>({hidden_dim, num_heads * head_dim}, hidden_dim * num_heads * head_dim);
+    this->W_o = Tensor<T>({num_heads * head_dim, hidden_dim}, num_heads * head_dim * hidden_dim);
 
-    // Initialize the gradients as zeros
+    this->b_q = Tensor<T>({num_heads * head_dim}, num_heads * head_dim);
+    this->b_k = Tensor<T>({num_heads * head_dim}, num_heads * head_dim);
+    this->b_v = Tensor<T>({num_heads * head_dim}, num_heads * head_dim);
+    this->b_o = Tensor<T>({hidden_dim}, hidden_dim);
+
+    // Initialize the parameters (e.g., with a normal distribution or other suitable initialization)
+    intitializeParameter(W_q);
+    intitializeParameter(W_k);
+    intitializeParameter(W_v);
+    intitializeParameter(W_o);
+
+    intitializeParameter(b_q);
+    intitializeParameter(b_k);
+    intitializeParameter(b_v);
+    intitializeParameter(b_o);
+
+    // Initialize the gradients of the parametrs as zeros
     grad_W_q = Tensor<T>({hidden_dim, num_heads * head_dim});
     grad_W_k = Tensor<T>({hidden_dim, num_heads * head_dim});
     grad_W_v = Tensor<T>({hidden_dim, num_heads * head_dim});
     grad_W_o = Tensor<T>({num_heads * head_dim, hidden_dim});
+
+    grad_b_q = Tensor<T>({num_heads * head_dim});
+    grad_b_k = Tensor<T>({num_heads * head_dim});
+    grad_b_v = Tensor<T>({num_heads * head_dim});
+    grad_b_o = Tensor<T>({hidden_dim});
 }
 
 template <typename T>
-void MultiHeadAttention<T>::initializeWeights(Tensor<T>& weights) {
+void MultiHeadAttention<T>::intitializeParameter(Tensor<T>& weights) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::normal_distribution<float> dist(0.0, 1.0);
+    std::normal_distribution<T> dist(0.0, 0.02);
 
-    for (int i = 0; i < weights.size(); i++) {
-        weights(i) = dist(gen);
+    size_t weights_size = 1;
+    for (auto dim : weights.dimensions) {
+        weights_size *= dim;  // Compute product, not sum
+    }
+
+    weights.data.clear();
+    for (size_t i = 0; i < weights_size; i++) {
+        weights.data.emplace_back(dist(gen));
     }
 }
 
@@ -74,7 +96,7 @@ Tensor<T> MultiHeadAttention<T>::concat_heads(const std::vector<Tensor<T>>& head
     // Determine the shape of the heads
     const int seq_len = heads[0].shape()[0];
     const int head_dim = heads[0].shape()[1];
-    
+
     // Initialize a vector to hold the concatenated data
     std::vector<T> concatenated_data;
     concatenated_data.reserve(seq_len * head_dim * num_heads);
@@ -104,7 +126,11 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
     Tensor<T> keys = input_data.dot(W_k);
     Tensor<T> values = input_data.dot(W_v);
 
-    // Step 2: Split the projections into multiple heads
+    queries += b_q;
+    keys += b_k;
+    values += b_v;
+
+     // Step 2: Split the projections into multiple heads
     queries_heads = split_heads(queries);
     keys_heads = split_heads(keys);
     values_heads = split_heads(values);
@@ -112,13 +138,11 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
     attention_heads.clear();
 
     // Step 3: Iterate over heads, compute and push heads into the attention_heads
+#pragma omp parallel for
     for (int i = 0; i < num_heads; ++i) {
         // Scaled dot product attention
         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose());
-        attention_scores = attention_scores / std::sqrt(static_cast<T>(head_dim));
-
-        // Apply softmax to get attention weights
-        typename ActivationFunction<T>::Softmax().forward(attention_scores);
+        attention_scores /= std::sqrt(static_cast<T>(head_dim));
 
         // Compute the output as weighted sum of values
         Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
@@ -132,15 +156,17 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
 
     // Step 5: Final linear projection
     Tensor<T> output = concatenated_output.dot(W_o);
+    output += b_o;
 
     return output;
 }
 
 template <typename T>
 void MultiHeadAttention<T>::backward(const Tensor<T>& grad_output) {
-    // Step 1: Compute gradients of the final projection
+    // Step 1: Compute gradients of the final projection (output layer)
     Tensor<T> grad_concatenated = grad_output.dot(W_o.transpose());
-    Tensor<T> grad_W_o = concat_heads(attention_heads).transpose().dot(grad_output);
+    grad_W_o = concat_heads(attention_heads).dot(grad_output.expandDims(0));
+    grad_b_o = grad_output.sum(0);
 
     // Step 2: Split the gradient of the concatenated heads back into multiple heads
     std::vector<Tensor<T>> grad_attention_heads = split_heads(grad_concatenated);
@@ -154,16 +180,12 @@ void MultiHeadAttention<T>::backward(const Tensor<T>& grad_output) {
     for (int i = 0; i < num_heads; ++i) {
         // Compute gradients of the attention weights
         Tensor<T> grad_attention_scores = grad_attention_heads[i].dot(values_heads[i].transpose());
-        grad_attention_scores = grad_attention_scores / std::sqrt(static_cast<T>(head_dim));
+        grad_attention_scores /= std::sqrt(static_cast<T>(head_dim));
 
-        // Compute gradients with respect to queries, keys and values
-        grad_values_heads[i] = grad_attention_scores.dot(grad_attention_heads[i].transpose());
-
-        // Backpropagate throught softmax (for extracting grad queries and grad keys)
-        typename ActivationFunction<T>::Softmax().backward(grad_attention_scores);
-
+        // Compute gradients with respect to queries, keys, and values
         grad_queries_heads[i] = grad_attention_scores.dot(keys_heads[i]);
         grad_keys_heads[i] = grad_attention_scores.transpose().dot(queries_heads[i]);
+        grad_values_heads[i] = grad_attention_scores.dot(grad_attention_heads[i].transpose());
     }
 
     // Step 4: Concatenate gradients of the heads
@@ -172,32 +194,43 @@ void MultiHeadAttention<T>::backward(const Tensor<T>& grad_output) {
     Tensor<T> grad_values = concat_heads(grad_values_heads);
 
     // Step 5: Compute gradients of the linear projections
-    Tensor<T> grad_W_q = input_cache.transpose().dot(grad_queries);
-    Tensor<T> grad_W_k = input_cache.transpose().dot(grad_keys);
-    Tensor<T> grad_W_v = input_cache.transpose().dot(grad_values);
+    grad_W_q = input_cache.transpose().dot(grad_queries);
+    grad_W_k = input_cache.transpose().dot(grad_keys);
+    grad_W_v = input_cache.transpose().dot(grad_values);
+
+    grad_b_q = grad_queries.sum(0);
+    grad_b_k = grad_keys.sum(0);
+    grad_b_v = grad_values.sum(0);
 
     // Step 6: Propagate gradients through the input data
     Tensor<T> grad_input_q = grad_queries.dot(W_q.transpose());
     Tensor<T> grad_input_k = grad_keys.dot(W_k.transpose());
     Tensor<T> grad_input_v = grad_values.dot(W_v.transpose());
 
-    Tensor<T> grad_input = grad_input_q + grad_input_k + grad_input_v;
-
     // Update the weights
     this->grad_W_k += grad_W_k;
     this->grad_W_q += grad_W_q;
     this->grad_W_v += grad_W_v;
     this->grad_W_o += grad_W_o;
+
+    // Update the biases
+    this->grad_b_k += grad_b_k;
+    this->grad_b_q += grad_b_q;
+    this->grad_b_v += grad_b_v;
+    this->grad_b_o += grad_b_o;
 }
+
 
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttention<T>::parameters() {
-    return {std::ref(W_q), std::ref(W_k), std::ref(W_v), std::ref(W_o)};
+    std::vector<std::reference_wrapper<Tensor<T>>> params = { W_q, W_k, W_v, W_o, b_q, b_k, b_v, b_o };
+    return params;
 }
 
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttention<T>::gradients() {
-    return {std::ref(grad_W_q), std::ref(grad_W_k), std::ref(grad_W_v), std::ref(grad_W_o)};
+    std::vector<std::reference_wrapper<Tensor<T>>> grads = { grad_W_q, grad_W_k, grad_W_v, grad_W_o, grad_b_q, grad_b_k, grad_b_v, grad_b_o };
+    return grads;
 }
 
 #endif // MULTIHEADATTENTION_TPP
