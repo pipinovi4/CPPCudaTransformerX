@@ -15,7 +15,7 @@
  */
 template <typename T>
 Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
-    std::function<void(Tensor<T>&)> init_func, typename Optimizer<T>::LearningRateSchedule& lr_schedule)
+    typename Optimizer<T>::LearningRateSchedule& lr_schedule, std::function<void(Tensor<T>&)> init_func)
     : lr_schedule(lr_schedule), vocab_size(vocab_size), embedding_dims(embedding_dims) {
     this->weights = Tensor<T>({vocab_size, embedding_dims});
     this->grad = Tensor<T>({vocab_size, embedding_dims});
@@ -56,14 +56,14 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
 
     // Define output shape as [batch_size, sequence_length, embedding_dims]
     std::vector<int> output_shape = {input_data.shape()[0], input_data.shape()[1], embedding_dims};
-    Tensor<T> output(output_shape);
+    Tensor<T> output(output_shape, input_data.shape()[0] * input_data.shape()[1] * embedding_dims);
 
     // Iterate over batch size and sequence length
     for (int i = 0; i < input_data.shape()[0]; ++i) {
         for (int j = 0; j < input_data.shape()[1]; ++j) {
             const int index = static_cast<int>(input_data.data[i * input_data.shape()[1] + j]);
             for (int k = 0; k < embedding_dims; ++k) {
-                output.data[(i * input_data.shape()[1] + j) * embedding_dims + k] = weights.data[index * embedding_dims + k];
+                output.data.push_back(weights.data[index * embedding_dims + k]);
             }
         }
     }
@@ -77,7 +77,7 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
  */
 
 template <typename T>
-void Embedding<T>::backward(const Tensor<T>& grad_data) {
+void Embedding<T>::backward(Tensor<T>& grad_data) {
     // Zero the gradient tensor before accumulating new gradients
     zero_grad();
 
@@ -86,7 +86,7 @@ void Embedding<T>::backward(const Tensor<T>& grad_data) {
         for (int j = 0; j < grad_data.shape()[1]; ++j) {
             const int index = static_cast<int>(input_cache.data[i * input_cache.shape()[1] + j]);
             for (int k = 0; k < embedding_dims; ++k) {
-                grad.data[index * embedding_dims + k] += grad_data.data[(i * grad_data.shape()[1] + j) * grad_data.shape()[2] + k];
+                grad_data.data[index * embedding_dims + k] += grad_data.data[(i * grad_data.shape()[1] + j) * grad_data.shape()[2] + k];
             }
         }
     }
@@ -99,10 +99,12 @@ template <typename T>
 void Embedding<T>::update(const int& epoch) {
     T learning_rate = lr_schedule.getLearningRate(epoch);
 
+    auto weights_data_access = weights.data.data();
+
     #pragma omp parallel for  // Use OpenMP for parallel processing if supported
     for (int i = 0; i < vocab_size; ++i) {
         for (int j = 0; j < embedding_dims; ++j) {
-            weights.data[i * embedding_dims + j] -= learning_rate * grad.data[i * embedding_dims + j];
+            weights_data_access[i * embedding_dims + j] -= learning_rate * grad.data[i * embedding_dims + j];
         }
     }
 }

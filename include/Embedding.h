@@ -8,11 +8,11 @@
 template <typename T>
 class Embedding {
 public:
-    Embedding(const int& vocab_size, const int& embedding_dims, std::function<void(Tensor<T>&)> init_func,
-    typename Optimizer<T>::LearningRateSchedule& lr_schedule);
+    Embedding(const int& vocab_size, const int& embedding_dims,
+    typename Optimizer<T>::LearningRateSchedule& lr_schedule, std::function<void(Tensor<T>&)> init_func = nullptr);
 
     Tensor<T> forward(const Tensor<T>& input_data);
-    void backward(const Tensor<T>& grad_data);
+    void backward(Tensor<T>& grad_data);
 
     void initializeWeights();
 
