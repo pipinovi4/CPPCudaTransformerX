@@ -320,26 +320,34 @@ Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const
     std::vector<int> indices(dimensions.size(), 0);
     std::vector<int> sliced_indices(dimensions.size(), 0);
 
-    for (size_t i = 0; i < data.size(); ++i) {
+    // Access data pointers for faster access
+    const auto data_access = data.data();
+    const auto indices_data_access = indices.data();
+    const auto sliced_indices_data_access = sliced_indices.data();
+    const auto dimensions_data_access = dimensions.data();
+    const auto sliced_tensor_data_access = sliced_tensor.data.data();
+
+    // Iterate over the data and copy the sliced data
+    for (int i = 0; i < data.size(); ++i) {
         // Calculate current indices in the original tensor
-        size_t temp = i;
+        int temp = i;
         for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = temp % dimensions[j];
-            temp /= dimensions[j];
+            indices_data_access[j] = temp % dimensions_data_access[j];
+            temp /= dimensions_data_access[j];
         }
 
         // Check if the current index falls within the slice range along the specified axis
-        if (indices[axis] >= actual_start && indices[axis] < actual_end && (indices[axis] - actual_start) % actual_step == 0) {
+        if (indices_data_access[axis] >= actual_start && indices_data_access[axis] < actual_end && (indices_data_access[axis] - actual_start) % actual_step == 0) {
             // Calculate the corresponding index in the sliced tensor
             for (size_t j = 0; j < indices.size(); ++j) {
-                sliced_indices[j] = (j == axis) ? (indices[j] - actual_start) / actual_step : indices[j];
+                sliced_indices_data_access[j] = (j == axis) ? (indices_data_access[j] - actual_start) / actual_step : indices_data_access[j];
             }
 
             // Calculate the index in the sliced tensor
             int sliced_index = sliced_tensor.calculateIndex(sliced_indices);
 
             // Copy the data from the original tensor to the sliced tensor
-            sliced_tensor.data[sliced_index] = data[i];
+            sliced_tensor_data_access[sliced_index] = data_access[i];
         }
     }
 
@@ -389,11 +397,12 @@ Tensor<T> Tensor<T>::concatenate(const Tensor<T>& other, int axis) const {
 
     // Copy data from the current tensor
     std::vector<int> indices(dimensions.size(), 0);
+    auto indices_data_access = indices.data();
     for (size_t i = 0; i < data.size(); ++i) {
         // Calculate current indices
         size_t temp = i;
         for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = temp % dimensions[j];
+            indices_data_access[j] = temp % dimensions[j];
             temp /= dimensions[j];
         }
 
@@ -403,18 +412,19 @@ Tensor<T> Tensor<T>::concatenate(const Tensor<T>& other, int axis) const {
 
     // Copy data from the other tensor
     indices.assign(dimensions.size(), 0);
+    indices_data_access = indices.data();
     for (size_t i = 0; i < other.size(); ++i) {
         // Calculate current indices for the other tensor
         size_t temp = i;
         for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = temp % other.shape()[j];
+            indices_data_access[j] = temp % other.shape()[j];
             temp /= other.shape()[j];
         }
         // Retrieve the value from the other tensor
         T value = other.get(indices);
 
         // Adjust the axis index for concatenation
-        indices[axis] += other.shape()[axis];
+        indices_data_access[axis] += other.shape()[axis];
 
         // Copy data into the result tensor
         result.set(indices, value);
@@ -444,16 +454,18 @@ Tensor<T> Tensor<T>::expandDims(const int axis) const {
 
     // Copy data from the current tensor
     std::vector<int> indices(dimensions.size() + 1, 0);  // Increase indices size for new axis
-    for (size_t i = 0; i < data.size(); ++i) {
+    const auto indices_data_access = indices.data();
+    const auto dimensions_data_access = dimensions.data();
+    for (int i = 0; i < data.size(); ++i) {
         // Calculate current indices
-        size_t temp = i;
+        int temp = i;
         for (size_t j = 0; j < indices.size(); ++j) {
             if (j < axis) {
-                indices[j] = temp % dimensions[j];
-                temp /= dimensions[j];
+                indices_data_access[j] = temp % dimensions_data_access[j];
+                temp /= dimensions_data_access[j];
             } else if (j > axis) {
-                indices[j] = temp % dimensions[j - 1];  // Adjust indices for new axis
-                temp /= dimensions[j - 1];
+                indices_data_access[j] = temp % dimensions_data_access[j - 1];
+                temp /= dimensions_data_access[j - 1];
             }
         }
 
@@ -476,7 +488,7 @@ Tensor<T> Tensor<T>::squeeze() const {
     // Use size_t for indices and iterators
     for (int dimension : dimensions) {
         if (dimension != 1) {
-            newDimensions.push_back(dimension);
+            newDimensions.emplace_back(dimension);
         }
     }
 
@@ -507,6 +519,9 @@ Tensor<T> Tensor<T>::squeeze() const {
         newStride *= newDimensions[i];
     }
 
+    // Copy data efficiently using strides
+    auto result_data_access = result.data.data();
+
     // Use a single loop with accumulated strides to copy data efficiently
     for (size_t i = 0; i < data.size(); ++i) {
         size_t newIndex = 0;
@@ -517,7 +532,7 @@ Tensor<T> Tensor<T>::squeeze() const {
             }
             oldIndex %= oldStrides[j];
         }
-        result.data[newIndex] = data[i];
+        result_data_access[newIndex] = data[i];
     }
 
     return result;
@@ -723,14 +738,14 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
     // Compute result dimensions
     std::vector<int> resultDimensions;
-    for (int i = 0; i < other_dims.size() - 2; ++i) {
-        resultDimensions.emplace_back(other_dims[i]);
-    }
-    resultDimensions.emplace_back(other_dims[other_dims.size() - 2]);
     for (int i = 0; i < this_dims.size() - 2; ++i) {
         resultDimensions.emplace_back(this_dims[i]);
     }
-    resultDimensions.emplace_back(this_dims.back());
+    resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
+    for (int i = 0; i < other_dims.size() - 2; ++i) {
+        resultDimensions.emplace_back(other_dims[i]);
+    }
+    resultDimensions.emplace_back(other_dims.back());
 
     // Initialize result tensor
     Tensor<T> result(resultDimensions);
@@ -738,20 +753,21 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
     // Calculate outer dimensions for easier indexing
     int batch_size = 1;
-    for (size_t i = 0; i < this_dims.size() - 2; ++i) {
+    for (int i = 0; i < this_dims.size() - 2; ++i) {
         batch_size *= this_dims[i];
     }
-    for (size_t i = 0; i < other_dims.size() - 2; ++i) {
+    for (int i = 0; i < other_dims.size() - 2; ++i) {
         batch_size *= other_dims[i];
     }
-    const int M = this_dims.back(); // Outer dimension for the first tensor
-    const int N = other_dims[other_dims.size() - 2]; // Outer dimension for the second tensor
+
+    const int M = this_dims[this_dims.size() - 2]; // Outer dimension for the first tensor
+    const int N = other_dims.back(); // Outer dimension for the second tensor
 
     // Access data pointers for faster access
     const T* A = data.data();
     const T* B = other.data.data();
 
-    // Perform the dot product using generalized indexing
+    // Perform the dot product using generalized indexing 131 986 000
     #pragma omp parallel for
     for (int b = 0; b < batch_size; ++b) {
         for (int i = 0; i < M; ++i) {
