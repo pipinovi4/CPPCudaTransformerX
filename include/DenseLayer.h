@@ -9,7 +9,7 @@
 template <typename T>
 class DenseLayer {
 public:
-    DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation, T biasInitValue = 0.0);
+    DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation = new typename ActivationFunction<T>::Linear(), T biasInitValue = 0.0);
 
     void initializeWeights(Tensor<T>& inputWeights);
 
