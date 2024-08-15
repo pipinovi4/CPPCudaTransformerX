@@ -14,9 +14,9 @@ link_directories(${CMAKE_BINARY_DIR}/lib ${CUDAToolkit_LIBRARY_DIR})
 # Add the main executable
 add_executable(C++CudaTransformerX
         src/main.cpp
-        src/MixedPrecisionFloat16.cpp
+        src/Float16.tpp
         src/Tensor.tpp
-        include/MixedPrecisionFloat16.h
+        include/Float16.h
         include/Tensor.h
         include/DenseLayer.h
         include/ActivationFunction.h
@@ -32,6 +32,11 @@ add_executable(C++CudaTransformerX
         include/Tokenizer.h
         src/Tokenizer.tpp
         examples/utils/loadAGNews.tpp
+        include/PositionalEncoder.h
+        include/MultiHeadAttention.h
+        src/MultiHeadAttention.tpp
+        examples/MultiHeadAttentionModel.h
+        src/MultiHeadAttention.tpp
 )
 
 # Link the main executable with CUDA
@@ -45,6 +50,8 @@ add_executable(global_tests
         tests/test_optimizer.cpp
         tests/test_dense_layer.cpp
         tests/test_embedding.cpp
+        tests/test_tokenizer.cpp
+        tests/test_multi_head_attention.cpp
 )
 
 # Add example of the DigitRecognizer executable
@@ -61,11 +68,19 @@ add_executable(digit_recognizer
         examples/utils/loadMNIST.h
 )
 
+# Add example of the EmbeddingModel executable
 add_executable(embedding_model
         examples/run/EmbeddingModelRunner.cpp
         examples/EmbeddingModel.h
         examples/EmbeddingModel.tpp
         src/Tokenizer.tpp
+)
+
+# Add example of the MultiHeadAttentionModel executable
+add_executable(multi_head_attention_model
+        examples/run/MultiHeadAttentionModelRunner.cpp
+        examples/MultiHeadAttentionModel.h
+        examples/MultiHeadAttentionModel.tpp
 )
 
 # Link the test executable with CUDA

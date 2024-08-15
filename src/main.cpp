@@ -1,51 +1,69 @@
-#include "../include/Tensor.h"
-#include <chrono>
-
-// My custom float_16 type horrible and in 1.5 times slower than float
+#include "../examples/MultiHeadAttentionModel.h"
+#include "../include/LossFunction.h"
+#include "../include/Optimizer.h"
 
 int main() {
-    // Test the float_16 compuation speed with float
-    Tensor<float_16> t1{100, 100, 100};
-    Tensor<float_16> t2{100, 100, 100};
+    // Test Multi_head_attention
+    // Constants for the test
+    constexpr int MAX_SEQUENCE_LENGTH = 64;
+    constexpr int HIDDEN_DIM = 64;
+    constexpr int NUM_HEADS = 8;
+    constexpr int HEAD_DIM = HIDDEN_DIM / NUM_HEADS;
+    constexpr int BATCH_SIZE = 8; // Define the batch size
+    constexpr float LEARNING_RATE = 0.01;
+    constexpr float DECAY_RATE = 0.6;
 
-    t1.fill(2);
-    t2.fill(3);
+    // Define the loss function
+    LossFunction<float>::meanSquaredError loss_function;  // Ensure your loss function is appropriate for your task
 
-    // Start timer
-    auto start = std::chrono::high_resolution_clock::now();
+    // Define the learning rate scheduler
+    Optimizer<float>::LearningRateSchedule::StepDecaySchedule learning_rate_scheduler(LEARNING_RATE, DECAY_RATE, 1);
 
-    // Perform 1000 multiplications
-    for (int i = 0; i < 10; ++i) {
-        t1 = t1 + t2;
+    // Define the Multi-Head Attention model
+    MultiHeadAttention<float> model(HIDDEN_DIM, NUM_HEADS, HEAD_DIM, new ActivationFunction<float>::ReLU());
+
+    // Collect model parameters for optimization
+    std::vector<std::vector<int>> params_shape;
+    for (const auto& ref : model.parameters()) {
+        auto param_shape = ref.get().shape();
+        params_shape.push_back(param_shape);
     }
 
-    // Stop timer
-    auto stop = std::chrono::high_resolution_clock::now();
+    // Define the optimizer
+    Optimizer<float>::Adam optimizer(params_shape, LEARNING_RATE, learning_rate_scheduler, 1e-8);
 
-    // Print the time taken
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
+    // Define large dummy data for training
+    std::vector<Tensor<float>> input_data(1000);
+    std::vector<Tensor<float>> target_data(1000);
 
-    Tensor<float> t3{100, 100, 100};
-    Tensor<float> t4{100, 100, 100};
-
-    // Fill the tensors with 2 and 3
-    t3.fill(2);
-    t4.fill(3);
-
-    // Start timer
-    start = std::chrono::high_resolution_clock::now();
-
-    // Perform 1000 multiplications
-    for (int i = 0; i < 10; ++i) {
-        t3 = t3 + t4;
+    // Initialize input and target data with random values
+    for (int i = 0; i < 1000; ++i) {
+        input_data[i] = Tensor<float>::zeros({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});
+        target_data[i] = Tensor<float>::ones({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});
     }
 
-    // Stop timer
-    stop = std::chrono::high_resolution_clock::now();
+    // Training loop
+    for (int epoch = 0; epoch < 5; ++epoch) {
+        float loss = 0;
+        for (int i = 0; i < 1000; ++i) {
+            // Perform forward pass
+            Tensor<float> output_train = model.forward(input_data[i]);
 
-    // Print the time taken
-    duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
+            // Compute loss
+            loss += loss_function.forward(output_train, target_data[i]);
+
+            // Perform backward pass
+            Tensor<float> grad = loss_function.backward(output_train, target_data[i]);
+            model.backward(grad);
+
+            optimizer.update(model.parameters(), model.gradients(), epoch);
+        }
+        std::cout << "Epoch [" << epoch + 1 << "], Loss: " << loss / 1000 << std::endl;
+    }
+
+    // Predict with the trained model
+    Tensor<float> input_test = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, HIDDEN_DIM}, 0, 1);
+    Tensor<float> output_test = model.forward(input_test);
+    output_test.print();
     return 0;
 }
