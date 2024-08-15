@@ -15,7 +15,6 @@
 #include <cassert>
 #include <cmath>
 #include <functional>
-#include "MixedPrecisionFloat16.h"
 #include <random>
 
 template <typename T>

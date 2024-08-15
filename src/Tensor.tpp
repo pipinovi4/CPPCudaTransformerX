@@ -729,6 +729,10 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     std::vector<int> this_dims = dimensions;
     std::vector<int> other_dims = other.dimensions;
 
+    // Dimenions sizes of the tensors
+    const size_t this_size = this_dims.size();
+    const size_t other_size = other_dims.size();
+
     // Handle broadcasting dimensions
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
@@ -738,44 +742,68 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
     // Compute result dimensions
     std::vector<int> resultDimensions;
-    for (int i = 0; i < this_dims.size() - 2; ++i) {
-        resultDimensions.emplace_back(this_dims[i]);
+    if (this_dims.size() >= 2) {
+        for (int i = 0; i < this_size - 2; ++i) {
+            resultDimensions.emplace_back(this_dims[i]);
+        }
+        resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
     }
-    resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
-    for (int i = 0; i < other_dims.size() - 2; ++i) {
-        resultDimensions.emplace_back(other_dims[i]);
+    if (other_dims.size() >= 2) {
+        for (int i = 0; i < other_size - 2; ++i) {
+            resultDimensions.emplace_back(other_dims[i]);
+        }
+        resultDimensions.emplace_back(other_dims.back());
     }
-    resultDimensions.emplace_back(other_dims.back());
+    if (this_size == 1 && other_size == 1) {
+        resultDimensions.emplace_back(1);
+    }
 
     // Initialize result tensor
     Tensor<T> result(resultDimensions);
-    T* result_data = result.data.data();
 
-    // Calculate outer dimensions for easier indexing
+    // Calculate outer dimensions for easier indexing if the tensors are not less than 3D
     int batch_size = 1;
-    for (int i = 0; i < this_dims.size() - 2; ++i) {
-        batch_size *= this_dims[i];
-    }
-    for (int i = 0; i < other_dims.size() - 2; ++i) {
-        batch_size *= other_dims[i];
+    if (this_size >= 3 && other_size >= 3) {
+        for (int i = 0; i < this_size - 2; ++i) {
+            batch_size *= this_dims[i];
+        }
+        resultDimensions.emplace_back(this_dims[this_size - 2]);
+        for (int i = 0; i < other_size - 2; ++i) {
+            batch_size *= other_dims[i];
+        }
+        resultDimensions.emplace_back(other_dims.back());
+    } else if (this_size == 2 && other_size > 2) {
+        for (int i = 0; i < other_size - 2; ++i) {
+            batch_size *= other_dims[i];
+        }
+    } else if (other_size == 2 && this_size > 2) {
+        for (int i = 0; i < this_size - 2; ++i) {
+            batch_size *= this_dims[i];
+        }
+    } else {
+        batch_size = 1;
     }
 
-    const int M = this_dims[this_dims.size() - 2]; // Outer dimension for the first tensor
-    const int N = other_dims.back(); // Outer dimension for the second tensor
+    const int M = this_size >= 2 ? this_dims[this_dims.size() - 2] : 1; // Outer dimension for the first tensor
+    const int K = this_dims.back(); // Inner dimension for both tensors
+    const int N = other_size >= 2 ? other_dims.back() : 1; // Outer dimension for the second tensor
 
     // Access data pointers for faster access
+    T* result_data = result.data.data();
     const T* A = data.data();
     const T* B = other.data.data();
 
-    // Perform the dot product using generalized indexing 131 986 000
+    // Perform the dot product using generalized indexing
     #pragma omp parallel for
     for (int b = 0; b < batch_size; ++b) {
         for (int i = 0; i < M; ++i) {
             for (int j = 0; j < N; ++j) {
                 T sum = static_cast<T>(0);
-                int a_idx = b * M + i;
-                int b_idx = b * N + j;
-                sum += A[a_idx] * B[b_idx];
+                for (int k = 0; k < K; ++k) {
+                    int a_idx = b * M + i + k;
+                    int b_idx = b * N + j + k;
+                    sum += A[a_idx] * B[b_idx];
+                }
                 result_data[b * M * N + i * N + j] = sum;
             }
         }
