@@ -4,6 +4,8 @@ from utils.mnist.normalize_data import normalize_data
 from utils.mnist.update_files import update_files
 from utils.ag_news.download_ag_news import download_ag_news
 from utils.ag_news.extract_ag_news import extract_ag_news
+from utils.wikitext.download_wikitext import download_wikitext
+from utils.wikitext.extract_wikitext import extract_wikitext
 
 import os
 
@@ -55,3 +57,14 @@ if __name__ == "__main__":
 
         # Print a success message indicating the completion of all steps
         print("AG_NEWS data has been successfully downloaded, extracted, and cleaned.")
+
+    if not all(os.path.exists(f"{DATA_DIR}/wikitext/{file}.txt") for file in ["train", "valid", "test"]):
+        print("Downloading and processing WikiText-2 dataset...")
+        # Download the WikiText-2 dataset if not already downloaded
+        wikitext_dataset = download_wikitext()
+
+        # Extract the downloaded dataset files
+        extract_wikitext(wikitext_dataset, os.path.join(DATA_DIR, "wikitext"))
+
+        # Print a success message indicating the completion of all steps
+        print("WikiText-2 data has been successfully downloaded, extracted, and saved.")
