@@ -105,11 +105,10 @@ Tensor<T> MultiHeadAttention<T>::concat_heads(const std::vector<Tensor<T>>& head
     for (int s = 0; s < seq_len; ++s) {
         for (const auto& head : heads) {
             for (int h = 0; h < head_dim; ++h) {
-                concatenated_data.push_back(head.data[s * head_dim + h]);
+                concatenated_data.emplace_back(head.data[s * head_dim + h]);
             }
         }
     }
-
     // Create a new tensor with the concatenated data
     Tensor<T> concatenated_tensor({seq_len, head_dim * num_heads}, concatenated_data);
 
@@ -143,6 +142,11 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
         // Scaled dot product attention
         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose());
         attention_scores /= std::sqrt(static_cast<T>(head_dim));
+
+        // Apply activation function (e.g., ReLU)
+        if (activation != nullptr) {
+            activation->forward(attention_scores);
+        }
 
         // Compute the output as weighted sum of values
         Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
@@ -219,7 +223,6 @@ void MultiHeadAttention<T>::backward(const Tensor<T>& grad_output) {
     this->grad_b_v += grad_b_v;
     this->grad_b_o += grad_b_o;
 }
-
 
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttention<T>::parameters() {
