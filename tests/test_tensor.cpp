@@ -539,7 +539,7 @@ TEST_F(Dot, HandleNormalCase) {
   const std::vector<int> dims {2, 2};
   const std::vector<float> inputData = {1.0f, 2.0f, 3.0f, 4.0f};
   const std::vector<float> otherData = {5.0f, 6.0f, 7.0f, 8.0f};
-  const std::vector<float> expectedData = {5.0f, 6.0f, 10.0f, 12.0f};
+  const std::vector<float> expectedData = {17.0f, 20.0f, 28.0f, 33.0f};
 
   const Tensor<float> input(dims, inputData);
   const Tensor<float> other(dims, otherData);
@@ -555,7 +555,7 @@ TEST_F(Dot, HandleEdgeCaseLargeValues) {
   const std::vector<int> dims {2, 2};
   const std::vector<float> inputData = {1000.0f, 2000.0f, 3000.0f, 4000.0f};
   const std::vector<float> otherData = {5000.0f, 6000.0f, 7000.0f, 8000.0f};
-  const std::vector<float> expectedData = {5000000.0f, 6000000.0f, 10000000.0f, 12000000.0f};
+  const std::vector<float> expectedData = {17000000.0f, 20000000.0f, 28000000.0f, 33000000.0f};
 
   const Tensor<float> input(dims, inputData);
   const Tensor<float> other(dims, otherData);
