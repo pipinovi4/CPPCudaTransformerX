@@ -83,6 +83,8 @@ public:
 
     Tensor<T> expandDims(int axis) const;
 
+    Tensor<T> expandDimsAs(std::vector<int> other_dimensions) const;
+
     Tensor<T> squeeze() const;
 
     Tensor<T> reshape(int newShape) const;

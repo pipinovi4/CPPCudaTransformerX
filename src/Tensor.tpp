@@ -492,6 +492,22 @@ Tensor<T> Tensor<T>::expandDims(int axis) const {
     return result;
 }
 
+template <typename T>
+Tensor<T> Tensor<T>::expandDimsAs(const std::vector<int> other_dimensions) const {
+    Tensor<T> expanded_tensor(other_dimensions);
+
+    // Assuming data is stored in a flat vector
+    const T* src_data = data.data();
+    T* dest_data = expanded_tensor.data.data();
+
+    // Expand the tensor data to match the target shape
+    for (size_t i = 0; i < expanded_tensor.data.size(); ++i) {
+        dest_data[i] = src_data[i % data.size()];
+    }
+
+    return expanded_tensor;
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::squeeze() const {
     // Step 1: Calculate the number of dimensions to be removed and the new dimensions.
