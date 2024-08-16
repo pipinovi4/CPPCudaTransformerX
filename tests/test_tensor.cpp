@@ -115,6 +115,29 @@ TEST_F(Sqrt, HandlesEdgeCaseLargeValues) {
   ExpectTensorNear();
 }
 
+class Pow : public TensorTest {
+protected:
+  Pow() {}
+
+  void ProcessData(const float& exponent) {
+    result_tensor = input_tensor.pow(exponent);
+  }
+};
+
+TEST_F(Pow, HandlesNormalCase) {
+  const std::vector<int> dims {5};
+  const std::vector<float> inputData = {2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+  const std::vector<float> expectedData = {4.0f, 9.0f, 16.0f, 25.0f, 36.0f};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected(dims, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(2.0f);
+
+  ExpectTensorNear();
+}
+
 class Sum : public TensorTest {
 protected:
   Sum() {}
