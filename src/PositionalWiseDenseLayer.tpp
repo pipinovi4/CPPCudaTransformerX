@@ -18,17 +18,16 @@ PositionalWiseDenseLayer<T>::PositionalWiseDenseLayer(const int d_model, const i
     biases_1_.fill(bias_init_value);
     biases_2_.fill(bias_init_value);
 
-    // Initialize parameter gradients and resize them
-    grad_weights_1_ = Tensor<T>({d_model, d_ff}, d_model * d_ff);
-    grad_weights_2_ = Tensor<T>({d_ff, d_model}, d_ff * d_model);
-    grad_weights_1_.fill(0.0);
-    grad_weights_2_.fill(0.0);
+    // Initialize parameter gradients as zeros
+    grad_weights_1_ = Tensor<T>({d_model, d_ff});
+    grad_weights_2_ = Tensor<T>({d_ff, d_model});
+
+    grad_weights_1_.print();
+    grad_weights_2_.print();
 
     // Initialize biases gradients as zeros
     grad_biases_1_ = Tensor<T>({d_ff});
     grad_biases_2_ = Tensor<T>({d_model});
-    grad_biases_1_.fill(0.0);
-    grad_biases_2_.fill(0.0);
 }
 
 template <typename T>
