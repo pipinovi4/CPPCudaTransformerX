@@ -61,6 +61,18 @@ public:
 
     Tensor<T> sqrt();
 
+    /**
+     * @brief Raises each element of the tensor to the specified power.
+     *
+     * This method applies element-wise exponentiation to the tensor.
+     * Each element in the tensor is raised to the power of the provided exponent.
+     *
+     * @tparam T Data type of the tensor elements (e.g., float, double).
+     * @param exponent The exponent to which each element of the tensor will be raised.
+     * @return Tensor<T> A new tensor with the same shape as the original, containing the results of the element-wise exponentiation.
+     */
+    Tensor<T> pow(T exponent) const;
+
     Tensor<T> apply(std::function<T(T)> func) const;
 
     void add(const Tensor<T>& other);

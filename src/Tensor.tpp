@@ -229,6 +229,24 @@ Tensor<T> Tensor<T>::sqrt() {
 }
 
 template <typename T>
+Tensor<T> Tensor<T>::pow(T exponent) const {
+    // Create a result tensor with the same dimensions
+    Tensor<T> result(dimensions);
+
+    // Use direct pointer access for optimization
+    const T* src_data = data.data();
+    T* dest_data = result.data.data();
+
+    // Perform element-wise exponentiation
+    for (size_t i = 0; i < data.size(); ++i) {
+        dest_data[i] = std::pow(src_data[i], exponent);
+    }
+
+    return result;
+}
+
+
+template <typename T>
 Tensor<T> Tensor<T>::apply(std::function<T(T)> func) const {
     Tensor<T> result(dimensions);
     for (int i = 0; i < data.size(); ++i) {
