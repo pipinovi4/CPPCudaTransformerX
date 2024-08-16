@@ -1,11 +1,10 @@
 #include <iostream>
-#include "../MultiHeadAttentionModel.h"
-#include "../../include/Embedding.h"
+#include "../models/MultiHeadAttentionModel.h"
 #include "../utils/loadAGNews.tpp"
-#include "../../include/Tensor.h"
-#include "../../include/Optimizer.h"
-#include "../../include/LossFunction.h"
-#include "../../include/Tokenizer.h"
+#include "../include/Tensor.h"
+#include "../include/Optimizer.h"
+#include "../include/LossFunction.h"
+#include "../include/Tokenizer.h"
 
 /**
  * @brief Main function to train and test a Multi-Head Attention model on the AG News dataset.
