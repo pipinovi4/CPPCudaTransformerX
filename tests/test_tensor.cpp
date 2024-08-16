@@ -199,6 +199,30 @@ TEST_F(Mean, HandlesNormalCase) {
   ExpectTensorNear();
 }
 
+class ExpandDimsAs : public TensorTest {
+protected:
+  ExpandDimsAs() {}
+
+  void ProcessData(const std::vector<int>& other_dimensions) {
+    result_tensor = input_tensor.expandDimsAs(other_dimensions);
+  }
+};
+
+TEST_F(ExpandDimsAs, HandlesNormalCase) {
+  const std::vector<int> dims {2, 2};
+  const std::vector<float> inputData = {1.0f, 2.0f, 3.0f, 4.0f};
+  const std::vector<float> expectedData = {1.0f, 2.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f, 4.0f};
+
+  const Tensor<float> input(dims, inputData);
+  const std::vector<int> otherDimensions {2, 2, 2};
+  const Tensor<float> expected(otherDimensions, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(otherDimensions);
+
+  ExpectTensorNear();
+}
+
 class Slice : public TensorTest {
 protected:
   Slice() {}
