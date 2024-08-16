@@ -1,11 +1,11 @@
-from utils.mnist.download_mnist import download_mnist, extract_mnist, MNIST_DIR
-from utils.mnist.load_data import load_data
-from utils.mnist.normalize_data import normalize_data
-from utils.mnist.update_files import update_files
-from utils.ag_news.download_ag_news import download_ag_news
-from utils.ag_news.extract_ag_news import extract_ag_news
-from utils.wikitext.download_wikitext import download_wikitext
-from utils.wikitext.extract_wikitext import extract_wikitext
+from utils_py.mnist.download_mnist import download_mnist, extract_mnist, MNIST_DIR
+from utils_py.mnist.load_data import load_data
+from utils_py.mnist.normalize_data import normalize_data
+from utils_py.mnist.update_files import update_files
+from utils_py.ag_news.download_ag_news import download_ag_news
+from utils_py.ag_news.extract_ag_news import extract_ag_news
+from utils_py.wikitext.download_wikitext import download_wikitext
+from utils_py.wikitext.extract_wikitext import extract_wikitext
 
 import os
 

@@ -1,7 +1,7 @@
-#include "../DigitRecognizer.h"
-#include "../../include/Optimizer.h"
-#include "../../include/Tensor.h"
-#include "../../include/LossFunction.h"
+#include "../models/DigitRecognizer.h"
+#include "../include/Optimizer.h"
+#include "../include/Tensor.h"
+#include "../include/LossFunction.h"
 #include "../utils/loadMNIST.tpp"
 #include <vector>
 #include <iostream>

@@ -1,8 +1,8 @@
-#include "../EmbeddingModel.h"
-#include "../../include/Tokenizer.h"
-#include "../../include/Optimizer.h"
-#include "../../include/LossFunction.h"
-#include "../../include/Tensor.h"
+#include "../models/EmbeddingModel.h"
+#include "../include/Tokenizer.h"
+#include "../include/Optimizer.h"
+#include "../include/LossFunction.h"
+#include "../include/Tensor.h"
 #include <vector>
 #include <iostream>
 #include <random>
