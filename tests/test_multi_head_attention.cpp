@@ -15,7 +15,7 @@ protected:
 
     ActivationFunction<float>::ReLU activation;
 
-    MultiHeadAttention<float> multihead_attention = MultiHeadAttention<float>(hidden_dim, num_heads, head_dim, activation);
+    MultiHeadAttention<float> multihead_attention = MultiHeadAttention<float>(hidden_dim, num_heads, head_dim, &activation);
 
     void ProcessInputBackward(const Tensor<float>& grad_output) {
         multihead_attention.backward(grad_output);
