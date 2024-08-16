@@ -75,7 +75,7 @@ TEST_F(MultiHeadAttentionTest, HandlesGradientAccumulationSimplified) {
     Tensor<float> input_data({1, HIDDEN_DIM}); // Simplify to a single example
     input_data.fill(1.0); // Fill input with known value
 
-    Tensor<float> output = multihead_attention.forward(input_data);
+    const Tensor<float> output = multihead_attention.forward(input_data);
 
     Tensor<float> grad_output(output.shape());
     grad_output.fill(0.1); // Use a simple gradient value
@@ -106,4 +106,26 @@ TEST_F(MultiHeadAttentionTest, HandlesSplitAndConcatHeads) {
     const Tensor<float> concatenated_heads = multihead_attention.concat_heads(split_heads);
     EXPECT_EQ(concatenated_heads.shape()[0], input_data.shape()[0]); // Sequence length
     EXPECT_EQ(concatenated_heads.shape()[1], input_data.shape()[1]); // Hidden dimension
+}
+
+TEST_F(MultiHeadAttentionTest, HandleForwardPassWithMask) {
+    // Initialize input tensor with random uniform values
+    const Tensor<float> input_data = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});
+
+    // Initialize mask tensor with random uniform values
+    const Tensor<float> mask = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, MAX_SEQUENCE_LENGTH});
+
+    // Perform forward pass
+    const Tensor<float> output = multihead_attention.forward(input_data, &mask);
+
+    // Check the output tensor shape
+    EXPECT_EQ(output.shape()[0], MAX_SEQUENCE_LENGTH); // Sequence length should be the same
+    EXPECT_EQ(output.shape()[1], HIDDEN_DIM); // Hidden dimension should match
+
+    // Additional checks can be added to verify the content of the output
+    // For example, checking if output values are within a reasonable range
+    for (int i = 0; i < output.size(); ++i) {
+        EXPECT_GE(output.data[i], -1.0f); // Example check: output values should be greater than or equal to -1.0
+        EXPECT_LE(output.data[i], 1.0f);  // Example check: output values should be less than or equal to 1.0
+    }
 }
