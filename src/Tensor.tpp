@@ -273,7 +273,11 @@ void Tensor<T>::add(const Tensor<T>& other) {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::sum(const int axis) const {
+Tensor<T> Tensor<T>::sum(int axis) const {
+    if (axis == -1) {
+        axis = dimensions.size() - 1;
+    }
+
     if (axis < 0 || axis >= dimensions.size()) {
         throw std::invalid_argument("Invalid axis");
     }
