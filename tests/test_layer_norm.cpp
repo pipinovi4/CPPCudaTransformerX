@@ -84,7 +84,7 @@ TEST_F(TestLayerNorm, ForwardMeanOutput) {
                 sum += y({i, j, k});
             }
             const float mean = sum / static_cast<float>(dims[2]);
-            EXPECT_NEAR(mean, 0.0, 0.2);
+            EXPECT_NEAR(mean, 0.0, 0.15);
         }
     }
 }
