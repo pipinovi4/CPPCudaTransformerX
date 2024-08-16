@@ -10,11 +10,7 @@ template <typename T>
 class MultiHeadAttention {
 public:
     // Constructor with default activation function
-    MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation = nullptr);
-
-    ~MultiHeadAttention() {
-        delete activation;
-    }
+    MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>& activation = ActivationFunction<T>::Linear());
 
     Tensor<T> forward(const Tensor<T>& input_data, const Tensor<T>* mask = nullptr);
     void backward(const Tensor<T>& grad_output);
@@ -42,7 +38,7 @@ private:
     std::vector<Tensor<T>> attention_heads;
     Tensor<T> input_cache;
 
-    ActivationFunction<T>* activation;
+    ActivationFunction<T>& activation;
 
     static void intitializeParameter(Tensor<T>& weights);
 };

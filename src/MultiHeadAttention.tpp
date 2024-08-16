@@ -5,7 +5,7 @@
 #include "../include/MultiHeadAttention.h"
 
 template <typename T>
-MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation)
+MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>& activation)
     : hidden_dim(hidden_dim), num_heads(num_heads), head_dim(head_dim), activation(activation) {
 
     // Initialize the parameters matrices with appropriate dimensions and sizes
@@ -151,10 +151,8 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data, const Tens
             }
         }
 
-        // Apply activation function (e.g., ReLU)
-        if (activation != nullptr) {
-            activation->forward(attention_scores);
-        }
+        // Apply activation function
+        activation.forward(attention_scores);
 
         // Compute the output as weighted sum of values
         Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
@@ -193,6 +191,8 @@ void MultiHeadAttention<T>::backward(const Tensor<T>& grad_output) {
         // Compute gradients of the attention weights
         Tensor<T> grad_attention_scores = grad_attention_heads[i].dot(values_heads[i].transpose());
         grad_attention_scores /= std::sqrt(static_cast<T>(head_dim));
+
+        activation.backward(grad_attention_scores);
 
         // Compute gradients with respect to queries, keys, and values
         grad_queries_heads[i] = grad_attention_scores.dot(keys_heads[i]);
