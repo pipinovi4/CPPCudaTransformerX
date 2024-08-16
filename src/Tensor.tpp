@@ -290,6 +290,18 @@ Tensor<T> Tensor<T>::sum(const int axis) const {
     return result;
 }
 
+template <typename T>
+Tensor<T> Tensor<T>::mean(int axis) const {
+    if (axis == -1) {
+        axis = dimensions.size() - 1;
+    }
+    if (axis < 0 || axis >= dimensions.size()) {
+        throw std::invalid_argument("Invalid axis");
+    }
+    Tensor<T> sum_tensor = sum(axis);
+    return sum_tensor / dimensions[axis];
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) {
@@ -439,7 +451,8 @@ Tensor<T> Tensor<T>::concatenate(const Tensor<T> &other) const {
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::expandDims(const int axis) const {
+Tensor<T> Tensor<T>::expandDims(int axis) const {
+    if (axis == 1) axis = dimensions.size() + 1;
     // Ensure axis is valid
     if (axis < 0 || axis > dimensions.size()) {
         throw std::invalid_argument("Invalid axis");

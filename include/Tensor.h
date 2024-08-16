@@ -67,6 +67,8 @@ public:
 
     Tensor<T> sum(int axis) const;
 
+    Tensor<T> mean(int axis) const;
+
     Tensor<T> slice(int axis, int start, int end, int step) const;
 
     Tensor<T> slice(int axis, int start, int end) const;
