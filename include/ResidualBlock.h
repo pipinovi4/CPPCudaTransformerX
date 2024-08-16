@@ -10,15 +10,16 @@
 template <typename T, typename D>
 class ResidualBlock {
 public:
+    D process_layer_;
+
     explicit ResidualBlock(int d_model, float epsilon, D process_layer);
 
     Tensor<T> forward(const Tensor<T>& input, const Tensor<T>* mask = nullptr);
 
-    Tensor<T> backward(const Tensor<T>& dout);
+    void backward(const Tensor<T>& dout);
 
 private:
     LayerNorm<T> layer_norm_;
-    D process_layer_;
     Tensor<T> input_;
     Tensor<T> processed_;
     Tensor<T> output_;
