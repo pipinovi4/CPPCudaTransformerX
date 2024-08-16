@@ -10,19 +10,23 @@
 // Test class for LayerNorm
 class TestLayerNorm : public ::testing::Test {
 protected:
-    TestLayerNorm() : layer_norm(LayerNorm<float>(d_model)), d_model(512) {}
+    // Dimension of the model
+    const int d_model;
 
     // LayerNorm instance to be tested
     LayerNorm<float> layer_norm;
-    const int d_model;  // Example dimension size for testing
 
-    // Random number generator with a non-predictable seed
+    // Random number generator
     std::default_random_engine generator;
 
+    // Constructor to initialize LayerNorm with the given model dimension
+    TestLayerNorm() : d_model(512), layer_norm(d_model) {}
+
+    // Set up the test fixture
     void SetUp() override {
-        // Seed the random number generator with the current time or random device
+        // Seed the random number generator with a non-deterministic random device
         std::random_device rd;
-        generator = std::default_random_engine(rd());
+        generator.seed(rd());
     }
 };
 
