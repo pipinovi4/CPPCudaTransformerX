@@ -16,7 +16,7 @@ public:
         delete activation;
     }
 
-    Tensor<T> forward(const Tensor<T>& input_data);
+    Tensor<T> forward(const Tensor<T>& input_data, const Tensor<T>* mask = nullptr);
     void backward(const Tensor<T>& grad_output);
 
     std::vector<std::reference_wrapper<Tensor<T>>> parameters();

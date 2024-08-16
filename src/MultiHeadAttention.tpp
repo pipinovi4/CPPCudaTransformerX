@@ -116,7 +116,7 @@ Tensor<T> MultiHeadAttention<T>::concat_heads(const std::vector<Tensor<T>>& head
 }
 
 template <typename T>
-Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
+Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data, const Tensor<T>* mask) {
     // Cache the input data for backpropagation
     input_cache = input_data;
 
@@ -142,6 +142,14 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input_data) {
         // Scaled dot product attention
         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose());
         attention_scores /= std::sqrt(static_cast<T>(head_dim));
+
+        // Apply mask (if provided)
+        if (mask != nullptr) {
+            // Assuming mask has the same shape as attention_scores
+            for (int j = 0; j < attention_scores.size(); ++j) {
+                attention_scores.data[j] += (*mask).data[j] ? 0 : -1e9;
+            }
+        }
 
         // Apply activation function (e.g., ReLU)
         if (activation != nullptr) {
