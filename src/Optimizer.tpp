@@ -81,17 +81,27 @@ public:
             auto& p = params[i].get().data;
             auto& g = grads[i].get().data;
 
+            if (fm.size() != sm.size() || sm.size() != p.size() || p.size() != g.size()) {
+                std::cerr << "Size mismatch between vectors!" << std::endl;
+                return;
+            }
+
+            // Pointer to raw data
+            auto fm_current = fm.data();
+            auto sm_current = sm.data();
+            auto g_current = g.data();
+            auto p_current = p.data();
+
             for (size_t j = 0; j < p.size(); ++j) {
-                T& fm_current = fm[j];
-                T& sm_current = sm[j];
-                T& g_current = g[j];
+                // Perform the updates
+                fm_current[j] = beta1 * fm_current[j] + inv_beta1 * g_current[j];
+                sm_current[j] = beta2 * sm_current[j] + inv_beta2 * std::pow(g_current[j], 2);
 
-                fm_current = beta1 * fm_current + inv_beta1 * g_current;
-                sm_current = beta2 * sm_current + inv_beta2 * std::pow(g_current, 2);
+                // Compute m_hat and v_hat
+                T m_hat = fm_current[j] / (1 - beta1_pow_epoch);
+                T v_hat = sm_current[j] / (1 - beta2_pow_epoch);
 
-                T m_hat = fm_current / (1 - beta1_pow_epoch);
-                T v_hat = sm_current / (1 - beta2_pow_epoch);
-
+                // Apply the update to parameters
                 p[j] -= this->learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);
             }
         }
