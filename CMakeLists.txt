@@ -46,6 +46,7 @@ add_executable(C++CudaTransformerX
         src/ResidualBlock.tpp
         include/PositionalWiseDenseLayer.h
         src/PositionalWiseDenseLayer.tpp
+        include/Layer.h
 )
 
 # Link the main executable with CUDA
