@@ -52,10 +52,13 @@ class Optimizer<T>::Adam final : public Optimizer<T> {
 public:
     Adam(const std::vector<std::vector<int>>& param_shape, T learning_rate, LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
             : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {
-        initialize(param_shape);
+        initialize_params(param_shape);
     }
 
-    void initialize(const std::vector<std::vector<int>>& param_shape) override {
+    explicit Adam(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
+        : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+
+    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
         for (const auto& shape : param_shape) {
             this->first_moment_vector.push_back(Tensor<T>(shape));
             this->second_moment_vector.push_back(Tensor<T>(shape));
@@ -100,10 +103,13 @@ class Optimizer<T>::RMSprop final : public Optimizer<T> {
 public:
     RMSprop(const std::vector<std::vector<int>>& param_shape, T learning_rate, T decay_rate, T epsilon, LearningRateSchedule& lr_schedule)
         : Optimizer<T>(0.9, 0.999, epsilon, learning_rate, lr_schedule), decay_rate(decay_rate), epsilon(epsilon) {
-        initialize(param_shape);
+        initialize_params(param_shape);
     }
 
-    void initialize(const std::vector<std::vector<int>>& param_shape) override {
+    explicit RMSprop(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
+    : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+
+    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
         for (const auto& shape : param_shape) {
             this->first_moment_vector.push_back(Tensor<T>(shape));  // Unused in RMSprop
             this->second_moment_vector.push_back(Tensor<T>(shape)); // Used to store mean squared gradients
@@ -141,10 +147,13 @@ class Optimizer<T>::SGD final : public Optimizer<T> {
 public:
     SGD(const std::vector<std::vector<int>>& param_shape, T learning_rate, LearningRateSchedule& lr_schedule)
         : Optimizer<T>(0.0, 0.0, 0.0, learning_rate, lr_schedule) {
-        initialize(param_shape);
+        initialize_params(param_shape);
     }
 
-    void initialize(const std::vector<std::vector<int>>& param_shape) override {
+    explicit SGD(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
+    : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+
+    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
         // Initialize moment vectors (if necessary)
         // In SGD, we typically don't need these, but we'll follow the structure
         for (const auto& shape : param_shape) {

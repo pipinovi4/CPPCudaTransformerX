@@ -20,7 +20,7 @@ public:
     explicit Optimizer(T beta1, T beta2, T epsilon, T learning_rate, LearningRateSchedule& lr_schedule)
      : beta1(beta1), beta2(beta2), epsilon(epsilon), learning_rate(learning_rate), lr_schedule(lr_schedule) {}
 
-    virtual void initialize(const std::vector<std::vector<int>>& param_shape) = 0;
+    virtual void initialize_params(const std::vector<std::vector<int>>& param_shape) = 0;
     virtual void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params, const std::vector<std::reference_wrapper<Tensor<T>>>& grads, const size_t& epoch) = 0;
     virtual ~Optimizer() = default;
 
