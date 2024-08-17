@@ -12,7 +12,7 @@ MultiHeadAttentionModel<T>::MultiHeadAttentionModel(const int& max_sequence_leng
 
 template <typename T>
 Tensor<T> MultiHeadAttentionModel<T>::forward(const Tensor<T>& input_data) {
-    Tensor<T> x = multi_head_attention.forward(input_data);
+    Tensor<T> x = multi_head_attention.forward(input_data, nullptr);
     x = input_layer.forward(x);
     return output_layer.forward(x);
 }
