@@ -65,13 +65,13 @@ TEST_F(PositionalWiseDenseLayerTest, ForwardPass) {
 // Test the backward pass
 TEST_F(PositionalWiseDenseLayerTest, BackwardPass) {
     const Tensor<float> input({2, d_model}, std::vector<float>{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
-    const Tensor<float> grad_output = Tensor<float>::uniform({2, d_model});
+    Tensor<float> grad_output = Tensor<float>::uniform({2, d_model});
 
     // Perform forward pass first
     layer->forward(input);
 
     // Perform backward pass
-    Tensor<float> grad_input = layer->backward(grad_output);
+    layer->backward(grad_output);
 
     // Check that the gradients have the correct shape
     const auto grads = layer->gradients();
@@ -82,7 +82,7 @@ TEST_F(PositionalWiseDenseLayerTest, BackwardPass) {
     EXPECT_EQ(grads[3].get().shape(), std::vector<int>({d_model}));
 
     // Ensure that the gradient with respect to the input is not empty
-    for (const auto& value : grad_input.data) {
+    for (const auto& value : grad_output.data) {
         EXPECT_FALSE(std::isnan(value));
     }
 }
