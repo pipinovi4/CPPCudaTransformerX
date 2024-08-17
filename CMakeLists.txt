@@ -28,15 +28,24 @@ add_executable(C++CudaTransformerX
         src/ActivationFunction.tpp
         include/Embedding.h
         src/Embedding.tpp
-        examples/utils/loadMNIST.tpp
+        utils/loadMNIST.tpp
         include/Tokenizer.h
         src/Tokenizer.tpp
-        examples/utils/loadAGNews.tpp
+        utils/loadAGNews.tpp
         include/PositionalEncoder.h
         include/MultiHeadAttention.h
         src/MultiHeadAttention.tpp
-        examples/MultiHeadAttentionModel.h
+        models/MultiHeadAttentionModel.h
         src/MultiHeadAttention.tpp
+        utils/loadWikiText.tpp
+        models/Transformer.h
+        models/Transformer.tpp
+        include/LayerNorm.h
+        src/LayerNorm.tpp
+        include/ResidualBlock.h
+        src/ResidualBlock.tpp
+        include/PositionalWiseDenseLayer.h
+        src/PositionalWiseDenseLayer.tpp
 )
 
 # Link the main executable with CUDA
@@ -52,35 +61,39 @@ add_executable(global_tests
         tests/test_embedding.cpp
         tests/test_tokenizer.cpp
         tests/test_multi_head_attention.cpp
+        tests/test_layer_norm.cpp
+        tests/test_residual_block.cpp
+        tests/test_positional_wise_dense_layer.cpp
 )
 
 # Add example of the DigitRecognizer executable
 add_executable(digit_recognizer
-        examples/run/DigitRecognizerRunner.cpp
-        examples/DigitRecognizer.h
-        examples/DigitRecognizer.tpp
-        examples/utils/readUInt32.h
-        examples/utils/readUInt32.cpp
-        examples/utils/swapEndian.h
-        examples/utils/swapEndian.cpp
-        examples/utils/loadMNIST.tpp
-        examples/utils/loadAGNews.h
-        examples/utils/loadMNIST.h
+        examples/DigitRecognizerRunner.cpp
+        models/DigitRecognizer.h
+        models/DigitRecognizer.tpp
+        utils/readUInt32.h
+        utils/readUInt32.cpp
+        utils/swapEndian.h
+        utils/swapEndian.cpp
+        utils/loadMNIST.tpp
+        utils/loadAGNews.h
+        utils/loadMNIST.h
+        utils/loadWikiText.h
 )
 
 # Add example of the EmbeddingModel executable
 add_executable(embedding_model
-        examples/run/EmbeddingModelRunner.cpp
-        examples/EmbeddingModel.h
-        examples/EmbeddingModel.tpp
+        examples/EmbeddingModelRunner.cpp
+        models/EmbeddingModel.h
+        models/EmbeddingModel.tpp
         src/Tokenizer.tpp
 )
 
 # Add example of the MultiHeadAttentionModel executable
 add_executable(multi_head_attention_model
-        examples/run/MultiHeadAttentionModelRunner.cpp
-        examples/MultiHeadAttentionModel.h
-        examples/MultiHeadAttentionModel.tpp
+        examples/MultiHeadAttentionModelRunner.cpp
+        models/MultiHeadAttentionModel.h
+        models/MultiHeadAttentionModel.tpp
 )
 
 # Link the test executable with CUDA
