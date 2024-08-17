@@ -21,15 +21,21 @@ MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_
     this->b_o = Tensor<T>({hidden_dim}, hidden_dim);
 
     // Initialize the parameters using a suitable initialization method
-    intitializeParameter(W_q);
-    intitializeParameter(W_k);
-    intitializeParameter(W_v);
-    intitializeParameter(W_o);
+    initializeParameter(W_q);
+    initializeParameter(W_k);
+    initializeParameter(W_v);
+    initializeParameter(W_o);
 
-    intitializeParameter(b_q);
-    intitializeParameter(b_k);
-    intitializeParameter(b_v);
-    intitializeParameter(b_o);
+    // Initialize the biases with a constant value of 0.01
+    for (int i = 0; i < num_heads * head_dim; i++) {
+        b_q.data.emplace_back(0.01);
+        b_k.data.emplace_back(0.01);
+        b_v.data.emplace_back(0.01);
+    }
+
+    for (int i = 0; i < hidden_dim; i++) {
+        b_o.data.emplace_back(0.01);
+    }
 
     // Initialize gradients for all parameters as zeros
     grad_W_q = Tensor<T>({hidden_dim, num_heads * head_dim});
