@@ -2,33 +2,69 @@
 #define LAYERNORM_H
 
 #pragma once
+#include "Layer.h"
 #include "Tensor.h"
 
+/**
+ * @class LayerNorm
+ * @brief Implements Layer Normalization for neural networks.
+ *
+ * Layer normalization normalizes the input tensor across the features (last dimension)
+ * to stabilize and accelerate training. This class supports both forward and backward
+ * passes, making it suitable for training deep learning models.
+ *
+ * @tparam T The data type used for the computations, typically `float` or `double`.
+ */
 template <typename T>
-class LayerNorm {
+class LayerNorm final : public Layer<T> {
 public:
-    // Constructor initializes the LayerNorm layer with the model dimension and epsilon value
+    /**
+     * @brief Constructor for the LayerNorm layer.
+     *
+     * Initializes the LayerNorm layer with the specified model dimension and
+     * a small epsilon value to prevent division by zero during normalization.
+     *
+     * @param d_model The dimension of the model, which corresponds to the size
+     *                of the last dimension of the input tensor.
+     * @param epsilon A small value added to the variance to prevent division
+     *                by zero during normalization. Default is 1e-6.
+     */
     explicit LayerNorm(int d_model, float epsilon = 1e-6);
 
-    // Forward pass: applies layer normalization to the input tensor
-    Tensor<T> forward(const Tensor<T>& x);
+    /**
+     * @brief Forward pass of the LayerNorm layer.
+     *
+     * Applies layer normalization to the input tensor. The normalization
+     * is performed across the last dimension of the input tensor, and
+     * the result is scaled and shifted using learnable parameters `gamma_` and `beta_`.
+     *
+     * @param input The input tensor to be normalized.
+     * @return The normalized output tensor after applying the scale and shift.
+     */
+    Tensor<T> forward(const Tensor<T>& input) override;
 
-    // Backward pass: computes gradients with respect to the input tensor
-    Tensor<T> backward(const Tensor<T>& dout);
+    /**
+     * @brief Backward pass of the LayerNorm layer.
+     *
+     * Computes the gradients of the loss with respect to the input tensor,
+     * which are used to update the parameters during backpropagation.
+     *
+     * @param grad The gradient of the loss with respect to the output of the layer.
+     */
+    void backward(Tensor<T>& grad) override;
 
 private:
-    int d_model_;  // Dimension of the model (size of the last dimension)
-    float epsilon_;  // Small value to prevent division by zero
-    Tensor<T> gamma_;  // Learnable scale parameter
-    Tensor<T> beta_;  // Learnable shift parameter
+    int d_model_;  // Dimension of the model (size of the last dimension of the input tensor)
+    float epsilon_;  // Small constant to prevent division by zero during normalization
+    Tensor<T> gamma_;  // Learnable scale parameter (applied after normalization)
+    Tensor<T> beta_;  // Learnable shift parameter (applied after normalization)
 
     // Intermediate results needed for backpropagation
     Tensor<T> normalized_;  // Normalized input tensor
-    Tensor<T> mean_;  // Mean across the last dimension
-    Tensor<T> variance_;  // Variance across the last dimension
+    Tensor<T> mean_;  // Mean of the input tensor across the last dimension
+    Tensor<T> variance_;  // Variance of the input tensor across the last dimension
 
-    // Store the input tensor for use during backpropagation
-    Tensor<T> input_;
+    Tensor<T> input_;  // Stores the input tensor for use during backpropagation
 };
 
 #include "../src/LayerNorm.tpp"

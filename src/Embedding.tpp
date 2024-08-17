@@ -4,23 +4,16 @@
 #include "../include/Embedding.h"
 #include <stdexcept>
 
-/**
- * @brief Constructs an Embedding layer with the specified dimensions and learning rate parameters.
- *
- * @param init_func Optional custom initialization function for weights.
- * @param lr_schedule The learning rate scheduler to use for updating the learning rate over epochs.
- * @param vocab_size The size of the input dimension (vocabulary size).
- * @param embedding_dims The size of the output dimension (embedding vector size).
- * @tparam T Data type of the input tensor.
- */
 template <typename T>
 Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
     typename Optimizer<T>::LearningRateSchedule& lr_schedule, std::function<void(Tensor<T>&)> init_func)
     : lr_schedule(lr_schedule), vocab_size(vocab_size), embedding_dims(embedding_dims) {
+
+    // Initialize the weights and gradient tensors with appropriate shapes
     this->weights = Tensor<T>({vocab_size, embedding_dims});
     this->grad = Tensor<T>({vocab_size, embedding_dims});
 
-    // Use custom initialization if provided, otherwise use default Xavier initialization
+    // Use custom initialization function if provided, otherwise initialize weights with default method
     if (init_func) {
         init_func(this->weights);
     } else {
@@ -28,41 +21,36 @@ Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
     }
 }
 
-/**
- * @brief Initializes the weights of the Embedding layer using Xavier initialization.
- */
 template <typename T>
 void Embedding<T>::initializeWeights() {
+    // Calculate the limit for Xavier/Glorot initialization
     T fan_in = static_cast<T>(vocab_size);
     T fan_out = static_cast<T>(embedding_dims);
     T limit = std::sqrt(6.0 / (fan_in + fan_out));
 
+    // Initialize random number generator
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<T> dis(-limit, limit);
 
+    // Populate weights tensor with random values within the calculated limit
     std::generate(weights.data.begin(), weights.data.end(), [&]() { return dis(gen); });
 }
 
-/**
- * @brief Performs the forward pass of the Embedding layer.
- *
- * @param input_data A tensor of input indices representing the input tokens.
- * @return Tensor<T> The corresponding embedding vectors for the input tokens.
- */
 template <typename T>
-Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
-    this->input_cache = input_data; // Store input data for backward pass
+Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
+    // Cache the input for use in the backward pass
+    this->input_cache = input;
 
-    // Define output shape as [batch_size, sequence_length, embedding_dims]
-    std::vector<int> output_shape = {input_data.shape()[0], input_data.shape()[1], embedding_dims};
-    Tensor<T> output(output_shape, input_data.shape()[0] * input_data.shape()[1] * embedding_dims);
+    // Define the shape of the output tensor [batch_size, sequence_length, embedding_dims]
+    std::vector<int> output_shape = {input.shape()[0], input.shape()[1], embedding_dims};
+    Tensor<T> output(output_shape, input.shape()[0] * input.shape()[1] * embedding_dims);
 
-    // Iterate over batch size and sequence length
-    for (int i = 0; i < input_data.shape()[0]; ++i) {
-        for (int j = 0; j < input_data.shape()[1]; ++j) {
-            const int index = static_cast<int>(input_data.data[i * input_data.shape()[1] + j]);
-            for (int k = 0; k < embedding_dims; ++k) {
+    // Populate the output tensor by looking up the embeddings for each token in the input
+    for (int i = 0; i < input.shape()[0]; ++i) {  // Iterate over batch size
+        for (int j = 0; j < input.shape()[1]; ++j) {  // Iterate over sequence length
+            const int index = static_cast<int>(input.data[i * input.shape()[1] + j]);
+            for (int k = 0; k < embedding_dims; ++k) {  // Iterate over embedding dimensions
                 output.data.push_back(weights.data[index * embedding_dims + k]);
             }
         }
@@ -70,83 +58,63 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input_data) {
     return output;
 }
 
-/**
- * @brief Performs the backward pass of the Embedding layer, computing gradients with respect to the weights.
- *
- * @param grad_data The gradient of the loss with respect to the output of the Embedding layer.
- */
-
 template <typename T>
-void Embedding<T>::backward(Tensor<T>& grad_data) {
-    // Zero the gradient tensor before accumulating new gradients
+void Embedding<T>::backward(Tensor<T>& grad) {
+    // Zero the gradients before accumulation
     zero_grad();
 
-    // Iterate over batch size and sequence length
-    for (int i = 0; i < grad_data.shape()[0]; ++i) {
-        for (int j = 0; j < grad_data.shape()[1]; ++j) {
+    // Accumulate gradients for the embeddings based on the backward pass
+    for (int i = 0; i < grad.shape()[0]; ++i) {  // Iterate over batch size
+        for (int j = 0; j < grad.shape()[1]; ++j) {  // Iterate over sequence length
             const int index = static_cast<int>(input_cache.data[i * input_cache.shape()[1] + j]);
-            for (int k = 0; k < embedding_dims; ++k) {
-                grad_data.data[index * embedding_dims + k] += grad_data.data[(i * grad_data.shape()[1] + j) * grad_data.shape()[2] + k];
+            for (int k = 0; k < embedding_dims; ++k) {  // Iterate over embedding dimensions
+                grad.data[index * embedding_dims + k] += grad.data[(i * grad.shape()[1] + j) * grad.shape()[2] + k];
             }
         }
     }
 }
 
-/**
- * @brief Updates the weights of the Embedding layer using the accumulated gradients.
- */
 template <typename T>
 void Embedding<T>::update(const int& epoch) {
+    // Retrieve the current learning rate based on the epoch
     T learning_rate = lr_schedule.getLearningRate(epoch);
 
+    // Access the raw data pointer for weights for faster updates
     auto weights_data_access = weights.data.data();
 
-    #pragma omp parallel for  // Use OpenMP for parallel processing if supported
-    for (int i = 0; i < vocab_size; ++i) {
-        for (int j = 0; j < embedding_dims; ++j) {
+    // Update weights in parallel if supported by the compiler
+    #pragma omp parallel for
+    for (int i = 0; i < vocab_size; ++i) {  // Iterate over vocabulary size
+        for (int j = 0; j < embedding_dims; ++j) {  // Iterate over embedding dimensions
             weights_data_access[i * embedding_dims + j] -= learning_rate * grad.data[i * embedding_dims + j];
         }
     }
 }
 
-/**
- * @brief Zeros the gradient tensor of the Embedding layer.
- */
 template <typename T>
 void Embedding<T>::zero_grad() {
+    // Reset all gradient values to zero
     std::fill(this->grad.data.begin(), this->grad.data.end(), static_cast<T>(0));
 }
 
-/**
- * @brief Sets the weights of the Embedding layer to the provided tensor.
- *
- * @param new_weights The tensor containing the new weights.
- */
 template <typename T>
 void Embedding<T>::setWeights(const Tensor<T>& new_weights) {
+    // Ensure the new weights match the shape of the existing weights
     if (new_weights.shape() != weights.shape()) {
         throw std::invalid_argument("New weights dimensions do not match current embedding weights dimensions.");
     }
     this->weights = new_weights;
 }
 
-/**
- * @brief Returns the weights tensor of the Embedding layer.
- *
- * @return Tensor<T> The weights tensor.
- */
 template <typename T>
 Tensor<T>& Embedding<T>::getWeights() {
+    // Return a reference to the weights tensor
     return this->weights;
 }
 
-/**
- * @brief Returns the gradient tensor of the Embedding layer.
- *
- * @return Tensor<T> The gradient tensor.
- */
 template <typename T>
 Tensor<T>& Embedding<T>::getGrad() {
+    // Return a reference to the gradient tensor
     return this->grad;
 }
 

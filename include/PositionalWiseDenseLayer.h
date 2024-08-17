@@ -3,6 +3,7 @@
 
 #pragma once
 #include "ActivationFunction.h"
+#include "Layer.h"
 #include "Tensor.h"
 
 /**
@@ -18,7 +19,7 @@
  * @tparam T The data type of the elements in the tensors (e.g., float, double).
  */
 template <typename T>
-class PositionalWiseDenseLayer {
+class PositionalWiseDenseLayer final : public Layer<T> {
 public:
     /**
      * @brief Constructor for the PositionalWiseDenseLayer class.
@@ -39,7 +40,7 @@ public:
      * @param input The input tensor to the layer.
      * @return The output tensor after the position-wise transformations.
      */
-    Tensor<T> forward(const Tensor<T>& input);
+    Tensor<T> forward(const Tensor<T>& input) override;
 
     /**
      * @brief Backward pass through the PositionalWiseDenseLayer to compute gradients.
@@ -48,10 +49,10 @@ public:
      * gradient of the loss with respect to the output of this layer. It also computes
      * the gradient of the loss with respect to the input, which is returned.
      *
-     * @param grad_output The gradient of the loss with respect to the output of this layer.
+     * @param grad The gradient of the loss with respect to the output of this layer.
      * @return The gradient of the loss with respect to the input of this layer.
      */
-    Tensor<T> backward(const Tensor<T>& grad_output);
+    void backward(Tensor<T>& grad) override;
 
     /**
      * @brief Returns the parameters (weights and biases) of the layer.

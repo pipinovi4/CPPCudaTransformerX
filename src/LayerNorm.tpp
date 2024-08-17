@@ -3,96 +3,66 @@
 
 #include "../include/LayerNorm.h"
 
-/**
- * @brief Construct a new LayerNorm object.
- * 
- * This constructor initializes the LayerNorm layer with the given model dimension (`d_model`)
- * and a small epsilon value (`epsilon_`) to prevent division by zero during normalization.
- * It also initializes the learnable parameters `gamma_` (scale) and `beta_` (shift).
- *
- * @tparam T Data type of the tensor elements (e.g., float, double).
- * @param d_model The dimension of the model (size of the last dimension).
- * @param epsilon A small value added to the variance to prevent division by zero during normalization.
- */
+// Constructor initializes the LayerNorm layer with model dimension (`d_model`),
+// epsilon value (`epsilon_`), and learnable parameters `gamma_` (scale) and `beta_` (shift).
 template <typename T>
 LayerNorm<T>::LayerNorm(const int d_model, const float epsilon)
-    : d_model_(d_model), epsilon_(epsilon), gamma_(Tensor<T>::ones({d_model})), beta_(Tensor<T>::zeros({d_model})) {}
+    : d_model_(d_model), epsilon_(epsilon),
+      gamma_(Tensor<T>::ones({d_model})),  // Initialize gamma to ones
+      beta_(Tensor<T>::zeros({d_model})) { }  // Initialize beta to zeros
 
-/**
- * @brief Forward pass of the LayerNorm layer.
- *
- * This function applies layer normalization to the input tensor `x`.
- * Layer normalization normalizes the input across the last dimension by subtracting the mean
- * and dividing by the standard deviation. After normalization, it applies a learned scale (`gamma_`)
- * and shift (`beta_`). A small uniform noise is added to the final output to reduce symmetry.
- *
- * @tparam T Data type of the tensor elements (e.g., float, double).
- * @param x Input tensor with shape (batch_size, seq_length, d_model).
- * @return Tensor<T> The normalized and scaled tensor with the same shape as the input.
- */
+// Forward pass of the LayerNorm layer.
 template <typename T>
-Tensor<T> LayerNorm<T>::forward(const Tensor<T>& x) {
-    // Store the input tensor for backpropagation
-    input_ = x;
+Tensor<T> LayerNorm<T>::forward(const Tensor<T>& input) {
+    input_ = input;  // Store input tensor for backpropagation
 
-    // Calculate mean across the last dimension and expand the dimensions to match the input tensor
-    mean_ = x.mean(-1).expandDimsAs(x.shape());
+    // Calculate the mean across the last dimension
+    mean_ = input.mean(-1).expandDimsAs(input.shape());
 
-    // Calculate variance across the last dimension
-    variance_ = ((x - mean_) * (x - mean_)).mean(-1);
+    // Calculate the variance across the last dimension
+    variance_ = ((input - mean_) * (input - mean_)).mean(-1);
 
-    // Normalize the input
-    normalized_ = (x - mean_) / (variance_.expandDimsAs(x.shape()) + epsilon_).sqrt();
+    // Normalize the input using the calculated mean and variance
+    normalized_ = (input - mean_) / (variance_.expandDimsAs(input.shape()) + epsilon_).sqrt();
 
-    // Add slight noise to normalized values if needed
+    // Optional: Add slight noise to normalized values to reduce symmetry
     Tensor<T> noise = Tensor<T>::uniform(normalized_.shape(), -1e-5, 1e-5);
     normalized_ = normalized_ + noise;
 
-    // Scale and shift using learned parameters gamma and beta (with slight noise)
-    return (gamma_.expandDimsAs(x.shape()) * normalized_ + beta_.expandDimsAs(x.shape()));
+    // Scale and shift the normalized output using gamma and beta
+    return (gamma_.expandDimsAs(input.shape()) * normalized_ + beta_.expandDimsAs(input.shape()));
 }
 
-/**
- * @brief Backward pass of the LayerNorm layer.
- *
- * This function calculates the gradient of the loss with respect to the input tensor `x`,
- * the scale (`gamma_`), and the shift (`beta_`), based on the gradient of the loss
- * with respect to the output (`dout`). A small uniform noise is added to the gradients
- * to reduce symmetry.
- *
- * @tparam T Data type of the tensor elements (e.g., float, double).
- * @param dout Gradient of the loss with respect to the output of the LayerNorm layer.
- * @return Tensor<T> The gradient with respect to the input tensor `x`.
- */
+// Backward pass of the LayerNorm layer.
 template <typename T>
-Tensor<T> LayerNorm<T>::backward(const Tensor<T>& dout) {
-    const int N = dout.shape()[dout.shape().size() - 1];  // Assuming the last dimension is the one normalized
+void LayerNorm<T>::backward(Tensor<T>& grad) {
+    const int N = grad.shape().back();  // Number of elements in the last dimension
 
-    // Expand gamma to match the shape of dout
-    Tensor<T> gamma_expanded = gamma_.expandDimsAs(dout.shape());
+    // Expand gamma to match the shape of the gradient tensor
+    Tensor<T> gamma_expanded = gamma_.expandDimsAs(grad.shape());
 
     // Gradient of the normalized output
-    Tensor<T> dnorm = dout * gamma_expanded;
+    Tensor<T> dnorm = grad * gamma_expanded;
 
-    // Gradient of the variance
-    Tensor<T> diff = input_ - mean_;  // Shape: same as input_
-    Tensor<T> dvar = (dnorm * diff * -0.5 * (variance_ + epsilon_).pow(-1.5).expandDimsAs(dout.shape())).sum(-1);  // Sum across the last dimension
-    dvar = dvar.expandDimsAs(diff.shape());  // Ensure correct broadcasting to the shape of input_
+    // Calculate the difference between input and mean
+    Tensor<T> diff = input_ - mean_;
 
-    // Gradient of the mean
-    Tensor<T> dmean = (dnorm * -1 / (variance_ + epsilon_).sqrt().expandDimsAs(dout.shape())).sum(-1);  // Sum across the last dimension
-    dmean = dmean.expandDimsAs(diff.shape());  // Ensure correct broadcasting
+    // Compute the gradient of the variance
+    Tensor<T> dvar = (dnorm * diff * -0.5 * (variance_ + epsilon_).pow(-1.5).expandDimsAs(grad.shape())).sum(-1);
+    dvar = dvar.expandDimsAs(diff.shape());  // Ensure broadcasting is correct
+
+    // Compute the gradient of the mean
+    Tensor<T> dmean = (dnorm * -1 / (variance_ + epsilon_).sqrt().expandDimsAs(grad.shape())).sum(-1);
+    dmean = dmean.expandDimsAs(diff.shape());  // Ensure broadcasting is correct
     dmean = dmean + dvar * diff * -2.0 / N;
 
-    // Gradient with respect to the input
-    Tensor<T> dx = dnorm / (variance_ + epsilon_).sqrt().expandDimsAs(dout.shape());
-    dx = dx + dvar * 2.0 * diff / N + dmean / N;
+    // Compute the gradient with respect to the input
+    grad = dnorm / (variance_ + epsilon_).sqrt().expandDimsAs(grad.shape());
+    grad = grad + dvar * 2.0 * diff / N + dmean / N;
 
     // Optional: Add slight noise to the gradients to reduce symmetry
-    Tensor<T> noise = Tensor<T>::uniform(dx.shape(), -1e-5, 1e-5);
-    dx = dx + noise;
-
-    return dx;
+    Tensor<T> noise = Tensor<T>::uniform(grad.shape(), -1e-5, 1e-5);
+    grad = grad + noise;
 }
 
 #endif // LAYERNORM_TPP
