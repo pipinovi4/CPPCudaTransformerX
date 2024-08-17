@@ -5,6 +5,7 @@
 #include "../include/Tensor.h"
 #include <vector>
 #include "ActivationFunction.h"
+#include "Layer.h"
 
 /**
  * @brief MultiHeadAttention layer class.
