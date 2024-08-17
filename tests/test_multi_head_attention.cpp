@@ -17,7 +17,7 @@ protected:
 
     MultiHeadAttention<float> multihead_attention = MultiHeadAttention<float>(hidden_dim, num_heads, head_dim, &activation);
 
-    void ProcessInputBackward(const Tensor<float>& grad_output) {
+    void ProcessInputBackward(Tensor<float>& grad_output) {
         multihead_attention.backward(grad_output);
     }
 };
@@ -28,7 +28,7 @@ TEST_F(MultiHeadAttentionTest, HandlesForwardPass) {
     const Tensor<float> input_data = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});
 
     // Perform forward pass
-    const Tensor<float> output = multihead_attention.forward(input_data);
+    const Tensor<float> output = multihead_attention.forward(input_data, nullptr);
 
     // Check the output tensor shape
     EXPECT_EQ(output.shape()[0], MAX_SEQUENCE_LENGTH); // Sequence length should be the same
@@ -48,10 +48,10 @@ TEST_F(MultiHeadAttentionTest, HandlesBackwardPass) {
     const Tensor<float> input_data = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});
 
     // Perform forward pass
-    const Tensor<float> output = multihead_attention.forward(input_data);
+    const Tensor<float> output = multihead_attention.forward(input_data, nullptr);
 
     // Initialize gradient tensor with random uniform values
-    const Tensor<float> grad_output = Tensor<float>::uniform(output.shape());
+    Tensor<float> grad_output = Tensor<float>::uniform(output.shape());
 
     // Perform backward pass
     this->ProcessInputBackward(grad_output);
@@ -78,7 +78,7 @@ TEST_F(MultiHeadAttentionTest, HandlesGradientAccumulationSimplified) {
     Tensor<float> input_data({1, HIDDEN_DIM}); // Simplify to a single example
     input_data.fill(1.0); // Fill input with known value
 
-    const Tensor<float> output = multihead_attention.forward(input_data);
+    const Tensor<float> output = multihead_attention.forward(input_data, nullptr);
 
     Tensor<float> grad_output(output.shape());
     grad_output.fill(0.1); // Use a simple gradient value
