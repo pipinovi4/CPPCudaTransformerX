@@ -40,7 +40,7 @@ TEST_F(TestLayerNorm, ForwardShape) {
     }
 
     // Forward pass
-    Tensor<float> y = layer_norm.forward(x);
+    const Tensor<float> y = layer_norm.forward(x);
 
     // Check the dimensions of the output tensor
     EXPECT_EQ(y.shape(), dims);
@@ -103,13 +103,13 @@ TEST_F(TestLayerNorm, BackwardShape) {
     }
 
     // Forward pass
-    const Tensor<float> y = layer_norm.forward(x);
+    Tensor<float> y = layer_norm.forward(x);
 
     // Backward pass
-    const Tensor<float> dx = layer_norm.backward(y);
+    layer_norm.backward(y);
 
     // Check the dimensions of the gradient tensor
-    EXPECT_EQ(dx.shape(), dims);
+    EXPECT_EQ(y.shape(), dims);
 }
 
 TEST_F(TestLayerNorm, BackwardGradientRange) {
@@ -131,15 +131,15 @@ TEST_F(TestLayerNorm, BackwardGradientRange) {
     }
 
     // Backward pass
-    Tensor<float> dx = layer_norm.backward(dout);
+    layer_norm.backward(dout);
 
     // Check that the gradients are within a reasonable range
     constexpr float min_grad = -10.0;
     constexpr float max_grad = 10.0;
-    for (int i = 0; i < dx.size(); ++i) {
-        EXPECT_GE(dx.data[i], min_grad);
-        EXPECT_LE(dx.data[i], max_grad);
-        EXPECT_FALSE(std::isnan(dx.data[i]));  // Ensure no NaN values
+    for (int i = 0; i < dout.size(); ++i) {
+        EXPECT_GE(dout.data[i], min_grad);
+        EXPECT_LE(dout.data[i], max_grad);
+        EXPECT_FALSE(std::isnan(dout.data[i]));  // Ensure no NaN values
     }
 }
 
@@ -162,14 +162,14 @@ TEST_F(TestLayerNorm, BackwardGradientMean) {
     }
 
     // Backward pass
-    const Tensor<float> dx = layer_norm.backward(dout);
+    layer_norm.backward(dout);
 
     // Check that the mean of the gradients is close to 0
     float sum_dx = 0.0;
-    for (int i = 0; i < dx.size(); ++i) {
-        sum_dx += dx.data[i];
+    for (int i = 0; i < dout.size(); ++i) {
+        sum_dx += dout.data[i];
     }
-    const float mean_dx = sum_dx / static_cast<float>(dx.size());
+    const float mean_dx = sum_dx / static_cast<float>(dout.size());
     EXPECT_NEAR(mean_dx, 0.0, 0.01);
 }
 
