@@ -16,7 +16,7 @@ public:
 
     Tensor<T> forward(const Tensor<T>& input, const Tensor<T>* mask = nullptr);
 
-    void backward(const Tensor<T>& dout);
+    void backward(Tensor<T>& dout);
 
 private:
     LayerNorm<T> layer_norm_;

@@ -26,10 +26,9 @@ Tensor<T> ResidualBlock<T, D>::forward(const Tensor<T>& input, const Tensor<T>* 
 }
 
 template <typename T, typename D>
-void ResidualBlock<T, D>::backward(const Tensor<T>& dout) {
-    Tensor<T> dnorm = layer_norm_.backward(dout);
-
-    process_layer_.backward(dnorm);
+void ResidualBlock<T, D>::backward(Tensor<T>& dout) {
+    process_layer_.backward(dout);
+    layer_norm_.backward(dout);
 }
 
 #endif // RESIDUALBLOCK_TPP
