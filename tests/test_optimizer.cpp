@@ -50,43 +50,38 @@ protected:
     Optimizer<float>::Adam optimizer;
 
     AdamTest()
-        : optimizer({{2, 2}}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+        : OptimizerTest<float>(), optimizer({{2, 2}}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
 
+protected:
     void SetUp() override {
         optimizer.initialize_params({{2, 2}});
     }
 };
 
 TEST_F(AdamTest, HandleNormalCase) {
-    // Initialize params and grads with some values
-    input_params.data = {0.1, 0.2, 0.3, 0.4};
-    input_grads.data = {0.01, 0.02, 0.03, 0.04};
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}),
+              Tensor<float>({2, 2}, std::vector<float>{0.01, 0.02, 0.03, 0.04}),
+              Tensor<float>({2, 2}, std::vector<float>{0.08, 0.18, 0.28, 0.38}));
 
-    // Calculate expected values based on Adam optimizer calculations
-    expected_params.data = {0.1, 0.2, 0.3, 0.4};  // This needs to be computed properly
+    // Wrap in std::reference_wrapper
+    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params), std::ref(input_params)};
+    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads), std::ref(input_grads)};
 
-    // Wrap tensors in reference wrappers and store in vectors
-    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params)};
-    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads)};
-
-    // Perform the update
+    // Call the update function with wrapped vectors
     optimizer.update(params_vec, grads_vec, 0);
 
-    // Check the results
+    // Validate the parameters after the update
     ExpectParamsNear(input_params);
 }
 
 TEST_F(AdamTest, HandleZeroGradients) {
-    // Initialize params and grads with zero gradients
-    input_params.data = {0.1, 0.2, 0.3, 0.4};
-    input_grads.data = {0.0, 0.0, 0.0, 0.0};
-
-    // Expected params should be the same as initial since grads are zero
-    expected_params.data = {0.1, 0.2, 0.3, 0.4};
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}),
+              Tensor<float>({2, 2}, std::vector<float>{0.0, 0.0, 0.0, 0.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}));
 
     // Wrap tensors in reference wrappers and store in vectors
-    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params)};
-    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads)};
+    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params), std::ref(input_params)};
+    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads), std::ref(input_grads)};
 
     // Perform the update
     optimizer.update(params_vec, grads_vec, 0);
@@ -96,16 +91,13 @@ TEST_F(AdamTest, HandleZeroGradients) {
 }
 
 TEST_F(AdamTest, HandleLargeGradients) {
-    // Initialize params and grads with large gradients
-    input_params.data = {0.1, 0.2, 0.3, 0.4};
-    input_grads.data = {1.0, 1.0, 1.0, 1.0};
-
-    // Expected values after applying the Adam optimizer (need to be computed correctly)
-    expected_params.data = {0.1, 0.2, 0.3, 0.4};  // Replace with correct expected values
+    SetUpData(Tensor<float>({2, 2}, std::vector<float>{0.1, 0.2, 0.3, 0.4}),
+              Tensor<float>({2, 2}, std::vector<float>{1.0, 1.0, 1.0, 1.0}),
+              Tensor<float>({2, 2}, std::vector<float>{0.08545, 0.18545, 0.28545, 0.38545}));
 
     // Wrap tensors in reference wrappers and store in vectors
-    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params)};
-    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads)};
+    const std::vector<std::reference_wrapper<Tensor<float>>> params_vec = {std::ref(input_params), std::ref(input_params)};
+    const std::vector<std::reference_wrapper<Tensor<float>>> grads_vec = {std::ref(input_grads), std::ref(input_grads)};
 
     // Perform the update
     optimizer.update(params_vec, grads_vec, 1);
