@@ -2,10 +2,10 @@
 #define MULTIHEADATTENTION_H
 
 #pragma once
-#include "../include/Tensor.h"
-#include <vector>
+#include "Tensor.h"
 #include "ActivationFunction.h"
 #include "Layer.h"
+#include <vector>
 
 /**
  * @brief MultiHeadAttention layer class.
@@ -60,20 +60,6 @@ public:
     void backward(Tensor<T>& grad) override;
 
     /**
-     * @brief Get the parameters of the MultiHeadAttention layer.
-     *
-     * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the layer's parameters.
-     */
-    std::vector<std::reference_wrapper<Tensor<T>>> parameters();
-
-    /**
-     * @brief Get the gradients of the MultiHeadAttention layer.
-     *
-     * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the gradients of the layer's parameters.
-     */
-    std::vector<std::reference_wrapper<Tensor<T>>> gradients();
-
-    /**
      * @brief Split the input tensor into multiple heads.
      *
      * This method reshapes and splits the input tensor into multiple heads for parallel attention computation.
@@ -92,6 +78,20 @@ public:
      * @return Tensor<T> Concatenated tensor of shape (batch_size, seq_length, hidden_dim).
      */
     Tensor<T> concat_heads(const std::vector<Tensor<T>>& heads) const;
+
+    /**
+    * @brief Get the parameters of the MultiHeadAttention layer.
+    *
+    * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the layer's parameters.
+    */
+    std::vector<std::reference_wrapper<Tensor<T>>> parameters();
+
+    /**
+     * @brief Get the gradients of the MultiHeadAttention layer.
+     *
+     * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the gradients of the layer's parameters.
+     */
+    std::vector<std::reference_wrapper<Tensor<T>>> gradients();
 
 private:
     int hidden_dim;  ///< Total hidden dimension size.
