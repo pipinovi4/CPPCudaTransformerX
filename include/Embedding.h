@@ -11,6 +11,7 @@
 #include "Layer.h"
 #include "../include/Tensor.h"
 #include "../include/Optimizer.h"
+#include <stdexcept>
 
 /**
  * @class Embedding

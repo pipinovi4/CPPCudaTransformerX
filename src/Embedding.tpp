@@ -2,7 +2,6 @@
 #define EMBEDDING_TPP
 
 #include "../include/Embedding.h"
-#include <stdexcept>
 
 template <typename T>
 Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
@@ -53,9 +52,9 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
     Tensor<T> output(output_shape);
 
     // Data access for better performance
-    auto input_data = input.data.data();
-    auto weights_data = weights_.data.data();
-    auto output_data = output.data.data();
+    const T* input_data = input.data.data();
+    const T* weights_data = weights_.data.data();
+    T* output_data = output.data.data();
 
     // Populate the output tensor by looking up the embeddings for each token in the input
     #pragma omp parallel for collapse(3)
@@ -83,17 +82,17 @@ void Embedding<T>::backward(Tensor<T>& grad) {
     }
 
     // Data access for better performance
-    auto grad_data = grad.data.data();
-    auto input_cache_data = input_cache_.data.data();
-    auto grad_data_ = grad_.data.data();
+    T* grad_data_ptr = grad.data.data();
+    T* input_cache_data_ptr = input_cache_.data.data();
+    T* grad_data_ptr_ = grad_.data.data();
 
     // Accumulate gradients for the embeddings based on the backward pass
     for (int k = 0; k < embedding_dims_; ++k) {
         #pragma omp parallel for collapse(2)
         for (int i = 0; i < grad_shape[0]; ++i) {
             for (int j = 0; j < grad_shape[1]; ++j) {
-                const int index = static_cast<int>(input_cache_data[i * input_cache_shape[1] + j]);
-                grad_data_[index * embedding_dims_ + k] += grad_data[(i * grad_shape[1] + j) * grad_shape[2] + k];
+                const int index = static_cast<int>(input_cache_data_ptr[i * input_cache_shape[1] + j]);
+                grad_data_ptr_[index * embedding_dims_ + k] += grad_data_ptr[(i * grad_shape[1] + j) * grad_shape[2] + k];
             }
         }
     }
@@ -113,15 +112,19 @@ void Embedding<T>::setWeights(const Tensor<T>& new_weights) {
     this->weights_ = new_weights;
 }
 
+// Getter for the model parameters
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<float>>> Embedding<T>::parameters() {
+    // Return a vector of references to the weights tensor
     std::vector<std::reference_wrapper<Tensor<float>>> weights_vector;
     weights_vector.push_back(std::ref(this->weights_));
     return weights_vector;
 }
 
+// Getter for the model parameters shape
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<float>>> Embedding<T>::gradients() {
+    // Return a vector of references to the gradient tensor
     std::vector<std::reference_wrapper<Tensor<float>>> grad_vector;
     grad_vector.push_back(std::ref(this->grad_));
     return grad_vector;
