@@ -1,10 +1,11 @@
-#ifndef POSITIONALWISEDENSELAYER_H
+#ifndef  POSITIONALWISEDENSELAYER_H
 #define POSITIONALWISEDENSELAYER_H
 
 #pragma once
 #include "ActivationFunction.h"
 #include "Layer.h"
 #include "Tensor.h"
+#include <stdexcept>
 
 /**
  * @class PositionalWiseDenseLayer
@@ -24,12 +25,12 @@ public:
     /**
      * @brief Constructor for the PositionalWiseDenseLayer class.
      *
-     * @param d_model The input dimension size.
-     * @param d_ff The output dimension size (intermediate size, usually larger than d_model).
+     * @param dimensions_model The input dimension size (d_model).
+     * @param dimensions_feed_forward The output dimension size (d_ff), typically larger than d_model.
      * @param activation_function The activation function to apply between the two dense layers.
      * @param bias_init_value The initial value for the biases (default is 0.0).
      */
-    PositionalWiseDenseLayer(int d_model, int d_ff, ActivationFunction<T>& activation_function, T bias_init_value = 0.0);
+    PositionalWiseDenseLayer(int dimensions_model, int dimensions_feed_forward, ActivationFunction<T>& activation_function, T bias_init_value = 0.0);
 
     /**
      * @brief Forward pass through the PositionalWiseDenseLayer.
@@ -37,8 +38,8 @@ public:
      * This function applies the first dense layer, then the activation function,
      * and finally the second dense layer. The result is returned as the output.
      *
-     * @param input The input tensor to the layer.
-     * @return The output tensor after the position-wise transformations.
+     * @param input The input tensor to the layer. Expected shape: [batch_size, dimensions_model].
+     * @return The output tensor after the position-wise transformations. Shape: [batch_size, dimensions_model].
      */
     Tensor<T> forward(const Tensor<T>& input) override;
 
@@ -50,6 +51,7 @@ public:
      * the gradient of the loss with respect to the input, which is returned.
      *
      * @param grad The gradient of the loss with respect to the output of this layer.
+     * Expected shape: [batch_size, dimensions_model].
      * @return The gradient of the loss with respect to the input of this layer.
      */
     void backward(Tensor<T>& grad) override;
@@ -75,26 +77,26 @@ public:
     std::vector<std::reference_wrapper<Tensor<T>>> gradients();
 
 private:
-    Tensor<T> input_cache_; // Cache the input for the backward pass
+    Tensor<T> input_cache_; ///< Cache the input for the backward pass.
 
-    ActivationFunction<T>& activation_function_; // Activation function
+    ActivationFunction<T>& activation_function_; ///< Activation function.
 
-    int d_model_; // Input dimension
-    int d_ff_;    // Hidden/output dimension
+    int dimensions_model_; ///< Input dimension (d_model).
+    int dimensions_feed_forward_; ///< Output dimension (d_ff).
 
-    // Weights and biases for the dense layer
-    Tensor<T> weights_1_; // Weights for the first projection (d_model -> d_ff)
-    Tensor<T> biases_1_;  // Biases for the first projection
+    // Weights and biases for the dense layers.
+    Tensor<T> weights_1_; ///< Weights for the first projection (dimensions_model_ -> dimensions_feed_forward_).
+    Tensor<T> biases_1_;  ///< Biases for the first projection.
 
-    Tensor<T> weights_2_; // Weights for the second projection (d_ff -> d_model)
-    Tensor<T> biases_2_;  // Biases for the second projection
+    Tensor<T> weights_2_; ///< Weights for the second projection (dimensions_feed_forward_ -> dimensions_model_).
+    Tensor<T> biases_2_;  ///< Biases for the second projection.
 
-    // Gradients
-    Tensor<T> grad_weights_1_; // Gradients for the first projection
-    Tensor<T> grad_biases_1_; // Gradients for the first projection
+    // Gradients.
+    Tensor<T> grad_weights_1_; ///< Gradients for the first projection.
+    Tensor<T> grad_biases_1_; ///< Gradients for the first projection.
 
-    Tensor<T> grad_weights_2_; // Gradients for the second projection
-    Tensor<T> grad_biases_2_; // Gradients for the second projection
+    Tensor<T> grad_weights_2_; ///< Gradients for the second projection.
+    Tensor<T> grad_biases_2_; ///< Gradients for the second projection.
 
     /**
      * @brief Helper function to initialize the weights using Xavier initialization.
