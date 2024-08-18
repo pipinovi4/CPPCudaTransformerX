@@ -48,10 +48,7 @@ void EmbeddingModel<T>::backward(Tensor<T>& grad_data) {
  */
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::parameters() {
-    std::vector<std::reference_wrapper<Tensor<T>>> param_refs;
-    auto& weights = embedding.getWeights();
-    param_refs.push_back(std::ref(weights));
-    return param_refs;
+    return embedding.parameters();
 }
 
 /**
@@ -61,10 +58,7 @@ std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::parameters() {
  */
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> EmbeddingModel<T>::gradients() {
-    std::vector<std::reference_wrapper<Tensor<T>>> grad_refs;
-    auto& grads = embedding.getGrad();
-    grad_refs.push_back(std::ref(grads));
-    return grad_refs;
+    return embedding.gradients();
 }
 
 #endif // EMBEDDINGMODEL_TPP
