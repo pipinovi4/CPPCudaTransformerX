@@ -6,11 +6,19 @@
 class EmbeddingTest : public ::testing::Test {
 protected:
     Embedding<float>* embedding = nullptr;
-    typename Optimizer<float>::LearningRateSchedule* lr_schedule = nullptr;
+    Optimizer<float>::LearningRateSchedule* lr_schedule = nullptr;
+    Optimizer<float>* optimizer = nullptr;
 
     void SetUpEmbedding(const int vocab_size, const int embedding_dims, const float learning_rate, const float decay_rate) {
-        lr_schedule = new typename Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule(learning_rate, decay_rate);
+        lr_schedule = new Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule(learning_rate, decay_rate);
         embedding = new Embedding<float>(vocab_size, embedding_dims, *lr_schedule);
+
+        // Accamulate params shape for optimizer
+        std::vector<std::vector<int>> params_shape;
+        params_shape.push_back(embedding->parameters()[0].get().shape());
+
+        // Define new optimizer
+        optimizer = new Optimizer<float>::Adam(params_shape, learning_rate, *lr_schedule);
     }
 
     [[nodiscard]] Tensor<float> ProcessInputForward(const Tensor<float>& input_data) const {
@@ -22,7 +30,7 @@ protected:
     }
 
     void UpdateEmbeddingWeights(const int epoch) const {
-        embedding->update(epoch);
+        optimizer->update(embedding->parameters(), embedding->gradients(), epoch);
     }
 
     static void ExpectOutputShape(const Tensor<float>& output, const std::vector<int>& expected_shape) {
@@ -64,10 +72,10 @@ TEST_F(EmbeddingTest, HandlesBackwardPass) {
 
     ProcessInputBackward(grad_data);
 
-    const auto& grad = embedding->getGrad();
-    ASSERT_EQ(grad.shape()[0], 10); // Vocabulary size = 10
-    ASSERT_EQ(grad.shape()[1], 5);  // Embedding dimensions = 5
-    ExpectAllFinite(grad); // Ensure all values are finite
+    const auto& grad = embedding->gradients();
+    ASSERT_EQ(grad[0].get().shape()[0], 10); // Vocabulary size = 10
+    ASSERT_EQ(grad[0].get().shape()[1], 5);  // Embedding dimensions = 5
+    ExpectAllFinite(grad[0].get()); // Ensure all values are finite
 }
 
 // Test the update of weights after backpropagation
@@ -83,8 +91,8 @@ TEST_F(EmbeddingTest, HandlesWeightUpdate) {
     ProcessInputBackward(grad_data);
     UpdateEmbeddingWeights(1);
 
-    const auto& weights = embedding->getWeights();
-    ExpectAllFinite(weights); // Ensure all values are finite
+    const auto& weights = embedding->parameters();
+    ExpectAllFinite(weights[0].get()); // Ensure all values are finite
 }
 
 // Test learning rate scheduling
@@ -99,11 +107,11 @@ TEST_F(EmbeddingTest, HandlesLearningRateSchedule) {
     ProcessInputBackward(grad_data);
     UpdateEmbeddingWeights(1);
 
-    const auto& weights = embedding->getWeights();
-    ExpectAllFinite(weights); // Ensure all values are finite
+    const auto& weights = embedding->parameters();
+    ExpectAllFinite(weights[0].get()); // Ensure all values are finite
 
     UpdateEmbeddingWeights(2); // Update again to see if learning rate decays
-    ExpectAllFinite(weights); // Ensure all values are finite
+    ExpectAllFinite(weights[0].get()); // Ensure all values are finite
 }
 
 // Test setting weights for the Embedding layer
@@ -113,10 +121,10 @@ TEST_F(EmbeddingTest, HandlesSetWeights) {
     new_weights.fill(0.1);
 
     embedding->setWeights(new_weights);
-    const auto& weights = embedding->getWeights();
+    const auto& weights = embedding->parameters();
 
-    ExpectOutputShape(weights, {10, 5});
-    ExpectAllFinite(weights); // Ensure all values are finite
+    ExpectOutputShape(weights[0].get(), {10, 5});
+    ExpectAllFinite(weights[0].get()); // Ensure all values are finite
 }
 
 // Test that an invalid weight shape throws an exception
