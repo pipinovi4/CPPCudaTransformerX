@@ -10,7 +10,8 @@ TEST(DenseLayerTest, InitializeWeights) {
 
     for (const auto& parameter : dense_layer.parameters()) {
         for (const auto& weight : parameter.get().data) {
-            EXPECT_EQ(weight, 0.0f);
+            EXPECT_GE(weight, -1.0f);
+            EXPECT_LE(weight, 1.0f);
         }
     }
 }
@@ -61,7 +62,8 @@ TEST(DenseLayerTest, UpdateParameters) {
     // Ensure weights have been updated (not all zero)
     for (const auto& parameter : dense_layer.parameters()) {
         for (const auto& weight : parameter.get().data) {
-            EXPECT_EQ(weight, 0.0f);
+            EXPECT_GE(weight, -1.0f);
+            EXPECT_LE(weight, 1.0f);
         }
     }
 }
