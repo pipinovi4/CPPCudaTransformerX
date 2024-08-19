@@ -14,6 +14,8 @@ public:
 
     explicit ResidualBlock(int d_model, float epsilon, D process_layer);
 
+    ~ResidualBlock() = default;
+
     Tensor<T> forward(const Tensor<T>& input, const Tensor<T>* mask = nullptr);
 
     void backward(Tensor<T>& dout);
