@@ -31,15 +31,9 @@ public:
      * @param vocab_size The size of the vocabulary.
      * @param embedding_dims The dimensionality of the embedding vectors.
      * @param lr_schedule The learning rate schedule used for updating the embeddings.
-     * @param init_func A function to initialize the weights of the embedding layer (optional).
      */
- Embedding(const int& vocab_size, const int& embedding_dims,
- typename Optimizer<T>::LearningRateSchedule& lr_schedule, std::function<void(Tensor<T>&)> init_func = nullptr);
-
-    /**
-     * @brief Default destructor.
-     */
-    ~Embedding() override = default;
+    Embedding(const int& vocab_size, const int& embedding_dims,
+    typename Optimizer<T>::LearningRateSchedule& lr_schedule);
 
     /**
      * @brief Performs the forward pass of the embedding layer.
@@ -82,14 +76,14 @@ public:
      *
      * @return A reference to the tensor containing the embedding weights.
      */
-    std::vector<std::reference_wrapper<Tensor<float>>> parameters();
+    std::vector<std::reference_wrapper<Tensor<float>>> parameters() override;
 
     /**
      * @brief Retrieves the gradients of the embedding layer.
      *
      * @return A reference to the tensor containing the gradients with respect to the embedding weights.
      */
-    std::vector<std::reference_wrapper<Tensor<float>>> gradients();
+    std::vector<std::reference_wrapper<Tensor<float>>> gradients() override;
 
 private:
     typename Optimizer<T>::LearningRateSchedule& lr_schedule_; ///< Learning rate schedule for updating weights.

@@ -5,19 +5,15 @@
 
 template <typename T>
 Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
-    typename Optimizer<T>::LearningRateSchedule& lr_schedule, std::function<void(Tensor<T>&)> init_func)
+    typename Optimizer<T>::LearningRateSchedule& lr_schedule)
     : lr_schedule_(lr_schedule), vocab_size_(vocab_size), embedding_dims_(embedding_dims) {
 
     // Initialize the weights and gradient tensors with appropriate shapes
     this->weights_ = Tensor<T>({vocab_size, embedding_dims});
     this->grad_ = Tensor<T>({vocab_size, embedding_dims});
 
-    // Use custom initialization function if provided, otherwise initialize weights with default method
-    if (init_func) {
-        init_func(this->weights_);
-    } else {
-        initializeWeights();
-    }
+    // Initialize the weights using Xavier/Glorot initialization
+    initializeWeights();
 }
 
 template <typename T>
