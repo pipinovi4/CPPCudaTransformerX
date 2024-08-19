@@ -8,8 +8,10 @@ TEST(DenseLayerTest, InitializeWeights) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    for (const auto& weight : dense_layer.weights.data) {
-        EXPECT_NE(weight, 0);
+    for (const auto& parameter : dense_layer.parameters()) {
+        for (const auto& weight : parameter.get().data) {
+            EXPECT_EQ(weight, 0.0f);
+        }
     }
 }
 
@@ -17,7 +19,7 @@ TEST(DenseLayerTest, ForwardPass) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({64}, 0.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({64}, 0.0f, 1.0f);
     const Tensor<float> output_data = dense_layer.forward(input_data);
 
     EXPECT_EQ(output_data.shape(), std::vector({64}));
@@ -27,7 +29,7 @@ TEST(DenseLayerTest, BackwardPass) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({1, 64}, 0.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({1, 64}, 0.0f, 1.0f);
     Tensor<float> output_data = dense_layer.forward(input_data);
 
     Tensor<float> grad_output = Tensor<float>::uniform({1, 64}, 0.0f, 1.0f);
@@ -54,13 +56,13 @@ TEST(DenseLayerTest, UpdateParameters) {
     dense_layer.backward(grad_output);
 
     // Update weights using optimizer
-    std::vector<std::reference_wrapper<Tensor<float>>> params = {std::ref(dense_layer.weights)};
-    std::vector<std::reference_wrapper<Tensor<float>>> grads = {std::ref(dense_layer.weightGradients)};
-    optimizer.update(params, grads, 1);
+    optimizer.update(dense_layer.parameters(), dense_layer.gradients(), 1);
 
     // Ensure weights have been updated (not all zero)
-    for (const auto& weight : dense_layer.weights.data) {
-        EXPECT_NE(weight, 0.0f);
+    for (const auto& parameter : dense_layer.parameters()) {
+        for (const auto& weight : parameter.get().data) {
+            EXPECT_EQ(weight, 0.0f);
+        }
     }
 }
 
@@ -68,7 +70,7 @@ TEST(DenseLayerTest, ForwardPassBoundary) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(1, 1, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({1}, 0.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({1}, 0.0f, 1.0f);
     const Tensor<float> output_data = dense_layer.forward(input_data);
 
     EXPECT_EQ(output_data.shape(), std::vector({1}));
@@ -78,7 +80,7 @@ TEST(DenseLayerTest, BackwardPassBoundary) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(1, 1, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({1}, 0.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({1}, 0.0f, 1.0f);
     Tensor<float> output_data = dense_layer.forward(input_data);
 
     Tensor<float> grad_output = Tensor<float>::uniform({1}, 0.0f, 1.0f);
@@ -91,7 +93,7 @@ TEST(DenseLayerTest, ForwardPassEdge) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({64}, -1.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({64}, -1.0f, 1.0f);
     const Tensor<float> output_data = dense_layer.forward(input_data);
 
     EXPECT_EQ(output_data.shape(), std::vector({64}));
@@ -101,7 +103,7 @@ TEST(DenseLayerTest, BackwardPassEdge) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({64}, -1.0f, 1.0f);
+    const Tensor<float> input_data = Tensor<float>::uniform({64}, -1.0f, 1.0f);
     Tensor<float> output_data = dense_layer.forward(input_data);
 
     Tensor<float> grad_output = Tensor<float>::uniform({64}, -1.0f, 1.0f);
@@ -115,7 +117,7 @@ TEST(DenseLayerTest, ForwardPassLarge) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({64}, 1e6, 1e7);
+    const Tensor<float> input_data = Tensor<float>::uniform({64}, 1e6, 1e7);
     const Tensor<float> output_data = dense_layer.forward(input_data);
 
     EXPECT_EQ(output_data.shape(), std::vector({64}));
@@ -125,7 +127,7 @@ TEST(DenseLayerTest, BackwardPassLarge) {
     ActivationFunction<float>::ReLU activation_function;
     DenseLayer<float> dense_layer(64, 64, &activation_function);
 
-    Tensor<float> input_data = Tensor<float>::uniform({64}, 1e6, 1e7);
+    const Tensor<float> input_data = Tensor<float>::uniform({64}, 1e6, 1e7);
     Tensor<float> output_data = dense_layer.forward(input_data);
 
     Tensor<float> grad_output = Tensor<float>::uniform({64}, 1e6, 1e7);
