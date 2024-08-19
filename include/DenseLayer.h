@@ -58,6 +58,25 @@ public:
      */
     void backward(Tensor<T>& grad) override;
 
+    /**
+     * @brief Get the parameters of the layer.
+     *
+     * This method returns a vector of references to the layer's parameters.
+     *
+     * @return A vector of references to the layer's parameters.
+     */
+    std::vector<std::reference_wrapper<Tensor<T>>> parameters() override;
+
+    /**
+     * @brief Get the gradients of the layer.
+     *
+     * This method returns a vector of references to the layer's gradients.
+     *
+     * @return A vector of references to the layer's gradients.
+     */
+    std::vector<std::reference_wrapper<Tensor<T>>> gradients() override;
+
+private:
     int inputUnits;  ///< The number of input units.
     int outputUnits; ///< The number of output units.
 

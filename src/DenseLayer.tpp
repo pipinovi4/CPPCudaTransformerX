@@ -98,4 +98,18 @@ void DenseLayer<T>::backward(Tensor<T>& grad) {
     grad = input_gradient;
 }
 
+// Getter for the layer parameters
+template <typename T>
+std::vector<std::reference_wrapper<Tensor<T>>> DenseLayer<T>::parameters() {
+    // Return references to the weight and bias tensors
+    return {std::ref(weights), std::ref(bias)};
+}
+
+// Getter for the layer gradients
+template <typename T>
+std::vector<std::reference_wrapper<Tensor<T>>> DenseLayer<T>::gradients() {
+    // Return references to the weight and bias gradients
+    return {std::ref(weightGradients), std::ref(biasGradients)};
+}
+
 #endif // DENSELAYER_TPP
