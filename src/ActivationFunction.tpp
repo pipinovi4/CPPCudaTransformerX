@@ -88,9 +88,6 @@ public:
 
 template <typename T>
 class ActivationFunction<T>::ReLU final : public ActivationFunction<T> {
-private:
-    Tensor<T> input_cache;
-
 public:
     // Forward method of the ReLU activation function (max(0, x))
     void forward(Tensor<T>& x) override {
@@ -107,6 +104,9 @@ public:
             gradOutput.data[i] *= (input_cache.data[i] > 0) ? 1 : 0;
         }
     }
+
+private:
+    Tensor<T> input_cache;
 };
 
 
