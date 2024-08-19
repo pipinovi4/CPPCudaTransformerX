@@ -49,7 +49,7 @@ int main() {
         Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule learning_rate_scheduler(LEARNING_RATE, DECAY_RATE);
 
         // Initialize the EmbeddingModel with the correct arguments
-        EmbeddingModel<float> model(VOCAB_SIZE, EMBEDDING_DIM, learning_rate_scheduler, nullptr);
+        EmbeddingModel<float> model(VOCAB_SIZE, EMBEDDING_DIM, learning_rate_scheduler);
 
         // Collect model parameters for optimization
         std::vector<std::vector<int>> params_shape;
