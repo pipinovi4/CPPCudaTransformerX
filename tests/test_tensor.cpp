@@ -29,9 +29,6 @@ protected:
   void ExpectTensorNear(const float abs_error = 1e-2) const {
     EXPECT_TRUE(result_tensor.shape() == expected_tensor.shape()) << "Expected shape: " << expected_tensor.shape() << " but got " << result_tensor.shape();
     EXPECT_TRUE(result_tensor.size() == expected_tensor.size()) << "Expected size: " << expected_tensor.size() << " but got " << result_tensor.size();
-    input_tensor.print();
-    expected_tensor.print();
-    result_tensor.print();
     for (int i = 0; i < result_tensor.size(); i++) {
       EXPECT_NEAR(result_tensor.data[i], expected_tensor.data[i], abs_error) << "Expected value: " << expected_tensor.data[i] << " but got " << result_tensor.data[i] << " at index " << i;
     }
