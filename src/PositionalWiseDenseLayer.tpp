@@ -61,8 +61,9 @@ void PositionalWiseDenseLayer<T>::initializeWeights(Tensor<T>& weights) {
 // Forward pass of the PositionalWiseDenseLayer.
 template <typename T>
 Tensor<T> PositionalWiseDenseLayer<T>::forward(const Tensor<T>& input) {
+    input.print();
     // Check input dimensions.
-    if (input.shape().size() != 2 || input.shape()[1] != dimensions_model_) {
+    if (input.shape().size() != 3 || input.shape()[1] != dimensions_model_) {
         throw std::invalid_argument("Forward pass error: Input tensor has incorrect dimensions. Expected shape: [batch_size, " + std::to_string(dimensions_model_) + "], received shape: [" + std::to_string(input.shape()[0]) + ", " + std::to_string(input.shape()[1]) + "].");
     }
 
