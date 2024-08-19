@@ -100,8 +100,9 @@ template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> DigitRecognizer<T>::parameters() {
     std::vector<std::reference_wrapper<Tensor<T>>> param_refs;
     for (auto& layer : layers) {
-        param_refs.push_back(std::ref(layer.weights));
-        param_refs.push_back(std::ref(layer.bias));
+        for (auto& param : layer.parameters()) {
+            param_refs.push_back(param);
+        }
     }
     return param_refs;
 }
@@ -110,8 +111,9 @@ template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> DigitRecognizer<T>::gradients() {
     std::vector<std::reference_wrapper<Tensor<T>>> grad_refs;
     for (auto& layer : layers) {
-        grad_refs.push_back(std::ref(layer.weightGradients));
-        grad_refs.push_back(std::ref(layer.biasGradients));
+        for (auto& grad : layer.gradients()) {
+            grad_refs.push_back(grad);
+        }
     }
     return grad_refs;
 }
