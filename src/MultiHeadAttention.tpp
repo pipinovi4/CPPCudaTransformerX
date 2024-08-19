@@ -77,8 +77,9 @@ std::vector<Tensor<T>> MultiHeadAttention<T>::split_heads(const Tensor<T>& x) co
 
     // Get the shape of the input tensor
     const std::vector<int> shape = x.shape();
-    const int seq_len = shape[0];  // Sequence length
-    const int hidden_dim = shape[1];  // Hidden dimension
+    const int batch_size = shape[0];  // Batch size
+    const int seq_len = shape[1];  // Sequence length
+    const int hidden_dim = shape[2];  // Hidden dimension
     const int head_dim = hidden_dim / num_heads;  // Dimension of each head
 
     // Ensure hidden_dim is divisible by num_heads
@@ -92,24 +93,26 @@ std::vector<Tensor<T>> MultiHeadAttention<T>::split_heads(const Tensor<T>& x) co
     // Manually extract the slices for each head
     for (int i = 0; i < num_heads; ++i) {
         // Initialize a vector to hold the data for the head
-        std::vector<T> head_data(seq_len * head_dim);
+        std::vector<T> head_data(batch_size * seq_len * head_dim);
 
         // Data access for head data
         T* head_data_ptr = head_data.data();
 
         // Extract the data for the head
-        #pragma omp parallel for collapse(2)
-        for (int s = 0; s < seq_len; ++s) {
-            for (int h = 0; h < head_dim; ++h) {
-                // Calculate the index in the input tensor
-                int index = s * hidden_dim + i * head_dim + h;
+        #pragma omp parallel for collapse(3)
+        for (int b = 0; b < batch_size; ++b) {
+            for (int s = 0; s < seq_len; ++s) {
+                for (int h = 0; h < head_dim; ++h) {
+                    // Calculate the index in the input tensor
+                    int index = b * seq_len * hidden_dim + s * hidden_dim + i * head_dim + h;
 
-                // Add the data to the head
-                head_data_ptr[s * head_dim + h] = x_data[index];
+                    // Add the data to the head
+                    head_data_ptr[b * seq_len * head_dim + s * head_dim + h] = x_data[index];
+                }
             }
         }
         // Create a tensor from the head data
-        heads.emplace_back(Tensor<T>({seq_len, head_dim}, std::move(head_data)));
+        heads.emplace_back(Tensor<T>({batch_size, seq_len, head_dim}, std::move(head_data)));
     }
 
     return heads;
@@ -119,33 +122,35 @@ std::vector<Tensor<T>> MultiHeadAttention<T>::split_heads(const Tensor<T>& x) co
 template <typename T>
 Tensor<T> MultiHeadAttention<T>::concat_heads(const std::vector<Tensor<T>>& heads) const {
     // Determine the shape of the heads
-    const int seq_len = heads[0].shape()[0];
-    const int head_dim = heads[0].shape()[1];
+    const int batch_size = heads[0].shape()[0];
+    const int seq_len = heads[0].shape()[1];
+    const int head_dim = heads[0].shape()[2];
 
     // Initialize a vector to hold the concatenated data and reserve space
-    std::vector<T> concatenated_data(seq_len * head_dim * num_heads);
+    std::vector<T> concatenated_data(batch_size * seq_len * head_dim * num_heads);
 
     // Data access for concatenated data for better performance
     T* concatenated_data_ptr = concatenated_data.data();
 
     // Concatenate all heads along the last dimension (head_dim)
-    for (int s = 0; s < seq_len; ++s) {
-        int offset = s * head_dim * num_heads; // Calculate the starting point for each sequence
+    #pragma omp parallel for collapse(3)
+    for (int b = 0; b < batch_size; ++b) {
+        for (int s = 0; s < seq_len; ++s) {
+            const int offset = b * seq_len * head_dim * num_heads + s * head_dim * num_heads; // Calculate the starting point for each sequence within the batch
 
-        #pragma omp parallel for
-        for (int n = 0; n < num_heads; ++n) {
-            const T* head_data = heads[n].data.data();
+            for (int n = 0; n < num_heads; ++n) {
+                const T* head_data = heads[n].data.data();
 
-            // Copy the data from the head to the concatenated data
-            for (int h = 0; h < head_dim; ++h) {
-                concatenated_data_ptr[offset + n * head_dim + h] = head_data[s * head_dim + h];
+                // Copy the data from the head to the concatenated data
+                for (int h = 0; h < head_dim; ++h) {
+                    concatenated_data_ptr[offset + n * head_dim + h] = head_data[(b * seq_len + s) * head_dim + h];
+                }
             }
         }
     }
 
-    return Tensor<T>({seq_len, head_dim * num_heads}, std::move(concatenated_data));
+    return Tensor<T>({batch_size, seq_len, head_dim * num_heads}, std::move(concatenated_data));
 }
-
 
 // Forward pass for MultiHeadAttention layer
 template <typename T>
@@ -168,6 +173,11 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
     keys_heads = split_heads(keys);
     values_heads = split_heads(values);
 
+    std::cout << "Queries heads: " << std::endl;
+    for (int i = 0; i < num_heads; i++) {
+        queries_heads[i].print();
+    }
+
     attention_heads.clear();
 
     // Step 3: Iterate over each head, compute attention, and store the results
@@ -176,7 +186,6 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
         // Scaled dot product attention
         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose());
         attention_scores /= std::sqrt(static_cast<T>(head_dim));  // Scale by the square root of the head dimension
-
         // Apply mask (if provided)
         if (mask != nullptr) {
             // Assuming mask has the same shape as attention_scores
@@ -184,9 +193,10 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
                 attention_scores.data[j] += (*mask).data[j] ? 0 : -1e9;  // Apply large negative value to masked positions
             }
         }
-
-        // Apply the activation function (typically softmax)
-        activation->forward(attention_scores);
+        // // Apply the activation function (typically softmax)
+        // if (activation != nullptr) {
+        //     activation->forward(attention_scores);
+        // }
 
         // Compute the output as a weighted sum of the values
         Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
@@ -194,14 +204,12 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
         // Store the attention outputs
         attention_heads.push_back(attention_output);
     }
-
     // Step 4: Concatenate the attention outputs from all heads
     Tensor<T> concatenated_output = concat_heads(attention_heads);
 
     // Step 5: Final linear projection to get the output
     Tensor<T> output = concatenated_output.dot(W_o);
     output += b_o;
-
     return output;
 }
 
