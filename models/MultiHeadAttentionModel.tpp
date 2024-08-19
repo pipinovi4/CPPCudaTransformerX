@@ -27,10 +27,9 @@ void MultiHeadAttentionModel<T>::backward(Tensor<T>& grad_output) {
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttentionModel<T>::parameters() {
     std::vector<std::reference_wrapper<Tensor<T>>> params;
-    params.push_back(input_layer.weights);
-    params.push_back(input_layer.bias);
-    params.push_back(output_layer.weights);
-    params.push_back(output_layer.bias);
+    for (auto& param : input_layer.parameters()) {
+        params.push_back(param);
+    }
     for (int i = 0; i < num_heads; i++) {
         auto attention_params = multi_head_attention.parameters();
         params.insert(params.end(), attention_params.begin(), attention_params.end());
@@ -41,10 +40,9 @@ std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttentionModel<T>::param
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> MultiHeadAttentionModel<T>::gradients() {
     std::vector<std::reference_wrapper<Tensor<T>>> params;
-    params.push_back(input_layer.weightGradients);
-    params.push_back(input_layer.biasGradients);
-    params.push_back(output_layer.weightGradients);
-    params.push_back(output_layer.biasGradients);
+    for (auto& param : input_layer.gradients()) {
+        params.push_back(param);
+    }
     for (int i = 0; i < num_heads; i++) {
         auto attention_params = multi_head_attention.gradients();
         params.insert(params.end(), attention_params.begin(), attention_params.end());
