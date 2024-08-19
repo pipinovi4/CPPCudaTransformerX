@@ -257,7 +257,7 @@ public:
      *
      * This method reduces the dimensionality of the tensor by one along the specified axis.
      */
-    Tensor<T> sum(int axis) const;
+    Tensor<T> sum(int axis = 0) const;
 
     /**
      * @brief Computes the mean along the specified axis.
@@ -272,7 +272,7 @@ public:
      *
      * The method computes the mean by summing the elements along the axis and dividing by the size of the axis.
      */
-    Tensor<T> mean(int axis) const;
+    Tensor<T> mean(int axis = 0) const;
 
     /**
      * @brief Returns the indices of the maximum values along a specified axis.
@@ -289,7 +289,24 @@ public:
      *
      * @throws std::invalid_argument if the specified axis is out of range for the tensor's dimensions.
      */
-    Tensor<T> argmax(int axis) const;
+    Tensor<T> argmax(int axis = 0) const;
+
+    /**
+     * @brief Applies the Softmax function along the specified axis of the tensor.
+     *
+     * The Softmax function is applied to each element along the specified axis,
+     * converting the elements into probabilities that sum to 1. This is useful
+     * in classification problems where the output needs to represent probabilities
+     * for each class.
+     *
+     * @param axis The axis along which to apply the Softmax function.
+     *             A negative axis value counts from the last dimension backwards
+     *             (e.g., -1 for the last axis).
+     * @return A new tensor with the same shape as the input tensor, but with
+     *         the elements normalized using the Softmax function along the specified axis.
+     * @throws std::invalid_argument if the axis is out of range for tensor dimensions.
+     */
+    Tensor<T> softmax(int axis = 0) const;
 
     /**
      * @brief Extracts a slice of the tensor along the specified axis.

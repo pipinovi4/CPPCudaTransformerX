@@ -349,6 +349,64 @@ Tensor<T> Tensor<T>::argmax(int axis) const {
     return Tensor<T>(output_shape, result_indices);
 }
 
+template <typename T>
+Tensor<T> Tensor<T>::softmax(int axis) const {
+    // Get the shape of the tensor
+    const std::vector<int> shape = this->shape();
+
+    if (shape.empty()) {
+        throw std::invalid_argument("Cannot perform softmax on an empty tensor.");
+    }
+
+    // Adjust axis if it's negative (e.g., -1 refers to the last axis)
+    if (axis < 0) {
+        axis += static_cast<int>(shape.size());
+    }
+
+    // Ensure the axis is within the valid range
+    if (axis >= static_cast<int>(shape.size()) || axis < 0) {
+        throw std::invalid_argument("Axis out of range for tensor dimensions.");
+    }
+
+    // Create a tensor to hold the result
+    Tensor<T> result = *this;
+
+    // Calculate the total number of elements and the size of the axis dimension
+    const int total_elements = this->size();
+    const int axis_dim = shape[axis];
+    const int num_iterations = total_elements / axis_dim;
+
+    // Iterate over the tensor to apply the Softmax function along the specified axis
+    #pragma omp parallel for
+    for (int i = 0; i < num_iterations; ++i) {
+        // Calculate the start and end indices for this slice
+        const int start_idx = i * axis_dim;
+        const int end_idx = start_idx + axis_dim;
+
+        // Find the maximum value in the current slice for numerical stability
+        T max_value = std::numeric_limits<T>::lowest();
+        for (int j = start_idx; j < end_idx; ++j) {
+            if (this->data[j] > max_value) {
+                max_value = this->data[j];
+            }
+        }
+
+        // Compute the exponentials and their sum
+        T sum = 0;
+        for (int j = start_idx; j < end_idx; ++j) {
+            result.data[j] = std::exp(this->data[j] - max_value);
+            sum += result.data[j];
+        }
+
+        // Normalize the values to get the Softmax probabilities
+        for (int j = start_idx; j < end_idx; ++j) {
+            result.data[j] /= sum;
+        }
+    }
+
+    return result;
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) { // Check if the axis is valid
