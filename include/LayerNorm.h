@@ -53,6 +53,32 @@ public:
      */
     void backward(Tensor<T>& grad) override;
 
+    /**
+     * @brief Get the parameters of the layer.
+     *
+     * This method returns a vector of references to the layer's parameters.
+     * This allows the optimizer to update the parameters during training.
+     *
+     * @return A vector of references to the layer's parameters.
+     */
+    std::vector<std::reference_wrapper<Tensor<T>>> parameters() override {
+        // Return empty vector since the parameters doesn't exist
+        return {};
+    };
+
+    /**
+     * @brief Get the gradients of the layer.
+     *
+     * This method returns a vector of references to the layer's gradients.
+     * This allows the optimizer to update the parameters during training.
+     *
+     * @return A vector of references to the layer's gradients.
+     */
+    std::vector<std::reference_wrapper<Tensor<T>>> gradients() override {
+        // Return empty vector since the gradients doesn't exist
+        return {};
+    }
+
 private:
     int d_model_;  // Dimension of the model (size of the last dimension of the input tensor)
     float epsilon_;  // Small constant to prevent division by zero during normalization

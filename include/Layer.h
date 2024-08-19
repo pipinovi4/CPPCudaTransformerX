@@ -50,6 +50,26 @@ public:
      * destructor to be called for derived classes.
      */
     virtual ~Layer() = default;
+
+    /**
+     * @brief Get the parameters of the layer.
+     *
+     * This method should return a vector of references to the layer's parameters.
+     * This allows the optimizer to update the parameters during training.
+     *
+     * @return A vector of references to the layer's parameters.
+     */
+    virtual std::vector<std::reference_wrapper<Tensor<T>>> parameters() = 0;
+
+    /**
+     * @brief Get the gradients of the layer.
+     *
+     * This method should return a vector of references to the layer's gradients.
+     * This allows the optimizer to update the parameters during training.
+     *
+     * @return A vector of references to the layer's gradients.
+     */
+    virtual std::vector<std::reference_wrapper<Tensor<T>>> gradients() = 0;
 };
 
 #endif //LAYER_H
