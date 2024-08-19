@@ -181,7 +181,7 @@ protected:
   }
 };
 
-TEST_F(Mean, HandlesNormalCase) {
+  TEST_F(Mean, HandlesNormalCase) {
   const std::vector<int> dims {10, 10};
   const std::vector<float> inputData = {
        0.27110479, 0.62862718, 0.49281226, 0.19090492, 0.36258228,
@@ -266,6 +266,43 @@ TEST_F(Argmax, HandleEdgeCaseSingleElement) {
   SetUpData(input, expected);
 
   ProcessData(0);
+
+  ExpectTensorNear();
+}
+
+class TensorSoftmax : public TensorTest {
+protected:
+  TensorSoftmax() {}
+
+  void ProcessData(const int axis) {
+    result_tensor = input_tensor.softmax(axis);
+  }
+};
+
+TEST_F(TensorSoftmax, HandlesNormalCase) {
+  const std::vector<int> dims {2, 3};
+  const std::vector<float> inputData = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+  const std::vector<float> expectedData = {0.09003057f, 0.24472847f, 0.66524096f, 0.09003057f, 0.24472847f, 0.66524096f};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected(dims, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(1);
+
+  ExpectTensorNear();
+}
+
+TEST_F(TensorSoftmax, HandlesNegativeAxis) {
+  const std::vector<int> dims {2, 3};
+  const std::vector<float> inputData = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+  const std::vector<float> expectedData = {0.09003057f, 0.24472847f, 0.66524096f, 0.09003057f, 0.24472847f, 0.66524096f};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected(dims, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(-1);
 
   ExpectTensorNear();
 }
