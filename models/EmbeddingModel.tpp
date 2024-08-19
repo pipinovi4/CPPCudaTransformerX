@@ -12,10 +12,9 @@
  * @param init_func Initialization function for the embeddings.
  */
 template <typename T>
-EmbeddingModel<T>::EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
-    std::function<void(Tensor<T>&)> init_func)
+EmbeddingModel<T>::EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule)
     : vocab_size(vocab_size), embedding_dim(embedding_dim),
-      embedding(vocab_size, embedding_dim, lr_schedule, init_func) {}
+      embedding(vocab_size, embedding_dim, lr_schedule) {}
 
 /**
  * @brief Performs the forward pass of the EmbeddingModel.

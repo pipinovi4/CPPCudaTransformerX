@@ -17,8 +17,7 @@
 template <typename T>
 class EmbeddingModel {
 public:
-    EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule,
-                   std::function<void(Tensor<T>&)> init_func);
+    EmbeddingModel(const size_t& vocab_size, const int& embedding_dim, Optimizer<float>::LearningRateSchedule& lr_schedule);
 
     Tensor<T> forward(Tensor<T>& input_data);
     void backward(Tensor<T>& grad_data);
