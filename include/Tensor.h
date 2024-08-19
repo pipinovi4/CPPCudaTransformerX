@@ -275,6 +275,23 @@ public:
     Tensor<T> mean(int axis) const;
 
     /**
+     * @brief Returns the indices of the maximum values along a specified axis.
+     *
+     * The `argmax` method computes the index of the maximum value along a specified axis of the tensor.
+     * It returns a tensor containing the indices of the maximum values.
+     *
+     * @param axis The axis along which to compute the indices of the maximum values.
+     *             If `axis` is negative, it counts from the last to the first axis.
+     *
+     * @return A tensor of indices corresponding to the maximum values along the specified axis.
+     *         The returned tensor will have the same shape as the original tensor, except along the
+     *         specified axis, where it will be reduced to 1 (the dimension corresponding to the indices).
+     *
+     * @throws std::invalid_argument if the specified axis is out of range for the tensor's dimensions.
+     */
+    Tensor<T> argmax(int axis) const;
+
+    /**
      * @brief Extracts a slice of the tensor along the specified axis.
      *
      * This method returns a new tensor that represents a slice of the original tensor along the specified axis.

@@ -293,6 +293,52 @@ Tensor<T> Tensor<T>::mean(int axis) const {
     return sum_tensor / dimensions[axis]; // Divide by the size of the axis to compute the mean
 }
 
+template <typename T>
+Tensor<T> Tensor<T>::argmax(int axis) const {
+    // Get the shape of the tensor
+    const std::vector<int> shape = this->shape();
+    
+    // Adjust axis if it's negative (e.g., -1 refers to the last axis)
+    if (axis < 0) {
+        axis += static_cast<int>(shape.size());
+    }
+
+    // Ensure the axis is within the valid range
+    if (axis < 0 || axis >= shape.size()) {
+        throw std::invalid_argument("Axis out of range for tensor dimensions.");
+    }
+
+    // Create a vector to hold the shape of the output tensor
+    std::vector<int> output_shape = shape;
+    output_shape[axis] = 1;  // The axis is reduced to a single dimension
+
+    // Calculate the total number of elements in the tensor
+    const int total_elements = this->size();
+
+    // Initialize a vector to hold the result indices
+    std::vector<int> result_indices(total_elements / shape[axis]);
+
+    // Iterate over the tensor to find the indices of the maximum values along the specified axis
+    #pragma omp parallel for
+    for (int i = 0; i < total_elements / shape[axis]; ++i) {
+        T max_value = std::numeric_limits<T>::lowest();
+        int max_index = 0;
+
+        for (int j = 0; j < shape[axis]; ++j) {
+            int index = i * shape[axis] + j;
+            if (this->data[index] > max_value) {
+                max_value = this->data[index];
+                max_index = j;
+            }
+        }
+
+        result_indices[i] = max_index;
+    }
+
+    // Create a new tensor to store the result and return it
+    return Tensor<T>(output_shape, result_indices);
+}
+
 template<typename T>
 Tensor<T> Tensor<T>::slice(const int axis, const int start, const int end, const int step) const {
     if (axis < 0 || axis >= dimensions.size()) { // Check if the axis is valid
