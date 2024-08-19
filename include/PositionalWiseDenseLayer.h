@@ -33,6 +33,11 @@ public:
     PositionalWiseDenseLayer(int dimensions_model, int dimensions_feed_forward, ActivationFunction<T>& activation_function, T bias_init_value = 0.0);
 
     /**
+     * @brief Destructor for the PositionalWiseDenseLayer class.
+     */
+    ~PositionalWiseDenseLayer() override = default;
+
+    /**
      * @brief Forward pass through the PositionalWiseDenseLayer.
      *
      * This function applies the first dense layer, then the activation function,
@@ -64,7 +69,7 @@ public:
      *
      * @return A vector of references to the weights and biases tensors.
      */
-    std::vector<std::reference_wrapper<Tensor<T>>> parameters();
+    std::vector<std::reference_wrapper<Tensor<T>>> parameters() override;
 
     /**
      * @brief Returns the gradients of the layer's parameters.
@@ -74,7 +79,7 @@ public:
      *
      * @return A vector of references to the gradient tensors for the weights and biases.
      */
-    std::vector<std::reference_wrapper<Tensor<T>>> gradients();
+    std::vector<std::reference_wrapper<Tensor<T>>> gradients() override;
 
 private:
     Tensor<T> input_cache_; ///< Cache the input for the backward pass.
