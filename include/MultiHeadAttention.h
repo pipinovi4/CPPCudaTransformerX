@@ -29,6 +29,11 @@ public:
     MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation = new typename ActivationFunction<T>::Linear());
 
     /**
+     * @brief Destructor for MultiHeadAttention.
+     */
+    ~MultiHeadAttention() override = default;
+
+    /**
      * @brief Forward pass for the MultiHeadAttention layer.
      *
      * This method processes the input tensor through the multi-head attention mechanism.
@@ -84,14 +89,14 @@ public:
     *
     * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the layer's parameters.
     */
-    std::vector<std::reference_wrapper<Tensor<T>>> parameters();
+    std::vector<std::reference_wrapper<Tensor<T>>> parameters() override;
 
     /**
      * @brief Get the gradients of the MultiHeadAttention layer.
      *
      * @return std::vector<std::reference_wrapper<Tensor<T>>> Vector of references to the gradients of the layer's parameters.
      */
-    std::vector<std::reference_wrapper<Tensor<T>>> gradients();
+    std::vector<std::reference_wrapper<Tensor<T>>> gradients() override;
 
 private:
     int hidden_dim;  ///< Total hidden dimension size.
