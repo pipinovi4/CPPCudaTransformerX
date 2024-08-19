@@ -222,6 +222,58 @@ TEST_F(Mean, HandlesNormalCase) {
   ExpectTensorNear();
 }
 
+class Argmax : public TensorTest {
+protected:
+  Argmax() {}
+
+  void ProcessData(const int axis) {
+    result_tensor = input_tensor.argmax(axis);
+  }
+};
+
+TEST_F(Argmax, HandleNormalCase) {
+  const std::vector<int> dims {2, 3};
+  const std::vector<float> inputData = {1.0f, 3.0f, 2.0f, 4.0f, 6.0f, 5.0f};
+  const std::vector<float> expectedData = {1, 1};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected({2}, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(1);
+
+  ExpectTensorNear();
+}
+
+TEST_F(Argmax, HandleEdgeCaseNegativeAxis) {
+  const std::vector<int> dims {2, 3};
+  const std::vector<float> inputData = {7.0f, 3.0f, 1.0f, 0.0f, 6.0f, 2.0f};
+  const std::vector<float> expectedData = {0, 1};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected({2}, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(-1);
+
+  ExpectTensorNear();
+}
+
+TEST_F(Argmax, HandleEdgeCaseSingleElement) {
+  const std::vector<int> dims {1};
+  const std::vector<float> inputData = {42.0f};
+  const std::vector<float> expectedData = {0};
+
+  const Tensor<float> input(dims, inputData);
+  const Tensor<float> expected({1}, expectedData);
+  SetUpData(input, expected);
+
+  ProcessData(0);
+
+  ExpectTensorNear();
+}
+
+
 class ExpandDimsAs : public TensorTest {
 protected:
   ExpandDimsAs() {}
