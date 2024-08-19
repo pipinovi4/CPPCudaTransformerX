@@ -297,35 +297,45 @@ template <typename T>
 Tensor<T> Tensor<T>::argmax(int axis) const {
     // Get the shape of the tensor
     const std::vector<int> shape = this->shape();
-    
-    // Adjust axis if it's negative (e.g., -1 refers to the last axis)
+
+    if (shape.empty()) {
+        throw std::invalid_argument("Cannot perform argmax on an empty tensor.");
+    }
+
     if (axis < 0) {
         axis += static_cast<int>(shape.size());
     }
 
-    // Ensure the axis is within the valid range
-    if (axis < 0 || axis >= shape.size()) {
+    if (axis >= static_cast<int>(shape.size()) || axis < 0) {
         throw std::invalid_argument("Axis out of range for tensor dimensions.");
     }
 
     // Create a vector to hold the shape of the output tensor
     std::vector<int> output_shape = shape;
-    output_shape[axis] = 1;  // The axis is reduced to a single dimension
+
+    // Remove the specified axis from the output shape
+    if (shape.size() > 1) {
+        output_shape.erase(output_shape.begin() + axis);
+    } else {
+        output_shape[axis] = 1;  // Set the output shape to 1 if the tensor is 1D
+    }
 
     // Calculate the total number of elements in the tensor
     const int total_elements = this->size();
+    const int axis_dim = shape[axis];
+    const int num_iterations = total_elements / axis_dim;
 
     // Initialize a vector to hold the result indices
-    std::vector<int> result_indices(total_elements / shape[axis]);
+    std::vector<T> result_indices(num_iterations);
 
     // Iterate over the tensor to find the indices of the maximum values along the specified axis
     #pragma omp parallel for
-    for (int i = 0; i < total_elements / shape[axis]; ++i) {
+    for (int i = 0; i < num_iterations; ++i) {
         T max_value = std::numeric_limits<T>::lowest();
         int max_index = 0;
 
-        for (int j = 0; j < shape[axis]; ++j) {
-            int index = i * shape[axis] + j;
+        for (int j = 0; j < axis_dim; ++j) {
+            int index = i * axis_dim + j;
             if (this->data[index] > max_value) {
                 max_value = this->data[index];
                 max_index = j;
