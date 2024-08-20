@@ -703,50 +703,64 @@ Tensor<T> Tensor<T>::zeros(const std::vector<int> &dims) {
 
 template<typename T>
 Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
-    // Create new dimensions for the transposed tensor
-    std::vector<int> newDimensions(dimensions.size());
-    std::vector<int> inversePermutation(dimensions.size());
+    // Create a copy of the permutation vector
+    std::vector<int> perm;
 
-    if (permutation.empty()) { // Check if permutation is empty (default to reversing dimensions)
-        std::reverse_copy(dimensions.begin(), dimensions.end(), newDimensions.begin());
-        std::iota(inversePermutation.begin(), inversePermutation.end(), 0);
-        std::reverse(inversePermutation.begin(), inversePermutation.end());
-    } else { // Otherwise, use the provided permutation
-        for (size_t i = 0; i < permutation.size(); ++i) {
-            newDimensions[i] = dimensions[permutation[i]];
-            inversePermutation[permutation[i]] = static_cast<int>(i);
+    // If the permutation vector size is less than the number of dimensions, fill it with the remaining dimensions
+    if (perm.size() < dimensions.size()) {
+        for (size_t i = 0; i < dimensions.size(); ++i) {
+            if (std::find(perm.begin(), perm.end(), i) == perm.end()) {
+                perm.push_back(static_cast<int>(i));
+            }
         }
     }
 
-    // Create a new tensor for the transposed result
-    Tensor<T> result(newDimensions);
-
-    // Precompute strides for the original and transposed tensors
-    std::vector<int> originalStrides(dimensions.size(), 1);
-    std::vector<int> newStrides(newDimensions.size(), 1);
-
-    for (int i = dimensions.size() - 2; i >= 0; --i) {
-        originalStrides[i] = originalStrides[i + 1] * dimensions[i + 1];
-        newStrides[i] = newStrides[i + 1] * newDimensions[i + 1];
+    for (int i : permutation) {
+        if (i < 0 || i >= dimensions.size()) {
+            throw std::invalid_argument("Invalid permutation index");
+        }
+        if (std::find(perm.begin(), perm.end(), i) == perm.end()) {
+            throw std::invalid_argument("Invalid permutation");
+        }
+        perm.push_back(i);
     }
 
-    // Perform the transposition by iterating over the original data array
-    #pragma omp parallel for
+    // Calculate the new shape based on the permutation
+    std::vector<int> newShape(dimensions.size());
+    for (size_t i = 0; i < perm.size(); ++i) {
+        newShape[i] = dimensions[perm[i]];
+    }
+
+    // Calculate the new strides based on the permutation
+    std::vector<int> newStrides(dimensions.size());
+    int stride = 1;
+    for (int i = newShape.size() - 1; i >= 0; --i) {
+        newStrides[i] = stride;
+        stride *= newShape[i];
+    }
+
+    // Create a new tensor with the new shape
+    Tensor<T> result(newShape);
+
+    // Use the permutation to map the data from the original tensor to the new tensor
+    std::vector<int> indices(dimensions.size(), 0);
     for (size_t i = 0; i < data.size(); ++i) {
-        const size_t originalIndex = i;
-        size_t newIndex = 0;
-
-        for (size_t j = 0; j < dimensions.size(); ++j) {
-            const int index = (originalIndex / originalStrides[j]) % dimensions[j];
-            newIndex += index * newStrides[inversePermutation[j]];
+        int oldIndex = 0;
+        int newIndex = 0;
+        int temp = i;
+        for (int j = dimensions.size() - 1; j >= 0; --j) {
+            indices[j] = temp % dimensions[j];
+            temp /= dimensions[j];
         }
-
-        result.data[newIndex] = data[i]; // Copy the data to the new transposed position
+        for (size_t j = 0; j < dimensions.size(); ++j) {
+            oldIndex += indices[j] * strides[j];
+            newIndex += indices[perm[j]] * newStrides[j];
+        }
+        result.data[newIndex] = data[oldIndex];
     }
 
-    return result; // Return the transposed tensor
+    return result;
 }
-
 template<typename T>
 Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
     Tensor<T> tensor(dims); // Create a tensor with the specified dimensions
