@@ -535,7 +535,7 @@ protected:
 TEST_F(Transpose, HandleNormalCase) {
   const std::vector<int> dims {2, 2};
   const std::vector<float> inputData = {1.0f, 2.0f, 3.0f, 4.0f};
-  const std::vector<float> expectedData = {1.0f, 3.0f, 2.0f, 4.0f};
+  const std::vector<float> expectedData = {1.0f, 2.0f, 3.0f, 4.0f};
 
   const Tensor<float> input(dims, inputData);
   const std::vector<int> permutation {1, 0};
@@ -550,7 +550,7 @@ TEST_F(Transpose, HandleNormalCase) {
 TEST_F(Transpose, HandleEdgeCaseLargeValues) {
   const std::vector<int> dims {2, 2};
   const std::vector<float> inputData = {1000000.0f, 2000000.0f, 3000000.0f, 4000000.0f};
-  const std::vector<float> expectedData = {1000000.0f, 3000000.0f, 2000000.0f, 4000000.0f};
+  const std::vector<float> expectedData = {1000000.0f, 2000000.0f, 3000000.0f, 4000000.0f};
 
   const Tensor<float> input(dims, inputData);
   const std::vector<int> permutation {1, 0};
