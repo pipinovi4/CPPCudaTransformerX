@@ -47,6 +47,13 @@ add_executable(C++CudaTransformerX
         include/PositionalWiseDenseLayer.h
         src/PositionalWiseDenseLayer.tpp
         include/Layer.h
+        src/LayerNorm.tpp
+        include/BPE.h
+        src/BPE.tpp
+        utils/loadAGNews.h
+        utils/loadMNIST.h
+        utils/loadWikiText.tpp
+        utils/swapEndian.tpp
 )
 
 # Link the main executable with CUDA
@@ -65,6 +72,7 @@ add_executable(global_tests
         tests/test_layer_norm.cpp
         tests/test_residual_block.cpp
         tests/test_positional_wise_dense_layer.cpp
+        tests/test_bpe.cpp
 )
 
 # Add example of the DigitRecognizer executable
@@ -72,14 +80,12 @@ add_executable(digit_recognizer
         examples/DigitRecognizerRunner.cpp
         models/DigitRecognizer.h
         models/DigitRecognizer.tpp
-        utils/readUInt32.h
-        utils/readUInt32.cpp
-        utils/swapEndian.h
-        utils/swapEndian.cpp
+        utils/readUint32.tpp
+        utils/swapEndian.tpp
         utils/loadMNIST.tpp
-        utils/loadAGNews.h
-        utils/loadMNIST.h
         utils/loadWikiText.h
+        utils/readUint32.h
+        utils/swapEdian.h
 )
 
 # Add example of the EmbeddingModel executable
