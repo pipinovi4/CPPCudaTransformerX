@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
 #include "../include/Tokenizer.h"
-#include <vector>
-#include <string>
 
 class TokenizerTest : public ::testing::Test {
 protected:
