@@ -82,7 +82,11 @@ public:
             auto& g = grads[i].get().data;
 
             if (fm.size() != sm.size() || sm.size() != p.size() || p.size() != g.size()) {
-                std::cerr << "Size mismatch between vectors!" << std::endl;
+                std::cerr << "Size mismatch between vectors in method update of the Optimizer!" << std::endl;
+                std::cerr << "First moment: " << fm.size() << " | ";
+                std::cerr << "Second moment: " << sm.size() << std::endl;
+                std::cerr << "Parameters: " << p.size() << " | ";
+                std::cerr << "Gradients: " << g.size() << std::endl;
                 return;
             }
 
