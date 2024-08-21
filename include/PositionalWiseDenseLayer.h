@@ -33,11 +33,6 @@ public:
     PositionalWiseDenseLayer(int dimensions_model, int dimensions_feed_forward, ActivationFunction<T>& activation_function, T bias_init_value = 0.0);
 
     /**
-     * @brief Destructor for the PositionalWiseDenseLayer class.
-     */
-    ~PositionalWiseDenseLayer() override = default;
-
-    /**
      * @brief Forward pass through the PositionalWiseDenseLayer.
      *
      * This function applies the first dense layer, then the activation function,
@@ -83,6 +78,8 @@ public:
 
 private:
     Tensor<T> input_cache_; ///< Cache the input for the backward pass.
+
+    Tensor<T> cache_projection_1_; ///< Cache the result of the first projection for the backward pass.
 
     ActivationFunction<T>& activation_function_; ///< Activation function.
 
