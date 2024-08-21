@@ -1,11 +1,7 @@
-//
-// Created by root on 8/1/24.
-//
-
 #ifndef SWAPENDIAN_H
 #define SWAPENDIAN_H
 
-#include <fstream>
+#pragma once
 #include <cstdint>
 
 /**
@@ -19,5 +15,7 @@
  * \return The 32-bit unsigned integer with its byte order swapped.
  */
 std::uint32_t swap_endian(std::uint32_t value);
+
+#include "swapEndian.tpp"
 
 #endif //SWAPENDIAN_H

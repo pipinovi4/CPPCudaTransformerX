@@ -1,8 +1,9 @@
-#ifndef READUINT32_H
-#define READUINT32_H
+#ifndef READ_UINT32_H
+#define READ_UINT32_H
 
+#pragma once
 #include <fstream>
-#include "swapEndian.h"
+#include "swapEndian.tpp"
 
 /**
  * \brief Reads a 32-bit unsigned integer from a file stream in big-endian format.
@@ -17,4 +18,6 @@
 */
 std::uint32_t readUInt32(std::ifstream& stream);
 
-#endif // READUINT32_H
+#include "readUint32.tpp"
+
+#endif //READ_UINT32_H
