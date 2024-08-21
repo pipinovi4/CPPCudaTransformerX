@@ -703,64 +703,63 @@ Tensor<T> Tensor<T>::zeros(const std::vector<int> &dims) {
 
 template<typename T>
 Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
-    // Create a copy of the permutation vector
-    std::vector<int> perm;
-
-    // If the permutation vector size is less than the number of dimensions, fill it with the remaining dimensions
-    if (perm.size() < dimensions.size()) {
-        for (size_t i = 0; i < dimensions.size(); ++i) {
-            if (std::find(perm.begin(), perm.end(), i) == perm.end()) {
-                perm.push_back(static_cast<int>(i));
-            }
-        }
+    // Validate the permutation vector
+    if (permutation.size() != dimensions.size()) {
+        throw std::invalid_argument("Permutation size does not match tensor dimensions");
     }
 
     for (int i : permutation) {
-        if (i < 0 || i >= dimensions.size()) {
+        if (i < 0 || i >= static_cast<int>(dimensions.size())) {
             throw std::invalid_argument("Invalid permutation index");
         }
-        if (std::find(perm.begin(), perm.end(), i) == perm.end()) {
-            throw std::invalid_argument("Invalid permutation");
-        }
-        perm.push_back(i);
     }
 
     // Calculate the new shape based on the permutation
     std::vector<int> newShape(dimensions.size());
-    for (size_t i = 0; i < perm.size(); ++i) {
-        newShape[i] = dimensions[perm[i]];
+    for (size_t i = 0; i < permutation.size(); ++i) {
+        newShape[i] = dimensions[permutation[i]];
+    }
+
+    // Calculate the original strides
+    std::vector<int> originalStrides(dimensions.size(), 1);
+    for (int i = dimensions.size() - 2; i >= 0; --i) {
+        originalStrides[i] = originalStrides[i + 1] * dimensions[i + 1];
     }
 
     // Calculate the new strides based on the permutation
     std::vector<int> newStrides(dimensions.size());
-    int stride = 1;
-    for (int i = newShape.size() - 1; i >= 0; --i) {
-        newStrides[i] = stride;
-        stride *= newShape[i];
+    for (size_t i = 0; i < permutation.size(); ++i) {
+        newStrides[i] = originalStrides[permutation[i]];
     }
 
     // Create a new tensor with the new shape
     Tensor<T> result(newShape);
 
-    // Use the permutation to map the data from the original tensor to the new tensor
+    // Map the data from the original tensor to the new tensor
     std::vector<int> indices(dimensions.size(), 0);
     for (size_t i = 0; i < data.size(); ++i) {
         int oldIndex = 0;
         int newIndex = 0;
-        int temp = i;
+        int temp = static_cast<int>(i);
+
+        // Calculate the old and new indices
         for (int j = dimensions.size() - 1; j >= 0; --j) {
             indices[j] = temp % dimensions[j];
             temp /= dimensions[j];
         }
+
         for (size_t j = 0; j < dimensions.size(); ++j) {
-            oldIndex += indices[j] * strides[j];
-            newIndex += indices[perm[j]] * newStrides[j];
+            oldIndex += indices[j] * originalStrides[j];
+            newIndex += indices[permutation[j]] * newStrides[j];
         }
+
         result.data[newIndex] = data[oldIndex];
     }
 
     return result;
 }
+
+
 template<typename T>
 Tensor<T> Tensor<T>::ones(const std::vector<int>& dims) {
     Tensor<T> tensor(dims); // Create a tensor with the specified dimensions
@@ -876,6 +875,18 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     // Copy dimensions to handle broadcasting
     std::vector<int> this_dims = dimensions;
     std::vector<int> other_dims = other.dimensions;
+
+    // Ensure the tensors have compatible dimensions for dot product
+    if (this_dims.empty() || other_dims.empty()) {
+        throw std::invalid_argument("Tensors must have at least one dimension for dot product");
+    }
+
+    // Ensure the inner dimensions match for matrix multiplication
+    if (this_dims.back() != other_dims[other_dims.size() - 2]) {
+        std::cerr << "Last element of this_dims: " << this_dims.back() << std::endl;
+        std::cerr << "Second to last element of other_dims: " << other_dims[other_dims.size() - 2] << std::endl;
+        throw std::invalid_argument("Inner dimensions do not match for dot product");
+    }
 
     // Dimenions sizes of the tensors
     const size_t this_size = this_dims.size();
