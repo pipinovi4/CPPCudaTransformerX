@@ -1,15 +1,10 @@
-#ifndef LOADMNIST_H
-#define LOADMNIST_H
+#ifndef LOADMNIST_TPP
+#define LOADMNIST_TPP
 
-#include <string>
-#include <vector>
-#include <cstdint>
-#include <fstream>
-#include <stdexcept>
-#include "readUInt32.h"
+#include "loadMNIST.h"
 
 // Declare the function as inline to avoid multiple definitions across different translation units
-inline std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filename) {
+std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string& filename) {
     std::ifstream imageStream(filename, std::ios::binary);
     if (!imageStream.is_open()) {
         throw std::runtime_error("Could not open image file.");
@@ -31,7 +26,7 @@ inline std::vector<std::vector<std::uint8_t>> loadMNISTImages(const std::string&
     return images;
 }
 
-inline std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
+std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
     std::ifstream labelStream(filename, std::ios::binary);
     if (!labelStream.is_open()) {
         throw std::runtime_error("Could not open label file.");
@@ -49,4 +44,4 @@ inline std::vector<std::uint8_t> loadMNISTLabels(const std::string& filename) {
     return labels;
 }
 
-#endif // LOADMNIST_H
+#endif // LOADMNIST_TPP

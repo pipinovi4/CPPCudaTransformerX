@@ -3,7 +3,7 @@
 
 #include "loadWikiText.h"
 
- std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::string& dataset_dir) {
+std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::string& dataset_dir) {
     std::vector<std::vector<std::string>> train_data;
     std::vector<std::vector<std::string>> val_data;
     std::vector<std::vector<std::string>> test_data;

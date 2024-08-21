@@ -1,21 +1,21 @@
+#ifndef LOADAGNEWS_TPP
+#define LOADAGNEWS_TPP
+
 #include "loadAGNews.h"
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
 
 /**
  * \brief Loads the AG News dataset from files.
  *
  * \return A vector containing training and test datasets, each represented as a vector of strings.
  */
-inline std::vector<std::vector<std::vector<std::string>>> loadAGNews(const std::string& dataset_dir) {
+std::vector<std::vector<std::vector<std::string>>> loadAGNews(const std::string& dataset_dir) {
     std::vector<std::vector<std::string>> train_data;
     std::vector<std::vector<std::string>> test_data;
 
     // Load the training data
     std::ifstream train_file(dataset_dir + "/train.txt");
     if (!train_file.is_open()) {
-        throw std::runtime_error("Failed to open the file: data/ag_news/train.txt");
+        throw std::runtime_error("Failed to open the file: " + dataset_dir + "/train.txt");
     }
 
     std::string line;
@@ -52,3 +52,5 @@ inline std::vector<std::vector<std::vector<std::string>>> loadAGNews(const std::
     // Return both train and test datasets
     return {train_data, test_data};
 }
+
+#endif //LOADAGNEWS_TPP
