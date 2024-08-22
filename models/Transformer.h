@@ -5,10 +5,11 @@
 #include "../include/Tensor.h"
 #include "../include/LossFunction.h"
 #include "../include/Optimizer.h"
-#include "../include/PositionalEncoder.h"
 #include "../include/Embedding.h"
 #include "../include/MultiHeadAttention.h"
 #include "../include/ResidualBlock.h"
+#include "../include/PositionalWiseDenseLayer.h"
+#include "../include/Tokenizer.h"
 #include <memory>
 
 
@@ -48,13 +49,13 @@ public:
     void save_weights(const std::string& filepath);
 
     // Training method
-    void train(const std::vector<Tensor<T>>& train_data, int batch_size, int n_epochs);
+    void train(const std::vector<std::vector<std::string>>& train_data, int batch_size, int n_epochs);
 
     // Evaluation method
-    float evaluate(const std::vector<Tensor<T>>& val_data, int batch_size);
+    float evaluate(const std::vector<std::vector<std::string>>& val_data, int batch_size);
 
     // Prediction method
-    Tensor<T> predict(const Tensor<T>& src, int max_len);
+    Tensor<T> predict(const std::vector<std::vector<std::string>>& src, int max_len);
 
     // Getters model parameters
     std::vector<std::reference_wrapper<Tensor<T>>> parameters();
@@ -77,11 +78,10 @@ private:
     Optimizer<T>* optimizer_;
 
     // Embedding layers
-    std::unique_ptr<Embedding<T>> input_embedding_; // Embedding layer
-    std::unique_ptr<Embedding<T>> output_embedding_; // Embedding layer
+    std::unique_ptr<Embedding<T>> embedding_; // Embedding layer
 
     // Positional encoding
-    std::unique_ptr<PositionalEncoder<T>> positional_encoder_; // Positional encoder
+    std::unique_ptr<Tokenizer<T>> positional_encoder_; // Positional encoder
 
     // Encoder and decoder layers
     std::vector<std::unique_ptr<ResidualBlock<T, Layer<T>*>>> encoder_layers_; // Encoder layers
@@ -89,7 +89,8 @@ private:
     std::vector<std::unique_ptr<ResidualBlock<T, Layer<T>*>>> output_encoder_layers_; // Output encoder layers
 
     // Output layer
-    std::vector<std::unique_ptr<PositionalWiseDenseLayer<T>*>> output_layers_; // Final output layer
+    std::unique_ptr<PositionalWiseDenseLayer<T>> output_layer_linear_; // Linear layer
+    std::unique_ptr<PositionalWiseDenseLayer<T>> output_layer_softmax_; // Softmax layer
 
     // Label smoothing function
     Tensor<T> apply_label_smoothing(const Tensor<T>& logits, const Tensor<T>& labels);
