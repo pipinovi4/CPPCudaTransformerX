@@ -37,14 +37,15 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
     // Cache the input for use in the backward pass
     this->input_cache_ = input;
 
-    // Ensure the input tensor is 2D [batch_size, sequence_length]
+    // Ensure the input tensor is 1D [sequence_length]
     const std::vector<int> input_shape = input.shape();
-    if (input_shape.size() != 2) {
-        throw std::invalid_argument("Input tensor must be 2D for embedding layer. Received shape: " + std::to_string(input_shape.size()));
+    if (input_shape.size() != 1) {
+        throw std::invalid_argument("Input tensor must be 1D for embedding layer. Received shape: " + std::to_string(input_shape.size()));
     }
-
-    // Define the shape of the output tensor [batch_size, sequence_length, embedding_dims]
-    std::vector<int> output_shape = {input_shape[0], input_shape[1], embedding_dims_};
+    
+    // Define the shape of the output tensor [sequence_length, embedding_dims]
+    std::vector<int> output_shape = {input_shape[0], embedding_dims_};
+    
     Tensor<T> output(output_shape);
 
     // Data access for better performance
@@ -53,15 +54,13 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
     T* output_data = output.data.data();
 
     // Populate the output tensor by looking up the embeddings for each token in the input
-    #pragma omp parallel for collapse(3)
-    for (int i = 0; i < input_shape[0]; ++i) {  // Iterate over batch size
-        for (int j = 0; j < input_shape[1]; ++j) {  // Iterate over sequence length
-            const int index = static_cast<int>(input_data[i * input_shape[1] + j]);
-            for (int k = 0; k < embedding_dims_; ++k) {  // Iterate over embedding dimensions
-                output_data[(i * input_shape[1] + j) * embedding_dims_ + k] = weights_data[index * embedding_dims_ + k];
-            }
+    for (int j = 0; j < input_shape[0]; ++j) {  // Iterate over sequence length
+        const int index = static_cast<int>(input_data[j]);
+        for (int k = 0; k < embedding_dims_; ++k) {  // Iterate over embedding dimensions
+            output_data[j * embedding_dims_ + k] = weights_data[index * embedding_dims_ + k];
         }
     }
+
     return output;
 }
 
@@ -70,11 +69,11 @@ void Embedding<T>::backward(Tensor<T>& grad) {
     // Zero the gradients before accumulation
     zero_grad();
 
-    // Ensure the gradient tensor is 3D [batch_size, sequence_length, embedding_dims]
+    // Ensure the gradient tensor is 3D [sequence_length, embedding_dims]
     const std::vector<int> grad_shape = grad.shape();
     const std::vector<int> input_cache_shape = input_cache_.shape();
-    if (grad_shape.size() != 3) {
-        throw std::invalid_argument("Gradient tensor must be 3D for embedding layer. Received shape: " + std::to_string(grad_shape.size()));
+    if (grad_shape.size() != 2) {
+        throw std::invalid_argument("Gradient tensor must be 2D for embedding layer. Received shape: " + std::to_string(grad_shape.size()));
     }
 
     // Data access for better performance
@@ -84,12 +83,9 @@ void Embedding<T>::backward(Tensor<T>& grad) {
 
     // Accumulate gradients for the embeddings based on the backward pass
     for (int k = 0; k < embedding_dims_; ++k) {
-        #pragma omp parallel for collapse(2)
-        for (int i = 0; i < grad_shape[0]; ++i) {
-            for (int j = 0; j < grad_shape[1]; ++j) {
-                const int index = static_cast<int>(input_cache_data_ptr[i * input_cache_shape[1] + j]);
-                grad_data_ptr_[index * embedding_dims_ + k] += grad_data_ptr[(i * grad_shape[1] + j) * grad_shape[2] + k];
-            }
+        for (int j = 0; j < grad_shape[0]; ++j) {
+            const int index = static_cast<int>(input_cache_data_ptr[j]);
+            grad_data_ptr_[index * embedding_dims_ + k] += grad_data_ptr[j * grad_shape[1] + k];
         }
     }
 }
