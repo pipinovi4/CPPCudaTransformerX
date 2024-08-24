@@ -52,127 +52,102 @@ MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_
 template <typename T>
 void MultiHeadAttention<T>::initializeParameter(Tensor<T>& weights) {
     std::random_device rd;
-    std::mt19937 gen(rd());
+    std::minstd_rand gen(rd());  // Use a faster generator
     T limit = std::sqrt(6.0 / (weights.shape()[0] + weights.shape()[1]));
-    std::normal_distribution<T> dist(-limit, limit);  // Xavier/Glorot initialization
+    std::normal_distribution<T> dist(-limit, limit);
 
     size_t weights_size = 1;
     for (auto dim : weights.dimensions) {
-        weights_size *= dim;  // Calculate the total number of elements in the tensor
+        weights_size *= dim;
     }
 
-    weights.data.clear();  // Clear any existing data in the tensor
+    weights.data.resize(weights_size);  // Pre-allocate memory
+
+    // Use parallelized loop to fill the vector
+    #pragma omp parallel for
     for (size_t i = 0; i < weights_size; i++) {
-        weights.data.push_back(dist(gen));  // Initialize the weights with values drawn from a normal distribution
+        weights.data[i] = dist(gen);
     }
 }
 
 // Split the input tensor into multiple heads
 template <typename T>
 std::vector<Tensor<T>> MultiHeadAttention<T>::split_heads(const Tensor<T>& x) const {
-    // Initialize a vector to hold the heads
-    std::vector<Tensor<T>> heads{};
-
-    // Reserve the heads vector to the number of heads
-    heads.reserve(num_heads);
+    // Initialize a vector to hold the heads and preallocate memory
+    std::vector<Tensor<T>> heads(num_heads, Tensor<T>({x.shape()[0], x.shape()[1] / num_heads}));
 
     // Get the shape of the input tensor
-    const std::vector<int> shape = x.shape();
-    const int batch_size = shape[0];  // Batch size
-    const int seq_len = shape[1];  // Sequence length
-    const int hidden_dim = shape[2];  // Hidden dimension
-    const int head_dim = hidden_dim / num_heads;  // Dimension of each head
-
-    // Ensure hidden_dim is divisible by num_heads
-    if (hidden_dim % num_heads != 0) {
-        throw std::invalid_argument("hidden_dim must be divisible by num_heads");
-    }
+    const int seq_len = x.shape()[0];
+    const int hidden_dim = x.shape()[1];
+    const int head_dim = hidden_dim / num_heads;
 
     // Data access input data (x) for better performance
     const T* x_data = x.data.data();
 
     // Manually extract the slices for each head
-    for (int i = 0; i < num_heads; ++i) {
-        // Initialize a vector to hold the data for the head
-        std::vector<T> head_data(batch_size * seq_len * head_dim);
-
-        // Data access for head data
-        T* head_data_ptr = head_data.data();
-
-        // Extract the data for the head
-        #pragma omp parallel for collapse(3)
-        for (int b = 0; b < batch_size; ++b) {
-            for (int s = 0; s < seq_len; ++s) {
-                for (int h = 0; h < head_dim; ++h) {
-                    // Calculate the index in the input tensor
-                    int index = b * seq_len * hidden_dim + s * hidden_dim + i * head_dim + h;
-
-                    // Add the data to the head
-                    head_data_ptr[b * seq_len * head_dim + s * head_dim + h] = x_data[index];
-                }
-            }
+    #pragma omp parallel for collapse(2)
+    for (int s = 0; s < seq_len; ++s) {
+        for (int h = 0; h < hidden_dim; ++h) {
+            const int head_index = h / head_dim;
+            const int head_offset = h % head_dim;
+            heads[head_index].data[s * head_dim + head_offset] = x_data[s * hidden_dim + h];
         }
-        // Create a tensor from the head data
-        heads.emplace_back(Tensor<T>({batch_size, seq_len, head_dim}, std::move(head_data)));
     }
 
     return heads;
 }
 
-// Concatenate the output from multiple heads
+
+// Split the input tensor into multiple heads
 template <typename T>
 Tensor<T> MultiHeadAttention<T>::concat_heads(const std::vector<Tensor<T>>& heads) const {
     // Determine the shape of the heads
-    const int batch_size = heads[0].shape()[0];
-    const int seq_len = heads[0].shape()[1];
-    const int head_dim = heads[0].shape()[2];
+    const int seq_len = heads[0].shape()[0];
+    const int head_dim = heads[0].shape()[1];
 
-    // Initialize a vector to hold the concatenated data and reserve space
-    std::vector<T> concatenated_data(batch_size * seq_len * head_dim * num_heads);
+    // Initialize a tensor to hold the concatenated data with reserved space
+    Tensor<T> concatenated_tensor({seq_len, head_dim * num_heads});
 
     // Data access for concatenated data for better performance
-    T* concatenated_data_ptr = concatenated_data.data();
+    T* concatenated_data_ptr = concatenated_tensor.data.data();
 
     // Concatenate all heads along the last dimension (head_dim)
-    for (int b = 0; b < batch_size; ++b) {
-        for (int s = 0; s < seq_len; ++s) {
-            const int offset = b * seq_len * head_dim * num_heads + s * head_dim * num_heads; // Calculate the starting point for each sequence
-
-            #pragma omp parallel for
-            for (int n = 0; n < num_heads; ++n) {
-                const T* head_data = heads[n].data.data();
-
-                // Copy the data from the head to the concatenated data
-                for (int h = 0; h < head_dim; ++h) {
-                    concatenated_data_ptr[offset + n * head_dim + h] = head_data[b * seq_len * head_dim + s * head_dim + h];
-                }
-            }
+    #pragma omp parallel for collapse(2)
+    for (int s = 0; s < seq_len; ++s) {
+        for (int n = 0; n < num_heads; ++n) {
+            const T* head_data = heads[n].data.data();
+            std::copy(
+                head_data + s * head_dim, 
+                head_data + (s + 1) * head_dim, 
+                concatenated_data_ptr + s * head_dim * num_heads + n * head_dim
+            );
         }
     }
 
-    return Tensor<T>({batch_size, seq_len, head_dim * num_heads}, std::move(concatenated_data));
+    return concatenated_tensor;
 }
+
 
 // Forward pass for MultiHeadAttention layer
 template <typename T>
 Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>* mask) {
-    // Cache the input data for backpropagation
-    input_cache = input; // 8 100 32
+     // Cache the input data for backpropagation
+     input_cache = input;
 
      // Step 1: Linear projections to get queries, keys, and values
-     Tensor<T> queries = input.dot(W_q);  // 8 100 32
-     Tensor<T> keys = input.dot(W_k);     // 8 100 32
-     Tensor<T> values = input.dot(W_v);   // 8 100 32
+     Tensor<T> queries = input.dot(W_q);
+     Tensor<T> keys = input.dot(W_k);
+     Tensor<T> values = input.dot(W_v);
 
      // Add the bias terms to the projections
-     queries += b_q; // 8 100 32
-     keys += b_k; // 8 100 32
-     values += b_v; // 8 100 32
+     queries += b_q;
+     keys += b_k;
+     values += b_v;
 
      // Step 2: Split the projections into multiple heads
-     queries_heads = split_heads(queries);  // 8 100 4
-     keys_heads = split_heads(keys);        // 8 100 4
-     values_heads = split_heads(values);    // 8 100 4
+     queries_heads = split_heads(queries);
+     keys_heads = split_heads(keys);
+     values_heads = split_heads(values);
 
      // Clear attention_heads vector
      attention_heads.clear();
@@ -181,30 +156,25 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
 #pragma omp parallel for
      for (int i = 0; i < num_heads; ++i) {
          // Compute the attention scores
-         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose({0, 2, 1})); // (8, 100, 4).dot((8, 4, 100)) = [8 100 8 100]
+         Tensor<T> attention_scores = queries_heads[i].dot(keys_heads[i].transpose({1, 0}));
          attention_scores /= std::sqrt(static_cast<T>(head_dim));  // Scale by the square root of the head dimension
-         attention_scores = attention_scores.sum(2); // 8 100 100
 
          // Apply mask (if provided)
          if (mask != nullptr) {
              // Assuming mask has the same shape as attention_scores
-             for (int b = 0; b < attention_scores.shape()[0]; ++b) {  // batch_size loop
-                 for (int j = 0; j < attention_scores.shape()[1]; ++j) {
-                     for (int k = 0; k < attention_scores.shape()[2]; ++k) {
-                         attention_scores.data[b*j*k] += (*mask).data[b*j*k] ? 0 : -1e9;  // Apply large negative value to masked positions
-                     }
-                 }
-             }
+            for (int j = 0; j < attention_scores.size(); ++j) {
+                attention_scores.data[j] += (*mask).data[j] ? 0 : -1e9;  // Apply large negative value to masked positions
+            }
          }
 
          // // Apply the activation function (typically softmax)
          typename ActivationFunction<T>::Softmax softmax;
-         softmax.forward(attention_scores);  // 8 100 100
+         softmax.forward(attention_scores);
 
-         Tensor<T> attention_output = attention_scores.dot(values_heads[i]).sum(2);  // 8 100 100
+         Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
 
          // Compute the output as a weighted sum of the values and store the result
-         attention_heads.push_back(attention_output); // (8 100 8 4).sum(2) = [8 100 4]
+         attention_heads.push_back(attention_output);
      }
 
      // Step 4: Concatenate the attention outputs from all heads
@@ -220,13 +190,14 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
 template <typename T>
 void MultiHeadAttention<T>::backward(Tensor<T>& grad) {
     // Step 1: Compute gradients of the final projection (output layer)
-    Tensor<T> grad_concatenated = grad.dot(W_o.transpose({1, 0}));  // Gradient w.r.t. concatenated output // 8 100 4
+    Tensor<T> grad_concatenated = grad.dot(W_o.transpose({1, 0}));
 
-    grad_W_o = concat_heads(attention_heads).transpose({0, 2, 1}).dot(grad).sum(2).sum(0);  // Gradient w.r.t. W_o, normalized by batch size // 100 32
-    grad_b_o = grad.sum(0).sum(0);  // Gradient w.r.t. b_o // 32
+    // In-place operation for weight gradient computation
+    grad_W_o = concat_heads(attention_heads).transpose({1, 0}).dot(grad);
+    grad_b_o = grad.sum(0); // Assuming b_o is a bias vector
 
     // Step 2: Split the gradient of the concatenated heads back into multiple heads
-    std::vector<Tensor<T>> grad_attention_heads = split_heads(grad_concatenated);  // 8 for [ 8 100 4]
+    std::vector<Tensor<T>> grad_attention_heads = split_heads(grad_concatenated);
 
     // Initialize gradients for queries, keys, and values
     std::vector<Tensor<T>> grad_queries_heads(num_heads);
@@ -237,42 +208,42 @@ void MultiHeadAttention<T>::backward(Tensor<T>& grad) {
     #pragma omp parallel for
     for (int i = 0; i < num_heads; ++i) {
         // Compute gradients of the attention scores
-        Tensor<T> grad_attention_scores = grad_attention_heads[i].dot(values_heads[i].transpose({0, 2, 1}));  // 2 8 2 8
+        Tensor<T> grad_attention_scores = grad_attention_heads[i].dot(values_heads[i].transpose({1, 0}));
         grad_attention_scores /= std::sqrt(static_cast<T>(head_dim));  // Scale gradient
-        grad_attention_scores = grad_attention_scores.sum(2);  // 2 8 8
 
-
-        // Apply the activation function (softmax) gradient
+        // Apply the softmax gradient in-place
         typename ActivationFunction<T>::Softmax softmax;
-        softmax.forward(grad_attention_scores);  // 8 100 100
+        softmax.backward(grad_attention_scores);
 
         // Compute gradients w.r.t. queries, keys, and values
-        grad_queries_heads[i] = grad_attention_scores.dot(keys_heads[i]).sum(2); // 8 100 4 / 8 100 4
-        grad_keys_heads[i] = grad_attention_scores.dot(queries_heads[i]).sum(2);  // Shape: [batch_size, seq_len, head_dim]
-        grad_values_heads[i] = grad_attention_scores.dot(grad_attention_heads[i]).sum(2);  // Shape: [batch_size, seq_len, head_dim]
+        grad_queries_heads[i] = grad_attention_scores.dot(keys_heads[i]);
+        grad_keys_heads[i] = grad_attention_scores.dot(queries_heads[i]);
+        grad_values_heads[i] = grad_attention_scores.dot(grad_attention_heads[i]);
     }
 
     // Step 4: Concatenate the gradients of the heads
-    Tensor<T> grad_queries = concat_heads(grad_queries_heads);  // Shape: [batch_size, seq_len, d_model]
-    Tensor<T> grad_keys = concat_heads(grad_keys_heads);  // Shape: [batch_size, seq_len, d_model]
-    Tensor<T> grad_values = concat_heads(grad_values_heads);  // Shape: [batch_size, seq_len, d_model]
+    Tensor<T> grad_queries = concat_heads(grad_queries_heads);
+    Tensor<T> grad_keys = concat_heads(grad_keys_heads);
+    Tensor<T> grad_values = concat_heads(grad_values_heads);
 
-    // Step 5: Compute gradients of the linear projections (W_q, W_k, W_v)
-    grad_W_q = input_cache.transpose({0, 2, 1}).dot(grad_queries).sum(2).sum(0);  // Shape: [d_model, d_model], normalized by batch size
-    grad_W_k = input_cache.transpose({0, 2, 1}).dot(grad_keys).sum(2).sum(0);  // Shape: [d_model, d_model], normalized by batch size
-    grad_W_v = input_cache.transpose({0, 2, 1}).dot(grad_values).sum(2).sum(0);  // Shape: [d_model, d_model], normalized by batch size
+    // Step 5: Compute gradients of the linear projections (W_q, W_k, W_v) efficiently
+    grad_W_q = input_cache.transpose({1, 0}).dot(grad_queries);
+    grad_W_k = input_cache.transpose({1, 0}).dot(grad_keys);
+    grad_W_v = input_cache.transpose({1, 0}).dot(grad_values);
 
     // Compute the gradients with respect to the biases
-    grad_b_q = grad_queries.sum(0).sum(0);  // Shape: [d_model]
-    grad_b_k = grad_keys.sum(0).sum(0);  // Shape: [d_model]
-    grad_b_v = grad_values.sum(0).sum(0);  // Shape: [d_model]
+    grad_b_q = grad_queries.sum(0);  // Shape: [d_model]
+    grad_b_k = grad_keys.sum(0);  // Shape: [d_model]
+    grad_b_v = grad_values.sum(0);  // Shape: [d_model]
 
-    // Step 6: Propagate gradients through the input data
-    Tensor<T> grad_input_q = grad_queries.dot(W_q);  // Shape: [batch_size, seq_len, d_model]
-    Tensor<T> grad_input_k = grad_keys.dot(W_k);  // Shape: [batch_size, seq_len, d_model]
-    Tensor<T> grad_input_v = grad_values.dot(W_v);  // Shape: [batch_size, seq_len, d_model]
+    // Step 6: Compute the gradients of the input
+    grad = grad_queries.dot(W_q.transpose({1, 0})) + grad_keys.dot(W_k.transpose({1, 0})) + grad_values.dot(W_v.transpose({1, 0}));
 
-    grad = grad_input_q + grad_input_k + grad_input_v;
+    // Optionally, clear intermediate tensors to free memory
+    grad_concatenated.data.clear();
+    grad_queries_heads.clear();
+    grad_keys_heads.clear();
+    grad_values_heads.clear();
 }
 
 // Explicit template instantiation for the following types (override the class declaration)
