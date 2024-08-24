@@ -6,6 +6,9 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include <deque>
+#include <utility>
+
 
 /**
  * @class BPE
@@ -38,6 +41,12 @@ public:
      */
     inline std::vector<std::string> apply(const std::string& word) const;
 
+    static inline std::map<std::pair<std::string, std::string>, int> computeMerges(const std::vector<std::vector<std::string>>& dataset, int num_merges);
+
+    // inline void saveMerges(const std::string& merge_file, const std::string& vocab_file) const;
+
+    // inline void loadMerges(const std::string& merge_file, const std::string& vocab_file);
+
 private:
     std::map<std::pair<std::string, std::string>, int> merges_; ///< Stores the BPE merge rules.
     std::unordered_map<std::string, int> vocab_; ///< Stores the vocabulary mapping.
@@ -51,7 +60,7 @@ private:
      * @param subwords The vector of subwords that will be merged.
      * @param pair The pair of subwords to merge into a single subword.
      */
-    static inline void mergeSubwords(std::vector<std::string>& subwords, const std::pair<std::string, std::string>& pair);
+     static inline void mergeSubwords(std::vector<std::string>& subwords, const std::pair<std::string, std::string>& pair);
 };
 
 #include "../src/BPE.tpp"

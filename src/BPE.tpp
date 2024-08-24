@@ -10,7 +10,7 @@ BPE::BPE(const std::map<std::pair<std::string, std::string>, int>& merges, const
 
 std::vector<std::string> BPE::apply(const std::string& word) const {
     std::vector<std::string> subwords;
-    
+
     // Start by splitting the word into individual characters
     for (char c : word) {
         subwords.emplace_back(1, c);
@@ -43,6 +43,30 @@ std::vector<std::string> BPE::apply(const std::string& word) const {
     }
 
     return subwords;
+}
+
+std::map<std::pair<std::string, std::string>, int> BPE::computeMerges(const std::vector<std::vector<std::string>>& dataset, const int num_merges) {
+    std::map<std::pair<std::string, std::string>, int> merges;
+    int merge_count = 0;
+
+    // Iterate through the dataset a fixed number of times to create merges
+    for (int merge_iteration = 0; merge_iteration < num_merges; ++merge_iteration) {
+        for (const auto& sentence : dataset) {
+            for (size_t i = 0; i < sentence.size() - 2; ++i) {
+                // Only add new pairs to the merges map
+                if (merges.find(std::make_pair(sentence[i], sentence[i + 1])) == merges.end()) {
+                    merges[std::make_pair(sentence[i], sentence[i + 1])] = merge_count++;
+
+                    // Break early if we've reached the desired number of merges
+                    if (merge_count >= num_merges) {
+                        return merges;
+                    }
+                }
+            }
+        }
+    }
+
+    return merges;  // Return the computed merges
 }
 
 // Merge subwords in the given vector according to the specified pair
