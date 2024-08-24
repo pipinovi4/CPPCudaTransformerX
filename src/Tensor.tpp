@@ -736,21 +736,18 @@ Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
     Tensor<T> result(newShape);
 
     // Map the data from the original tensor to the new tensor
-    std::vector<int> indices(dimensions.size(), 0);
+    #pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
         int oldIndex = 0;
         int newIndex = 0;
         int temp = static_cast<int>(i);
 
-        // Calculate the old and new indices
         for (int j = dimensions.size() - 1; j >= 0; --j) {
-            indices[j] = temp % dimensions[j];
+            int index = temp % dimensions[j];
             temp /= dimensions[j];
-        }
 
-        for (size_t j = 0; j < dimensions.size(); ++j) {
-            oldIndex += indices[j] * originalStrides[j];
-            newIndex += indices[permutation[j]] * newStrides[j];
+            oldIndex += index * originalStrides[j];
+            newIndex += index * newStrides[permutation[j]];
         }
 
         result.data[newIndex] = data[oldIndex];
@@ -883,87 +880,66 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
 
     // Ensure the inner dimensions match for matrix multiplication
     if (this_dims.back() != other_dims[other_dims.size() - 2]) {
-        std::cerr << "Last element of this_dims: " << this_dims.back() << std::endl;
-        std::cerr << "Second to last element of other_dims: " << other_dims[other_dims.size() - 2] << std::endl;
         throw std::invalid_argument("Inner dimensions do not match for dot product");
     }
-
-    // Dimenions sizes of the tensors
-    const size_t this_size = this_dims.size();
-    const size_t other_size = other_dims.size();
 
     // Handle broadcasting dimensions
     if (this_dims.size() < other_dims.size()) {
         this_dims.insert(this_dims.begin(), other_dims.size() - this_dims.size(), 1);
     } else if (other_dims.size() < this_dims.size()) {
-        other_dims.insert(other_dims.begin(), this_dims.size() - this_dims.size(), 1);
+        other_dims.insert(other_dims.begin(), this_dims.size() - other_dims.size(), 1);
     }
 
     // Compute result dimensions
     std::vector<int> resultDimensions;
-    if (this_dims.size() >= 2) {
-        for (int i = 0; i < this_size - 2; ++i) {
-            resultDimensions.emplace_back(this_dims[i]);
-        }
-        resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
+    for (int i = 0; i < this_dims.size() - 2; ++i) {
+        resultDimensions.emplace_back(this_dims[i]);
     }
-    if (other_dims.size() >= 2) {
-        for (int i = 0; i < other_size - 2; ++i) {
-            resultDimensions.emplace_back(other_dims[i]);
-        }
-        resultDimensions.emplace_back(other_dims.back());
-    }
-    if (this_size == 1 && other_size == 1) {
-        resultDimensions.emplace_back(1);
-    }
+    resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
+    resultDimensions.emplace_back(other_dims.back());
 
     // Initialize result tensor
     Tensor<T> result(resultDimensions);
 
-    // Calculate outer dimensions for easier indexing if the tensors are not less than 3D
-    int batch_size = 1;
-    if (this_size >= 3 && other_size >= 3) {
-        for (int i = 0; i < this_size - 2; ++i) {
-            batch_size *= this_dims[i];
-        }
-        resultDimensions.emplace_back(this_dims[this_size - 2]);
-        for (int i = 0; i < other_size - 2; ++i) {
-            batch_size *= other_dims[i];
-        }
-        resultDimensions.emplace_back(other_dims.back());
-    } else if (this_size == 2 && other_size > 2) {
-        for (int i = 0; i < other_size - 2; ++i) {
-            batch_size *= other_dims[i];
-        }
-    } else if (other_size == 2 && this_size > 2) {
-        for (int i = 0; i < this_size - 2; ++i) {
-            batch_size *= this_dims[i];
-        }
-    } else {
-        batch_size = 1;
-    }
-
-    const int M = this_size >= 2 ? this_dims[this_dims.size() - 2] : 1; // Outer dimension for the first tensor
-    const int K = this_dims.back(); // Inner dimension for both tensors
-    const int N = other_size >= 2 ? other_dims.back() : 1; // Outer dimension for the second tensor
+    const int M = this_dims[this_dims.size() - 2]; // Outer dimension for the first tensor
+    const int K = this_dims.back();                // Inner dimension for both tensors
+    const int N = other_dims.back();               // Outer dimension for the second tensor
 
     // Access data pointers for faster access
     T* result_data = result.data.data();
     const T* A = data.data();
     const T* B = other.data.data();
 
-    // Perform the dot product using generalized indexing
+    // Precompute batch size
+    const int batch_size = result.data.size() / (M * N);
+
+    // Perform the dot product using optimized loops
     #pragma omp parallel for
     for (int b = 0; b < batch_size; ++b) {
+        T* result_ptr = result_data + b * M * N;
+        const T* A_ptr = A + b * M * K;
+        const T* B_ptr = B + b * K * N;
+
         for (int i = 0; i < M; ++i) {
             for (int j = 0; j < N; ++j) {
                 T sum = static_cast<T>(0);
-                for (int k = 0; k < K; ++k) {
-                    int a_idx = b * M + i + k;
-                    int b_idx = b * N + j + k;
-                    sum += A[a_idx] * B[b_idx];
+                const T* A_row_ptr = A_ptr + i * K;
+                const T* B_col_ptr = B_ptr + j;
+
+                // Unroll the loop to process 4 elements per iteration
+                int k = 0;
+                for (; k <= K - 4; k += 4) {
+                    sum += A_row_ptr[k] * B_col_ptr[k * N];
+                    sum += A_row_ptr[k + 1] * B_col_ptr[(k + 1) * N];
+                    sum += A_row_ptr[k + 2] * B_col_ptr[(k + 2) * N];
+                    sum += A_row_ptr[k + 3] * B_col_ptr[(k + 3) * N];
                 }
-                result_data[b * M * N + i * N + j] = sum;
+                // Process remaining elements
+                for (; k < K; ++k) {
+                    sum += A_row_ptr[k] * B_col_ptr[k * N];
+                }
+
+                result_ptr[i * N + j] = sum;
             }
         }
     }

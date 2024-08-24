@@ -16,6 +16,7 @@
 #include <cmath>
 #include <functional>
 #include <random>
+#include <immintrin.h>
 
 /**
  * @brief The Tensor class represents a multi-dimensional array (tensor) and provides various operations.
