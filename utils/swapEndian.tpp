@@ -1,7 +1,7 @@
 #ifndef SWAPEDIAN_TPP
 #define SWAPEDIAN_TPP
 
-#include "swapEdian.h"
+#include "swapEndian.h"
 
 inline std::uint32_t swap_endian(const std::uint32_t value) {
     return ((value >> 24) & 0x000000FF) |   // Move byte 0 to byte 3
