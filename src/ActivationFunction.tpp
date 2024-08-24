@@ -38,30 +38,23 @@ public:
         const size_t innerSize = shape.back();
 
         for (size_t i = 0; i < outerSize; ++i) {
-            // Find the maximum value in the current slice for numerical stability
-            double maxVal = -std::numeric_limits<double>::infinity();
+            T* x_slice = &x.data[i * innerSize];
+            T maxVal = *std::max_element(x_slice, x_slice + innerSize);
+            T sum = 0.0;
             for (size_t j = 0; j < innerSize; ++j) {
-                maxVal = std::max(maxVal, static_cast<double>(x.data[i * innerSize + j]));
+                x_slice[j] = std::exp(x_slice[j] - maxVal);
+                sum += x_slice[j];
             }
-
-            // Compute the exponentials and their sum
-            double sum = 0.0;
             for (size_t j = 0; j < innerSize; ++j) {
-                x.data[i * innerSize + j] = std::exp(static_cast<double>(x.data[i * innerSize + j]) - maxVal);
-                sum += x.data[i * innerSize + j];
-            }
-
-            // Normalize the values to get the softmax probabilities
-            for (size_t j = 0; j < innerSize; ++j) {
-                x.data[i * innerSize + j] /= sum;
+                x_slice[j] /= sum;
             }
         }
     }
 
     // Backward method for computation of the gradient
     void backward(Tensor<T>& gradOutput) override {
-        Tensor<T> softmax_output = gradOutput; // Softmax output from forward pass
-        forward(softmax_output); // Compute softmax values again
+        Tensor<T> softmax_output = gradOutput; // Assume softmax_output has the same structure
+        forward(softmax_output);
         const auto& shape = gradOutput.shape();
         size_t outerSize = 1;
         for (size_t i = 0; i < shape.size() - 1; ++i) {
@@ -70,17 +63,14 @@ public:
         const size_t innerSize = shape.back();
 
         for (size_t i = 0; i < outerSize; ++i) {
+            T* gradOutput_i = &gradOutput.data[i * innerSize];
+            T* softmaxOutput_i = &softmax_output.data[i * innerSize];
+            T dot_product = 0;
             for (size_t j = 0; j < innerSize; ++j) {
-                T softmax_val_j = softmax_output.data[i * innerSize + j];
-                gradOutput.data[i * innerSize + j] = 0; // Initialize gradient value
-                for (size_t k = 0; k < innerSize; ++k) {
-                    T softmax_val_k = softmax_output.data[i * innerSize + k];
-                    if (j == k) {
-                        gradOutput.data[i * innerSize + j] += softmax_val_j * (1 - softmax_val_j) * gradOutput.data[i * innerSize + k];
-                    } else {
-                        gradOutput.data[i * innerSize + j] -= softmax_val_j * softmax_val_k * gradOutput.data[i * innerSize + k];
-                    }
-                }
+                dot_product += softmaxOutput_i[j] * gradOutput_i[j];
+            }
+            for (size_t j = 0; j < innerSize; ++j) {
+                gradOutput_i[j] = softmaxOutput_i[j] * (gradOutput_i[j] - dot_product);
             }
         }
     }
