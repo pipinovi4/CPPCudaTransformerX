@@ -3,6 +3,17 @@
 
 #include "loadWikiText.h"
 
+// Function to remove empty sentences from a dataset
+inline void removeEmptySentences(std::vector<std::vector<std::string>>& dataset) {
+    dataset.erase(
+        std::remove_if(dataset.begin(), dataset.end(),
+            [](const std::vector<std::string>& sentence) {
+                return sentence.empty();  // Check if the sentence is empty
+            }),
+        dataset.end()
+    );
+}
+
 std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::string& dataset_dir) {
     std::vector<std::vector<std::string>> train_data;
     std::vector<std::vector<std::string>> val_data;
@@ -63,7 +74,10 @@ std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::strin
         test_data.push_back(words);
     }
 
-    // Return all datasets as a vector of vectors
+    removeEmptySentences(train_data);
+    removeEmptySentences(val_data);
+    removeEmptySentences(test_data);
+
     return {train_data, val_data, test_data};
 }
 
