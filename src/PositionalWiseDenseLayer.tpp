@@ -62,56 +62,50 @@ void PositionalWiseDenseLayer<T>::initializeWeights(Tensor<T>& weights) {
 // Forward pass of the PositionalWiseDenseLayer.
 template <typename T>
 Tensor<T> PositionalWiseDenseLayer<T>::forward(const Tensor<T>& input) {
-    // Check input dimensions.
-    if (input.shape().size() != 3 || input.shape()[2] != dimensions_model_) {
-        throw std::invalid_argument("Forward pass error: Input tensor has incorrect dimensions. Expected shape: [batch_size, max_token_size, " + std::to_string(dimensions_model_) + "], received shape: [" + std::to_string(input.shape()[0]) + ", " + std::to_string(input.shape()[1]) + ", " + std::to_string(input.shape()[2]) + "].");
+    if (input.shape()[1] != dimensions_model_) {
+        throw std::invalid_argument("Input tensor has incorrect dimensions.");
     }
 
     input_cache_ = input;
 
-    // Perform the first matrix multiplication and add the first bias.
-    cache_projection_1_ = input.dot(weights_1_) + biases_1_;
+    // Perform the first matrix multiplication and add the first bias
+    cache_projection_1_ = input.dot(weights_1_);
+    cache_projection_1_ += biases_1_;
 
-    // Apply the activation function to the result of the first projection.
-    // activation_function_.forward(projection_1);
+    // Apply the activation function
+    // activation_function_.forward(cache_projection_1_);
 
-    // Perform the second matrix multiplication and add the second bias.
-    Tensor<T> projection_2 = cache_projection_1_.dot(weights_2_) + biases_2_;
+    // Perform the second matrix multiplication and add the second bias
+    Tensor<T> output = cache_projection_1_.dot(weights_2_);
+    output += biases_2_;
 
-    // Reshape the output back to [batch_size, max_token_size, d_model]
-    Tensor<T> output = projection_2.reshape({input.shape()[0], input.shape()[1], dimensions_model_});
-
-    // Return the final output tensor after the second projection.
     return output;
 }
 
 // Backward pass of the PositionalWiseDenseLayer.
 template <typename T>
 void PositionalWiseDenseLayer<T>::backward(Tensor<T>& grad) {
-    // Check gradient dimensions.
-    if (grad.shape().size() != 3 || grad.shape()[2] != dimensions_model_) {
-        throw std::invalid_argument("Backward pass error: Gradient tensor has incorrect dimensions. Expected shape: [batch_size, max_token_size, " + std::to_string(dimensions_model_) + "], received shape: [" + std::to_string(grad.shape()[0]) + ", " + std::to_string(grad.shape()[1]) + ", " + std::to_string(grad.shape()[2]) + "].");
+    if (grad.shape()[1] != dimensions_model_) {
+        throw std::invalid_argument("Gradient tensor has incorrect dimensions.");
     }
 
     // Step 1: Calculate the gradient w.r.t. the second set of weights and biases.
-    grad_weights_2_ = cache_projection_1_.dot(grad).sum(2).sum(0);
-    grad_biases_2_ = grad.sum(0).sum(0);
+    grad_weights_2_ = cache_projection_1_.transpose({1, 0}).dot(grad);
+    grad_biases_2_ = grad.sum(0);
 
     // Step 2: Backpropagate the gradient through the second layer to the first layer.
     Tensor<T> grad_intermediate = grad.dot(weights_2_.transpose({1, 0}));
 
     // Step 3: Apply the activation function gradient.
-    // If you're using an activation function like ReLU, you'll need to apply its gradient here.
     // activation_function_.backward(grad_intermediate);
 
     // Step 4: Calculate the gradient w.r.t. the first set of weights and biases.
-    grad_weights_1_ = input_cache_.transpose({0, 2, 1}).dot(grad_intermediate).sum(2).sum(0);
-    grad_biases_1_ = grad_intermediate.sum(0).sum(0);
+    grad_weights_1_ = input_cache_.transpose({1, 0}).dot(grad_intermediate);
+    grad_biases_1_ = grad_intermediate.sum(0);
 
     // Step 5: Backpropagate the gradient to the input.
-    grad = grad_intermediate.dot(weights_1_.transpose({1, 0})).reshape(input_cache_.shape());
+    grad = grad_intermediate.dot(weights_1_.transpose({1, 0}));
 }
-
 
 // Update the weights of the PositionalWiseDenseLayer using the optimizer.
 template <typename T>
