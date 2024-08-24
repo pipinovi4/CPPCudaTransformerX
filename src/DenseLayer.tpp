@@ -49,9 +49,6 @@ Tensor<T> DenseLayer<T>::forward(const Tensor<T>& input) {
     T* __restrict__ output_data = output.data.data();
     const T* __restrict__ bias_data = bias.data.data();
 
-    // Prefetch data to minimize latency (uncomment if necessary)
-    // _mm_prefetch((const char*)(weights_data), _MM_HINT_T0);
-
     // Parallelized and vectorized loop for computing the output
     #pragma omp parallel for simd
     for (size_t j = 0; j < outputUnits; ++j) {
