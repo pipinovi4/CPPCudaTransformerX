@@ -19,6 +19,9 @@ public:
     // Converts a vector of tokens into a vector of token IDs using the vocabulary
     std::vector<int> textToIds(const std::vector<std::string>& tokens) const;
 
+    // Converts a vector of token IDs into a vector of tokens using the vocabulary
+    std::vector<std::string> idsToText(const std::vector<T>& ids) const;
+
     // Builds a vocabulary from a dataset of tokenized sentences
     static std::unordered_map<std::string, int> buildVocabulary(const std::vector<std::vector<std::string>>& dataset);
 
