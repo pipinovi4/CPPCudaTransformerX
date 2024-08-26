@@ -2,6 +2,7 @@
 #define LOADWIKITEXT_TPP
 
 #include "loadWikiText.h"
+#include <regex>
 
 // Function to remove empty sentences from a dataset
 inline void removeEmptySentences(std::vector<std::vector<std::string>>& dataset) {
@@ -12,6 +13,12 @@ inline void removeEmptySentences(std::vector<std::vector<std::string>>& dataset)
             }),
         dataset.end()
     );
+}
+
+// Function to check if a line is a title
+inline bool isTitle(const std::string& line) {
+    static const std::regex title_regex(R"(^\s*=+\s.*\s=+\s*$)");
+    return std::regex_match(line, title_regex);
 }
 
 std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::string& dataset_dir) {
@@ -27,6 +34,8 @@ std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::strin
 
     std::string line;
     while (std::getline(train_file, line)) {
+        if (isTitle(line)) continue;  // Skip titles
+
         std::vector<std::string> words;
         std::istringstream iss(line);
         std::string word;
@@ -45,6 +54,8 @@ std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::strin
     }
 
     while (std::getline(val_file, line)) {
+        if (isTitle(line)) continue;  // Skip titles
+
         std::vector<std::string> words;
         std::istringstream iss(line);
         std::string word;
@@ -63,6 +74,8 @@ std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::strin
     }
 
     while (std::getline(test_file, line)) {
+        if (isTitle(line)) continue;  // Skip titles
+
         std::vector<std::string> words;
         std::istringstream iss(line);
         std::string word;
@@ -74,6 +87,7 @@ std::vector<std::vector<std::vector<std::string>>> loadWikiText(const std::strin
         test_data.push_back(words);
     }
 
+    // Remove empty sentences from the datasets
     removeEmptySentences(train_data);
     removeEmptySentences(val_data);
     removeEmptySentences(test_data);
