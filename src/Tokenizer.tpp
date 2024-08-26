@@ -105,29 +105,21 @@ std::vector<std::string> Tokenizer<T>::idsToText(const std::vector<T>& ids) cons
 }
 
 template <typename T>
-std::unordered_map<std::string, int> Tokenizer<T>::buildVocabulary(const std::vector<std::vector<std::string>>& dataset) {
-    std::unordered_map<std::string, int> vocab;
+std::unordered_map<std::string, int> Tokenizer<T>::buildVocabulary(const std::vector<std::string>& vocab) {
+    std::unordered_map<std::string, int> vocab_;
     int index = 0;
 
     // Add special tokens first
     for (const auto& token : special_tokens) {
-        vocab.emplace(token, index++);
+        vocab_.emplace(token, index++);
     }
 
-    // Add tokens from the dataset
-    for (const auto& sentence : dataset) {
-        for (const auto& token : sentence) {
-            // Convert the token to lowercase
-            std::string lower_token = token;
-            std::transform(lower_token.begin(), lower_token.end(), lower_token.begin(), ::tolower);
-
-            if (vocab.find(lower_token) == vocab.end()) {
-                vocab.emplace(lower_token, index++);
-            }
-        }
+    // Add tokens from the vocab
+    for (const auto& token : vocab) {
+        vocab_.emplace(token, index++);
     }
 
-    return vocab;
+    return vocab_;
 }
 
 template <typename T>

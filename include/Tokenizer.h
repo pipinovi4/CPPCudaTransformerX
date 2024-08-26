@@ -23,7 +23,7 @@ public:
     std::vector<std::string> idsToText(const std::vector<T>& ids) const;
 
     // Builds a vocabulary from a dataset of tokenized sentences
-    static std::unordered_map<std::string, int> buildVocabulary(const std::vector<std::vector<std::string>>& dataset);
+    static std::unordered_map<std::string, int> buildVocabulary(const std::vector<std::string>& vocab);
 
     // Builds an inverse vocabulary (ID to token mapping) from a given vocabulary
     static std::unordered_map<int, std::string> buildInverseVocabulary(const std::unordered_map<std::string, int>& vocab);
