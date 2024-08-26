@@ -6,6 +6,8 @@ from utils_py.ag_news.download_ag_news import download_ag_news
 from utils_py.ag_news.extract_ag_news import extract_ag_news
 from utils_py.wikitext.download_wikitext import download_wikitext
 from utils_py.wikitext.extract_wikitext import extract_wikitext
+from utils_py.vocab.download_vocab import download_vocab, train_vocab
+from utils_py.vocab.extract_vocab import extract_vocab
 
 import os
 
@@ -68,3 +70,10 @@ if __name__ == "__main__":
 
         # Print a success message indicating the completion of all steps
         print("WikiText-2 data has been successfully downloaded, extracted, and saved.")
+
+    print("Downloading and processing SentencePiece vocabulary...")
+    # Download and process the SentencePiece vocabulary
+    vocab_file_path = download_vocab(os.path.join(DATA_DIR, "vocab"))
+    train_vocab(vocab_file_path)
+    extract_vocab(os.path.join(DATA_DIR, "vocab"))
+    print("SentencePiece vocabulary has been successfully downloaded and processed.")
