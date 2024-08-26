@@ -17,13 +17,13 @@
 #include <functional>
 #include <random>
 #include <immintrin.h>
+#include "eigen3/Eigen/Dense"
 
 /**
- * @brief The Tensor class represents a multi-dimensional array (tensor) and provides various operations.
+ * @brief A class representing a multi-dimensional array (tensor) and providing various operations.
  *
  * This class allows for the creation and manipulation of multi-dimensional arrays (tensors) of various data types.
- * It supports operations such as element-wise addition, subtraction, multiplication, division, reshaping,
- * slicing, and broadcasting.
+ * It supports operations such as element-wise addition, subtraction, multiplication, division, reshaping, slicing, and broadcasting.
  *
  * @tparam T The data type of the elements in the tensor (e.g., int, float, double).
  */

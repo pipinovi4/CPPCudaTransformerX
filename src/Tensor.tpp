@@ -256,25 +256,23 @@ Tensor<T> Tensor<T>::sum(int axis) const {
 
     Tensor<T> result(new_dims); // Create a new tensor with the reduced dimensions
 
-    std::vector<int> indices(dimensions.size(), 0); // Initialize indices for the original tensor
-    std::vector<int> result_indices(new_dims.size(), 0); // Initialize indices for the result tensor
+    const  std::vector<int> strides = calculateStrides(); // Precompute strides for the original tensor
+    const std::vector<int> result_strides = result.calculateStrides(); // Precompute strides for the result tensor
 
+#pragma omp parallel for
     for (size_t i = 0; i < data.size(); ++i) {
-        size_t temp = i;
-        for (size_t j = indices.size(); j-- > 0;) {
-            indices[j] = temp % dimensions[j]; // Calculate the index for dimension j
-            temp /= dimensions[j]; // Update temp for the next dimension
-        }
-
-        for (size_t j = 0; j < indices.size(); ++j) {
+        int temp = static_cast<int>(i);
+        int result_index = 0;
+        for (size_t j = 0; j < dimensions.size(); ++j) {
+            const int index = temp / strides[j];
+            temp %= strides[j];
             if (j < axis) {
-                result_indices[j] = indices[j]; // Copy indices for dimensions before the axis
+                result_index += index * result_strides[j];
             } else if (j > axis) {
-                result_indices[j - 1] = indices[j]; // Adjust indices for dimensions after the axis
+                result_index += index * result_strides[j - 1];
             }
         }
-
-        int result_index = result.calculateIndex(result_indices); // Calculate the index for the result tensor
+#pragma omp atomic
         result.data[result_index] += data[i]; // Accumulate the sum along the specified axis
     }
 
@@ -708,7 +706,7 @@ Tensor<T> Tensor<T>::transpose(const std::vector<int>& permutation) const {
         throw std::invalid_argument("Permutation size does not match tensor dimensions");
     }
 
-    for (int i : permutation) {
+    for (const int i : permutation) {
         if (i < 0 || i >= static_cast<int>(dimensions.size())) {
             throw std::invalid_argument("Invalid permutation index");
         }
@@ -898,7 +896,7 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     resultDimensions.emplace_back(this_dims[this_dims.size() - 2]);
     resultDimensions.emplace_back(other_dims.back());
 
-    // Initialize result tensor
+    // Initialize result tensor (or resize if needed)
     Tensor<T> result(resultDimensions);
 
     const int M = this_dims[this_dims.size() - 2]; // Outer dimension for the first tensor
@@ -913,35 +911,14 @@ Tensor<T> Tensor<T>::dot(const Tensor<T>& other) const {
     // Precompute batch size
     const int batch_size = result.data.size() / (M * N);
 
-    // Perform the dot product using optimized loops
-    #pragma omp parallel for
+    // Use Eigen to perform the matrix multiplication
+    #pragma omp parallel for // Parallelize over batches
     for (int b = 0; b < batch_size; ++b) {
-        T* result_ptr = result_data + b * M * N;
-        const T* A_ptr = A + b * M * K;
-        const T* B_ptr = B + b * K * N;
+        Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> matA(A + b * M * K, M, K);
+        Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> matB(B + b * K * N, K, N);
+        Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> matC(result_data + b * M * N, M, N);
 
-        for (int i = 0; i < M; ++i) {
-            for (int j = 0; j < N; ++j) {
-                T sum = static_cast<T>(0);
-                const T* A_row_ptr = A_ptr + i * K;
-                const T* B_col_ptr = B_ptr + j;
-
-                // Unroll the loop to process 4 elements per iteration
-                int k = 0;
-                for (; k <= K - 4; k += 4) {
-                    sum += A_row_ptr[k] * B_col_ptr[k * N];
-                    sum += A_row_ptr[k + 1] * B_col_ptr[(k + 1) * N];
-                    sum += A_row_ptr[k + 2] * B_col_ptr[(k + 2) * N];
-                    sum += A_row_ptr[k + 3] * B_col_ptr[(k + 3) * N];
-                }
-                // Process remaining elements
-                for (; k < K; ++k) {
-                    sum += A_row_ptr[k] * B_col_ptr[k * N];
-                }
-
-                result_ptr[i * N + j] = sum;
-            }
-        }
+        matC.noalias() = matA * matB;  // Perform matrix multiplication using Eigen
     }
 
     return result;
@@ -967,7 +944,7 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
         }
     }
 
-    // Determine resulting dimensions
+    // Calculate resulting dimensions after broadcasting
     std::vector<int> result_dims(this_dims.size());
     for (size_t i = 0; i < this_dims.size(); ++i) {
         result_dims[i] = std::max(this_dims[i], other_dims[i]);
@@ -975,33 +952,22 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 
     // Create result tensor
     Tensor<T> result(result_dims);
-    const size_t result_size = result.data.size();
 
-    // Precompute strides for efficient indexing
-    std::vector<int> this_strides(this_dims.size(), 1);
-    std::vector<int> other_strides(other_dims.size(), 1);
+    // Perform the addition with broadcasting manually
+    Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matA(this->data.data(), this->data.size(), 1);
+    Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matB(other.data.data(), other.data.size(), 1);
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matC(result.data.data(), result.data.size(), 1);
 
-    for (int i = this_dims.size() - 2; i >= 0; --i) {
-        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
-        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
-    }
-
-    // Perform element-wise addition with broadcasting
-    for (size_t i = 0; i < result_size; ++i) {
-        int this_index = 0;
-        int other_index = 0;
-        size_t temp = i;
-
-        // Calculate index in each tensor based on broadcasted dimensions
-        for (size_t j = result_dims.size(); j-- > 0;) {
-            int result_idx = static_cast<int>(temp) % result_dims[j];
-            temp /= result_dims[j];
-
-            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
-            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+    if (this->data.size() == other.data.size()) {
+        // If both tensors have the same size, perform element-wise addition
+        matC = matA.array() + matB.array();
+    } else {
+        // Manually broadcast one of the tensors
+        for (int i = 0; i < matC.size(); ++i) {
+            int this_idx = i % matA.size();
+            int other_idx = i % matB.size();
+            matC(i) = matA(this_idx) + matB(other_idx);
         }
-
-        result.data[i] = this->data[this_index] + other.data[other_index];
     }
 
     return result;
@@ -1009,7 +975,7 @@ Tensor<T> Tensor<T>::operator+(const Tensor<T>& other) const {
 
 template<typename T>
 Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
-    // Check if dimensions are compatible for broadcasting
+    // Ensure dimensions are broadcast-compatible
     auto this_dims = this->dimensions;
     auto other_dims = other.dimensions;
 
@@ -1027,40 +993,30 @@ Tensor<T> Tensor<T>::operator-(const Tensor<T>& other) const {
         }
     }
 
-    // Calculate resulting dimensions
+    // Calculate resulting dimensions after broadcasting
     std::vector<int> result_dims(this_dims.size());
     for (size_t i = 0; i < this_dims.size(); ++i) {
         result_dims[i] = std::max(this_dims[i], other_dims[i]);
     }
 
-    // Create a new tensor to hold the result
+    // Create result tensor
     Tensor<T> result(result_dims);
 
-    // Precompute strides for efficient indexing
-    std::vector<int> this_strides(this_dims.size(), 1);
-    std::vector<int> other_strides(other_dims.size(), 1);
+    // Perform the subtraction with broadcasting manually
+    Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matA(this->data.data(), this->data.size(), 1);
+    Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matB(other.data.data(), other.data.size(), 1);
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> matC(result.data.data(), result.data.size(), 1);
 
-    for (int i = this_dims.size() - 2; i >= 0; --i) {
-        this_strides[i] = this_strides[i + 1] * this_dims[i + 1];
-        other_strides[i] = other_strides[i + 1] * other_dims[i + 1];
-    }
-
-    // Perform element-wise subtraction with broadcasting
-    for (size_t i = 0; i < result.data.size(); ++i) {
-        int this_index = 0;
-        int other_index = 0;
-        size_t temp = i;
-
-        // Calculate index in each tensor based on broadcasted dimensions
-        for (size_t j = result_dims.size(); j-- > 0;) {
-            int result_idx = static_cast<int>(temp) % result_dims[j];
-            temp /= result_dims[j];
-
-            this_index += (this_dims[j] == 1 ? 0 : result_idx) * this_strides[j];
-            other_index += (other_dims[j] == 1 ? 0 : result_idx) * other_strides[j];
+    if (this->data.size() == other.data.size()) {
+        // If both tensors have the same size, perform element-wise subtraction
+        matC = matA.array() - matB.array();
+    } else {
+        // Manually broadcast one of the tensors
+        for (int i = 0; i < matC.size(); ++i) {
+            int this_idx = i % matA.size();
+            int other_idx = i % matB.size();
+            matC(i) = matA(this_idx) - matB(other_idx);
         }
-
-        result.data[i] = this->data[this_index] - other.data[other_index];
     }
 
     return result;
