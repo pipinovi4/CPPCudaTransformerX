@@ -12,10 +12,11 @@ def download_vocab(data_dir):
     Returns:
         str: Path to the created vocabulary file.
     """
-    vocab_file_path = os.path.join(data_dir, "vocab_20000_words.txt")
+    vocab_file_path = os.path.join(data_dir, "vocab_30000_words.txt")
 
     print("Creating and populating the vocab file with datasets like AG_NEWS and WikiText.")
     with open(vocab_file_path, "w") as f:
+        # Add dataset content
         for file_name in ["train", "valid", "test"]:
             with open(f"data/wikitext/{file_name}.txt", "r") as wikitext_file:
                 f.write(wikitext_file.read().lower())
@@ -40,7 +41,7 @@ def train_vocab(vocab_file_path):
     command_string = (
         f"--input={vocab_file_path} "
         f"--model_prefix=spm "
-        f"--vocab_size=20000 "
+        f"--vocab_size=30000 "
         f"--model_type=word "
         f"--character_coverage=0.9995"
     )

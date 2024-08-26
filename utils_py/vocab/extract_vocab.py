@@ -55,7 +55,7 @@ def extract_vocab(data_dir):
     Returns:
         None
     """
-    vocab_file_path = os.path.join(data_dir, "vocab_20000_words.txt")
+    vocab_file_path = os.path.join(data_dir, "vocab_30000_words.txt")
 
     with open("spm.vocab", "r") as spm_vocab_file:
         lines = spm_vocab_file.readlines()
@@ -63,14 +63,30 @@ def extract_vocab(data_dir):
     special_chars = ['-', '#', '&', '@', '$', '%', '^', '*', '+', '=', '<', '>', '?', '!', '~', '`', '|', '\\', '/', '(', ')', '[', ']', '{', '}', ':', ';', '"', "'", '.']
 
     words = []
+
+    # Add special tokens
+    special_tokens = ["<unk>", "<s>", "</s>", "<pad>", "<mask>"]
+    words.extend(special_tokens)
+
+    # Add numbers from 0 to 9
+    for number in range(10):
+        words.append(str(number))
+
+    # Add special symbols
+    special_symbols = ["&", "$", "%", "@", "#", "*", "!", "?", "^", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", "|", "\\", "/", "<", ">", "~", "`", ";", ":", "'", '"', ",", "."]
+    words.extend(special_symbols)
+
+    # Extract and filter words from the SentencePiece vocabulary
     for line in lines:
         word = line.split('\t')[0].replace('▁', '')
         if not line.startswith('<'):
             words.extend(split_and_filter_word(word, special_chars))
 
+    # Save the filtered vocabulary
     with open(vocab_file_path, "w") as output_file:
         output_file.write('\n'.join(words))
 
+    # Clean up temporary files
     os.remove("spm.vocab")
     os.remove("spm.model")
 
