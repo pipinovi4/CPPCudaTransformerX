@@ -3,11 +3,6 @@
 
 #include "loadAGNews.h"
 
-/**
- * \brief Loads the AG News dataset from files.
- *
- * \return A vector containing training and test datasets, each represented as a vector of strings.
- */
 std::vector<std::vector<std::vector<std::string>>> loadAGNews(const std::string& dataset_dir) {
     std::vector<std::vector<std::string>> train_data;
     std::vector<std::vector<std::string>> test_data;
