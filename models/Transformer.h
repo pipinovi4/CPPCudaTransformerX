@@ -12,6 +12,8 @@
 #include "../include/Tokenizer.h"
 #include <memory>
 
+#include "../include/DenseLayer.h"
+
 
 template <typename T>
 class Transformer {
@@ -20,7 +22,7 @@ public:
     Transformer(int vocab_size, int d_model, int n_heads, int d_ff, int max_len,
         float dropout, float label_smoothing, int warmup_steps,
         typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule,
-        LossFunction<T>* loss_function, Optimizer<T>* optimizer);
+        LossFunction<T>* loss_function, Optimizer<T>* optimizer, std::vector<std::string> vocab);
 
     // Defaulted Destructor
     ~Transformer() = default;
@@ -49,7 +51,7 @@ public:
     void save_weights(const std::string& filepath);
 
     // Training method
-    void train(const std::vector<std::vector<std::string>>& train_data, int batch_size, int n_epochs);
+    void train(const std::vector<std::vector<std::string>>& train_data, int n_epochs, int batch_size = 32);
 
     // Evaluation method
     float evaluate(const std::vector<std::vector<std::string>>& val_data, int batch_size);
@@ -89,8 +91,10 @@ private:
     std::vector<std::unique_ptr<ResidualBlock<T, Layer<T>*>>> output_encoder_layers_; // Output encoder layers
 
     // Output layer
-    std::unique_ptr<PositionalWiseDenseLayer<T>> output_layer_linear_; // Linear layer
-    std::unique_ptr<PositionalWiseDenseLayer<T>> output_layer_softmax_; // Softmax layer
+    std::unique_ptr<DenseLayer<T>> output_layer_softmax_; // Softmax layer
+
+    // Convert sequence to tokenized tensor
+    Tensor<T> convert_to_tensor(const std::vector<std::string>& sequence);
 
     // Label smoothing function
     Tensor<T> apply_label_smoothing(const Tensor<T>& logits, const Tensor<T>& labels);
