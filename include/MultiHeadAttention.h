@@ -6,6 +6,7 @@
 #include "ActivationFunction.h"
 #include "Layer.h"
 #include <vector>
+#include "eigen3/Eigen/Dense"
 
 /**
  * @brief MultiHeadAttention layer class.

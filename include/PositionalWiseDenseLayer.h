@@ -6,6 +6,7 @@
 #include "Layer.h"
 #include "Tensor.h"
 #include <stdexcept>
+#include "eigen3/Eigen/Dense"
 
 /**
  * @class PositionalWiseDenseLayer

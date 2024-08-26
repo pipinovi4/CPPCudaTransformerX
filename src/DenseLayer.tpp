@@ -7,6 +7,10 @@
 template <typename T>
 DenseLayer<T>::DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation, T biasInitValue)
     : inputUnits(input_units), outputUnits(output_units), activation(activation) {
+    // Check if an activation function is provided, otherwise use the Linear activation
+    if (activation == nullptr) {
+        this->activation = new typename ActivationFunction<T>::Linear();
+    }
 
     // Initialize weights and gradients tensors with appropriate shapes
     weights = Tensor<T>({input_units, output_units});
@@ -24,15 +28,15 @@ DenseLayer<T>::DenseLayer(int input_units, int output_units, ActivationFunction<
 template <typename T>
 void DenseLayer<T>::initializeWeights(Tensor<T>& inputWeights) {
     // Set up random number generation for weight initialization
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static thread_local std::mt19937 gen(std::random_device{}());
     T limit = std::sqrt(6.0 / (inputUnits + outputUnits)); // Xavier/Glorot initialization limit
     std::uniform_real_distribution<T> dist(-limit, limit);
 
-    // Populate the weights tensor with random values
-    for (int i = 0; i < inputWeights.size(); ++i) {
-        inputWeights.data[i] = dist(gen);
-    }
+    // Convert inputWeights to Eigen matrix mapping
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> mat(inputWeights.data.data(), inputWeights.dimensions[0], inputWeights.dimensions[1]);
+
+    // Initialize the weights using Eigen's NullaryExpr with a lambda function
+    mat = mat.NullaryExpr(mat.rows(), mat.cols(), [&]() { return dist(gen); });
 }
 
 template <typename T>
@@ -80,14 +84,26 @@ void DenseLayer<T>::backward(Tensor<T>& grad) {
     // Initialize input gradients tensor with the shape of the input
     Tensor<T> input_gradient(input_cache.shape());
 
+    // Direct access to data pointers for better performance
+    const T* __restrict__ grad_data = grad.data.data();
+    const T* __restrict__ input_cache_data = input_cache.data.data();
+    const T* __restrict__ weights_data = weights.data.data();
+    T* __restrict__ input_gradient_data = input_gradient.data.data();
+    T* __restrict__ bias_gradients_data = biasGradients.data.data();
+    T* __restrict__ weight_gradients_data = weightGradients.data.data();
+
     // Compute gradients with respect to weights, biases, and input
+    #pragma omp parallel for
     for (size_t j = 0; j < outputUnits; ++j) {
-        T grad_data = grad.data[j];  // Gradient from the next layer
-        biasGradients.data[j] += grad_data;  // Accumulate bias gradients
+        T grad_val = grad_data[j];  // Gradient from the next layer
+        #pragma omp atomic
+        bias_gradients_data[j] += grad_val;  // Accumulate bias gradients
+
+        #pragma omp simd
         for (size_t k = 0; k < inputUnits; ++k) {
             // Accumulate gradients with respect to input and weights
-            input_gradient.data[k] += grad_data * weights.data[k * outputUnits + j];
-            weightGradients.data[k * outputUnits + j] += grad_data * input_cache.data[k];
+            input_gradient_data[k] += grad_val * weights_data[k * outputUnits + j];
+            weight_gradients_data[k * outputUnits + j] += grad_val * input_cache_data[k];
         }
     }
 

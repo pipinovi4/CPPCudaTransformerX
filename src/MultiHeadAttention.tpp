@@ -51,23 +51,19 @@ MultiHeadAttention<T>::MultiHeadAttention(const int& hidden_dim, const int& num_
 // Initialize the weights using a normal distribution (Xavier/Glorot initialization)
 template <typename T>
 void MultiHeadAttention<T>::initializeParameter(Tensor<T>& weights) {
-    std::random_device rd;
-    std::minstd_rand gen(rd());  // Use a faster generator
+    // Calculate the limit for Xavier/Glorot initialization
     T limit = std::sqrt(6.0 / (weights.shape()[0] + weights.shape()[1]));
-    std::normal_distribution<T> dist(-limit, limit);
 
-    size_t weights_size = 1;
-    for (auto dim : weights.dimensions) {
-        weights_size *= dim;
+    if (weights.data.size() != weights.shape()[0] * weights.shape()[1]) {
+        weights.data.resize(weights.shape()[0] * weights.shape()[1]);  // Allocate memory for the weights
     }
 
-    weights.data.resize(weights_size);  // Pre-allocate memory
+    // Map the weights tensor to an Eigen matrix
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> mat(weights.data.data(), weights.shape()[0], weights.shape()[1]);
 
-    // Use parallelized loop to fill the vector
-    #pragma omp parallel for
-    for (size_t i = 0; i < weights_size; i++) {
-        weights.data[i] = dist(gen);
-    }
+    // Initialize the matrix with random values using Eigen's built-in functions
+    mat = mat.NullaryExpr(mat.rows(), mat.cols(),
+        [limit]() { return Eigen::internal::random<T>(-limit, limit); });
 }
 
 // Split the input tensor into multiple heads

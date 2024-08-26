@@ -12,6 +12,7 @@
 #include "../include/Tensor.h"
 #include "../include/Optimizer.h"
 #include <stdexcept>
+#include "eigen3/Eigen/Dense"
 
 /**
  * @class Embedding

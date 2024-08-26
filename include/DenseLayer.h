@@ -11,6 +11,7 @@
 #include "Layer.h"
 #include "../include/Tensor.h"
 #include "../include/ActivationFunction.h"
+#include "eigen3/Eigen/Dense"
 
 /**
  * @class DenseLayer
@@ -32,7 +33,7 @@ public:
      * @param activation The activation function applied to the layer's output (default is Linear).
      * @param biasInitValue The initial value for the bias terms (default is 0.0).
      */
-    DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation = new typename ActivationFunction<T>::Linear(), T biasInitValue = 0.0);
+    DenseLayer(int input_units, int output_units, ActivationFunction<T>* activation = nullptr, T biasInitValue = 0.0);
 
     /**
      * @brief Initializes the weights of the layer.

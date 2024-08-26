@@ -16,6 +16,7 @@ Embedding<T>::Embedding(const int& vocab_size, const int& embedding_dims,
     initializeWeights();
 }
 
+// Initialize the weights using the Xavier (Glorot) initialization.
 template <typename T>
 void Embedding<T>::initializeWeights() {
     // Calculate the limit for Xavier/Glorot initialization
@@ -23,13 +24,12 @@ void Embedding<T>::initializeWeights() {
     T fan_out = static_cast<T>(embedding_dims_);
     T limit = std::sqrt(6.0 / (fan_in + fan_out));
 
-    // Initialize random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<T> dis(-limit, limit);
+    // Map the weights tensor to an Eigen matrix
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> mat(weights_.data.data(), vocab_size_, embedding_dims_);
 
-    // Populate weights tensor with random values within the calculated limit
-    std::generate(weights_.data.begin(), weights_.data.end(), [&]() { return dis(gen); });
+    // Initialize the matrix with random values using Eigen's built-in functions
+    mat = mat.NullaryExpr(mat.rows(), mat.cols(),
+        [limit]() { return Eigen::internal::random<T>(-limit, limit); });
 }
 
 template <typename T>

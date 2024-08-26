@@ -43,20 +43,23 @@ PositionalWiseDenseLayer<T>::PositionalWiseDenseLayer(const int dimensions_model
 // Initialize the weights using the Xavier (Glorot) initialization.
 template <typename T>
 void PositionalWiseDenseLayer<T>::initializeWeights(Tensor<T>& weights) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    T limit = std::sqrt(6.0 / (weights.shape()[0] + weights.shape()[1]));
-    std::normal_distribution<T> dist(-limit, limit);  // Xavier/Glorot initialization
+    // Переконайтеся, що тензор має правильний розмір
+    size_t rows = weights.shape()[0];
+    size_t cols = weights.shape()[1];
 
-    size_t weights_size = 1;
-    for (auto dim : weights.dimensions) {
-        weights_size *= dim;  // Calculate the total number of elements in the tensor
+    if (weights.data.size() != rows * cols) {
+        weights.data.resize(rows * cols);  // Виділяємо пам'ять під дані
     }
 
-    weights.data.clear();  // Clear any existing data in the tensor
-    for (size_t i = 0; i < weights_size; i++) {
-        weights.data.push_back(dist(gen));  // Initialize the weights with values drawn from a normal distribution
-    }
+    // Обчислюємо ліміт для ініціалізації за методом Xavier/Glorot
+    T limit = std::sqrt(6.0f / (static_cast<float>(rows + cols)));
+
+    // Мапимо тензор на матрицю Eigen
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>> mat(weights.data.data(), rows, cols);
+
+    // Ініціалізуємо матрицю випадковими значеннями в межах обчисленого ліміту
+    mat = mat.NullaryExpr(rows, cols,
+        [limit]() { return Eigen::internal::random<T>(-limit, limit); });
 }
 
 // Forward pass of the PositionalWiseDenseLayer.
