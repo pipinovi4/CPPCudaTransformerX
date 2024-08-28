@@ -6,49 +6,93 @@
 #include <unordered_set>
 #include <vector>
 
+/// @brief A generic Tokenizer class that provides functionality for text tokenization,
+/// conversion between text and token IDs, and vocabulary management.
 template <typename T>
 class Tokenizer {
 public:
-    // Constructor: Initializes the tokenizer with various options
+    /**
+     * @brief Constructor to initialize the tokenizer with specific options.
+     * @param max_len Maximum length for tokenized sequences (0 means no limit).
+     * @param delimiters A string containing characters that act as token delimiters.
+     * @param pad If true, sequences will be padded to max_len.
+     * @param truncate If true, sequences will be truncated to max_len.
+     * @param to_lower If true, all text will be converted to lowercase.
+     * @param strip_punctuation If true, punctuation will be removed from the text.
+     */
     explicit Tokenizer(int max_len = 0, std::string delimiters = " \t\n", bool pad = true,
         bool truncate = true, bool to_lower = true, bool strip_punctuation = true);
 
-    // Tokenizes the input text into a vector of tokens
+    /**
+     * @brief Tokenizes the input text into a vector of tokens.
+     * @param text The input string to be tokenized.
+     * @return A vector of tokenized strings.
+     */
     std::vector<std::string> tokenize(const std::string& text);
 
-    // Converts a vector of tokens into a vector of token IDs using the vocabulary
+    /**
+     * @brief Converts a vector of tokens into a vector of token IDs using the vocabulary.
+     * @param tokens The vector of tokens to be converted.
+     * @return A vector of integer token IDs.
+     */
     std::vector<int> textToIds(const std::vector<std::string>& tokens) const;
 
-    // Converts a vector of token IDs into a vector of tokens using the vocabulary
-    std::vector<std::string> idsToText(const std::vector<T>& ids) const;
+    /**
+     * @brief Converts a vector of token IDs back into a vector of tokens using the vocabulary.
+     * @param ids The vector of token IDs to be converted.
+     * @return A vector of tokens corresponding to the provided token IDs.
+     */
+    std::vector<std::string> idsToText(const std::vector<int>& ids) const;
 
-    // Builds a vocabulary from a dataset of tokenized sentences
+    /**
+     * @brief Builds a vocabulary from a dataset of tokenized sentences.
+     * @param vocab A vector of tokens from which to build the vocabulary.
+     * @return A map associating each token with a unique integer ID.
+     */
     static std::unordered_map<std::string, int> buildVocabulary(const std::vector<std::string>& vocab);
 
-    // Builds an inverse vocabulary (ID to token mapping) from a given vocabulary
-    static std::unordered_map<int, std::string> buildInverseVocabulary(const std::unordered_map<std::string, int>& vocab);
-
-    // Sets the vocabulary for the tokenizer
+    /**
+     * @brief Sets the vocabulary for the tokenizer.
+     * @param vocab A map of tokens to integer IDs to be used by the tokenizer.
+     */
     void setVocabulary(const std::unordered_map<std::string, int>& vocab);
 
-    // Saves the vocabulary to a file
+    /**
+     * @brief Saves the current vocabulary to a file.
+     * @param filename The path to the file where the vocabulary will be saved.
+     */
     void saveVocabulary(const std::string& filename) const;
 
-    // Loads the vocabulary from a file
+    /**
+     * @brief Loads a vocabulary from a file.
+     * @param filename The path to the file from which the vocabulary will be loaded.
+     */
     void loadVocabulary(const std::string& filename);
 
 private:
-    // Pads or truncates the token sequence to the specified maximum length
+    /**
+     * @brief Pads or truncates the token sequence to the specified maximum length.
+     * @param tokens The vector of tokens to be padded or truncated.
+     * @param max_len The maximum length for the tokenized sequence.
+     */
     static void applyPadding(std::vector<std::string>& tokens, int max_len);
 
-    int max_len;  // Maximum length for tokenized sequences
-    std::string delimiters;  // Characters used to delimit tokens in the text
-    bool pad;  // Whether to pad sequences to max_len
-    bool truncate;  // Whether to truncate sequences to max_len
-    bool to_lower;  // Whether to convert text to lowercase
-    bool strip_punctuation;  // Whether to remove punctuation from the text
-    std::unordered_map<std::string, int> vocab;  // Vocabulary mapping tokens to IDs
-    static std::unordered_set<std::string> special_tokens;  // Set of special tokens like <PAD>, <UNK>
+    /**
+     * @brief Converts the input text to lowercase in a non-in-place operation.
+     * This method is a more optimized and memory-efficient alternative to std::tolower.
+     * @param text The input string to be converted to lowercase.
+     * @return A new string that is the lowercase version of the input.
+     */
+    static std::string toLower(const std::string& text);
+
+    int max_len;  ///< Maximum length for tokenized sequences
+    std::string delimiters;  ///< Characters used to delimit tokens in the text
+    bool pad;  ///< Whether to pad sequences to max_len
+    bool truncate;  ///< Whether to truncate sequences to max_len
+    bool to_lower;  ///< Whether to convert text to lowercase
+    bool strip_punctuation;  ///< Whether to remove punctuation from the text
+    std::unordered_map<std::string, int> vocab;  ///< Vocabulary mapping tokens to IDs
+    static std::unordered_set<std::string> special_tokens;  ///< Set of special tokens like <PAD>, <UNK>
 };
 
 #include "../src/Tokenizer.tpp"

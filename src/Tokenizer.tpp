@@ -87,7 +87,7 @@ std::vector<int> Tokenizer<T>::textToIds(const std::vector<std::string>& tokens)
 }
 
 template <typename T>
-std::vector<std::string> Tokenizer<T>::idsToText(const std::vector<T>& ids) const {
+std::vector<std::string> Tokenizer<T>::idsToText(const std::vector<int>& ids) const {
     std::vector<std::string> tokens;
     tokens.reserve(ids.size());
 
@@ -111,24 +111,17 @@ std::unordered_map<std::string, int> Tokenizer<T>::buildVocabulary(const std::ve
 
     // Add special tokens first
     for (const auto& token : special_tokens) {
-        vocab_.emplace(token, index++);
+        // Convert to lowercase and add to the vocab
+        vocab_.emplace(toLower(token), index++);
     }
 
     // Add tokens from the vocab
     for (const auto& token : vocab) {
-        vocab_.emplace(token, index++);
+        // Convert to lowercase and add to the vocab
+        vocab_.emplace(toLower(token), index++);
     }
 
     return vocab_;
-}
-
-template <typename T>
-std::unordered_map<int, std::string> Tokenizer<T>::buildInverseVocabulary(const std::unordered_map<std::string, int>& vocab) {
-    std::unordered_map<int, std::string> inv_vocab;
-    for (const auto& [token, id] : vocab) {
-        inv_vocab.emplace(id, token);
-    }
-    return inv_vocab;
 }
 
 template <typename T>
@@ -172,6 +165,13 @@ void Tokenizer<T>::applyPadding(std::vector<std::string>& tokens, const int max_
             tokens.insert(tokens.end(), max_len - tokens.size(), "<PAD>");  // Pad if too few tokens
         }
     }
+}
+
+template <typename T>
+std::string Tokenizer<T>::toLower(const std::string& text) {
+    std::string lower_text = text;
+    std::transform(lower_text.begin(), lower_text.end(), lower_text.begin(), ::tolower);
+    return lower_text;
 }
 
 #endif // TOKENIZER_TPP
