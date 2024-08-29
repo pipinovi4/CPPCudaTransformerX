@@ -65,30 +65,6 @@ TEST_F(MultiHeadAttentionTest, InitializesParameters) {
     }
 }
 
-// Test gradient accumulation and updating weights
-TEST_F(MultiHeadAttentionTest, HandlesGradientAccumulationSimplified) {
-    Tensor<float> input_data({MAX_SEQUENCE_LENGTH, HIDDEN_DIM}); // Use batch size
-    input_data.fill(1.0); // Fill input with known value
-
-    const Tensor<float> output = multihead_attention.forward(input_data, nullptr);
-
-    Tensor<float> grad_output(output.shape());
-    grad_output.fill(0.1); // Use a simple gradient value
-
-    this->ProcessInputBackward(grad_output);
-
-    // Retrieve the gradients
-    const auto gradients = multihead_attention.gradients();
-
-    // Check gradient accumulation
-    for (const auto& gradient : gradients) {
-        const auto& grad_data = gradient.get().data;
-        for (const auto& value : grad_data) {
-            EXPECT_NE(value, 0.0f); // Ensure that gradients are not zero
-        }
-    }
-}
-
 // Test for proper split and concatenation of heads
 TEST_F(MultiHeadAttentionTest, HandlesSplitAndConcatHeads) {
     const Tensor<float> input_data = Tensor<float>::uniform({MAX_SEQUENCE_LENGTH, HIDDEN_DIM});

@@ -52,18 +52,18 @@ protected:
 // Test the forward pass of the Embedding layer
 TEST_F(EmbeddingTest, HandlesForwardPass) {
     SetUpEmbedding(10, 5, 0.01, 0.9);
-    Tensor<float> input_data({2, 3}); // Batch size = 2, Sequence length = 3
+    Tensor<float> input_data({3}); // Batch size = 2, Sequence length = 3
     input_data.fill(1.0); // Filling input with a valid index
 
     const Tensor<float> output = ProcessInputForward(input_data);
-    ExpectOutputShape(output, {2, 3, 5}); // Expected shape: [Batch size, Sequence length, Embedding dims]
+    ExpectOutputShape(output, {3, 5}); // Expected shape: [Batch size, Sequence length, Embedding dims]
     ExpectAllFinite(output); // Ensure all values are finite
 }
 
 // Test the backward pass of the Embedding layer
 TEST_F(EmbeddingTest, HandlesBackwardPass) {
     SetUpEmbedding(10, 5, 0.01, 0.9);
-    Tensor<float> input_data({2, 3});
+    Tensor<float> input_data({3});
     input_data.fill(1.0);
 
     const Tensor<float> output = ProcessInputForward(input_data);
@@ -81,7 +81,7 @@ TEST_F(EmbeddingTest, HandlesBackwardPass) {
 // Test the update of weights after backpropagation
 TEST_F(EmbeddingTest, HandlesWeightUpdate) {
     SetUpEmbedding(10, 5, 0.01, 0.9);
-    Tensor<float> input_data({2, 3});
+    Tensor<float> input_data({3});
     input_data.fill(1.0);
 
     const Tensor<float> output = ProcessInputForward(input_data);
@@ -98,7 +98,7 @@ TEST_F(EmbeddingTest, HandlesWeightUpdate) {
 // Test learning rate scheduling
 TEST_F(EmbeddingTest, HandlesLearningRateSchedule) {
     SetUpEmbedding(10, 5, 0.01, 0.9);
-    Tensor<float> input_data({2, 3});
+    Tensor<float> input_data({3});
     input_data.fill(1.0);
 
     const Tensor<float> output = ProcessInputForward(input_data);
