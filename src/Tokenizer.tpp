@@ -63,28 +63,60 @@ std::vector<int> Tokenizer<T>::textToIds(const std::vector<std::string>& tokens)
     std::vector<int> token_ids;
     token_ids.reserve(tokens.size());
 
-    for (const auto& token : tokens) {
-        std::string lower_token = token;
-        std::transform(lower_token.begin(), lower_token.end(), lower_token.begin(), ::tolower);
+    const int unk_id = vocab.at("<unk>");
+    const int pad_id = vocab.at("<pad>");
 
+    for (const auto& token : tokens) {
+        // Directly transform the token to lowercase while searching
+        std::string lower_token(token.size(), '\0');
+        std::transform(token.begin(), token.end(), lower_token.begin(), ::tolower);
+
+        // Use find() and insert the result directly
         auto it = vocab.find(lower_token);
-        if (it != vocab.end()) {
-            token_ids.push_back(it->second);
-        } else {
-            token_ids.push_back(vocab.at("<unk>"));
-        }
+        token_ids.push_back(it != vocab.end() ? it->second : unk_id);
     }
 
-    // Apply truncation and padding if necessary
+    // Apply truncation if necessary
     if (truncate && max_len > 0 && token_ids.size() > max_len) {
         token_ids.resize(max_len);
     }
+
+    // Apply padding if necessary
     if (pad && max_len > 0 && token_ids.size() < max_len) {
-        token_ids.insert(token_ids.end(), max_len - token_ids.size(), vocab.at("<pad>"));
+        token_ids.insert(token_ids.end(), max_len - token_ids.size(), pad_id);
     }
 
     return token_ids;
 }
+
+
+// template <typename T>
+// std::vector<int> Tokenizer<T>::textToIds(const std::vector<std::string>& tokens) const {
+//     std::vector<int> token_ids;
+//     token_ids.reserve(tokens.size());
+//
+//     for (const auto& token : tokens) {
+//         std::string lower_token = token;
+//         std::transform(lower_token.begin(), lower_token.end(), lower_token.begin(), ::tolower);
+//
+//         auto it = vocab.find(lower_token);
+//         if (it != vocab.end()) {
+//             token_ids.push_back(it->second);
+//         } else {
+//             token_ids.push_back(vocab.at("<unk>"));
+//         }
+//     }
+//
+//     // Apply truncation and padding if necessary
+//     if (truncate && max_len > 0 && token_ids.size() > max_len) {
+//         token_ids.resize(max_len);
+//     }
+//     if (pad && max_len > 0 && token_ids.size() < max_len) {
+//         token_ids.insert(token_ids.end(), max_len - token_ids.size(), vocab.at("<pad>"));
+//     }
+//
+//     return token_ids;
+// }
 
 template <typename T>
 std::vector<std::string> Tokenizer<T>::idsToText(const std::vector<int>& ids) const {
