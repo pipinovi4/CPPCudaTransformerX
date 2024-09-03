@@ -11,8 +11,11 @@
 #include "../include/PositionalWiseDenseLayer.h"
 #include "../include/Tokenizer.h"
 #include <memory>
-
+#include <vector>
+#include <string>
+#include <functional>
 #include "../include/DenseLayer.h"
+#include "chrono"
 
 
 template <typename T>
@@ -51,7 +54,7 @@ public:
     void save_weights(const std::string& filepath);
 
     // Training method
-    void train(const std::vector<std::vector<std::string>>& train_data, int n_epochs, int batch_size = 32);
+    void train(const std::vector<std::vector<std::string>>& data, int n_epochs, int batch_size = 32);
 
     // Evaluation method
     float evaluate(const std::vector<std::vector<std::string>>& val_data, int batch_size);
@@ -59,12 +62,18 @@ public:
     // Prediction method
     Tensor<T> predict(const std::vector<std::vector<std::string>>& src, int max_len);
 
+    // Method to generate text
+    std::string generate_text(const std::vector<std::string>& input);
+
     // Getters model parameters
     std::vector<std::reference_wrapper<Tensor<T>>> parameters();
     std::vector<std::reference_wrapper<Tensor<T>>> gradients();
 
     // Getters model parameters shape
     std::vector<std::vector<int>> parameters_shape();
+
+    // Convert sequence to tokenized tensor
+    std::vector<std::vector<Tensor<T>>> convert_to_tensor(const std::vector<std::vector<std::string>>& data);
 
 private:
     int vocab_size_;
@@ -93,11 +102,8 @@ private:
     // Output layer
     std::unique_ptr<DenseLayer<T>> output_layer_softmax_; // Softmax layer
 
-    // Convert sequence to tokenized tensor
-    Tensor<T> convert_to_tensor(const std::vector<std::string>& sequence);
-
-    // Label smoothing function
-    Tensor<T> apply_label_smoothing(const Tensor<T>& logits, const Tensor<T>& labels);
+    // // Label smoothing function
+    // Tensor<T> apply_label_smoothing(const Tensor<T>& logits, const Tensor<T>& labels);
 };
 
 #include "Transformer.tpp"
