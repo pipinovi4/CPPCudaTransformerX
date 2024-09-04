@@ -63,7 +63,7 @@ public:
     Tensor<T> predict(const std::vector<std::vector<std::string>>& src, int max_len);
 
     // Method to generate text
-    std::string generate_text(const std::vector<std::string>& input);
+    std::string generate(const std::vector<std::string>& input);
 
     // Getters model parameters
     std::vector<std::reference_wrapper<Tensor<T>>> parameters();

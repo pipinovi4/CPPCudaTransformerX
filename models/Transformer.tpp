@@ -248,7 +248,7 @@ void Transformer<T>::train(const std::vector<std::vector<std::string>>& data, co
     duration<float> elapsed{};
 
     // Step 3: Training loop with batch processing
-    for (int epoch = 0; epoch < 5; ++epoch) {
+    for (int epoch = 0; epoch < n_epochs; ++epoch) {
         for (int batch_start = 0; batch_start < num_sentences; batch_start += batch_size) {
             start_time = steady_clock::now();  // Start timing
             // Initialize the batch loss
@@ -433,60 +433,8 @@ std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std:
     return {src, tgt, true_labels};
 }
 
-// template <typename T>
-// std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std::vector<std::vector<std::string>>& train_data) {
-//     const int num_sentences = static_cast<int>(train_data.size());
-//     std::vector<Tensor<T>> src(num_sentences);
-//     std::vector<Tensor<T>> tgt(num_sentences);
-//     std::vector<Tensor<T>> true_labels(num_sentences);
-//
-//     // Convert the special tokens to strings if necessary
-//     const std::string pad_str = "<pad>";
-//     const std::string sos_str = "<sos>";
-//     const std::string eos_str = "<eos>";
-//
-//     // Iterate over the sentences
-//     for (int i = 0; i < num_sentences; ++i) {
-//         std::vector<std::string> src_vector = train_data[i];
-//         std::vector<std::string> tgt_vector = train_data[i];
-//
-//         // Add special symbols to the source sentence
-//         src_vector.insert(src_vector.begin(), sos_str);
-//         if (src_vector.size() >= max_len_) {
-//             src_vector[max_len_ - 1] = eos_str;
-//             src_vector.resize(max_len_);
-//         } else {
-//             src_vector.push_back(eos_str);
-//             src_vector.resize(max_len_, pad_str);  // Pad the remaining tokens
-//         }
-//
-//         // Add special symbols to the target sentence
-//         tgt_vector.insert(tgt_vector.begin(), sos_str);
-//         if (tgt_vector.size() >= max_len_) {
-//             tgt_vector[max_len_ - 2] = eos_str;
-//             tgt_vector[max_len_ - 1] = pad_str;
-//             tgt_vector.resize(max_len_);
-//         } else {
-//             tgt_vector.push_back(eos_str);
-//             tgt_vector.push_back(pad_str);
-//             tgt_vector.resize(max_len_, pad_str);  // Pad the remaining tokens
-//         }
-//         true_labels[i] = Tensor<T>({max_len_}, positional_encoder_->textToIds(src_vector));
-//
-//         // Fill the tensors with the special tokens
-//         std::fill(src_vector.begin() + 2, src_vector.end(), pad_str); // Fill unpredicted tokens with <pad>
-//         std::fill(tgt_vector.begin() + 1, tgt_vector.end(), pad_str); // Fill unpredicted tokens with <pad>
-//
-//         // Convert the sentences to tokenized tensors
-//         src[i] = Tensor<T>({max_len_}, positional_encoder_->textToIds(src_vector));
-//         tgt[i] = Tensor<T>({max_len_}, positional_encoder_->textToIds(tgt_vector));
-//     }
-//
-//     return {src, tgt, true_labels};
-// }
-
 template <typename T>
-std::string Transformer<T>::generate_text(const std::vector<std::string>& input) {
+std::string Transformer<T>::generate(const std::vector<std::string>& input) {
     // Convert the input data to tokenized tensors
     std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor({input}, 1);
 
