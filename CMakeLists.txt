@@ -59,6 +59,8 @@ add_executable(C++CudaTransformerX
         utils/loadVocab.tpp
         models/Transformer.tpp
         models/Transformer.tpp
+        src/generate.cpp
+        src/train.cpp
 )
 
 # Add the test executable
