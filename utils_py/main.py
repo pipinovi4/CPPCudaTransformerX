@@ -1,13 +1,13 @@
-from utils_py.mnist.download_mnist import download_mnist, extract_mnist, MNIST_DIR
-from utils_py.mnist.load_data import load_data
-from utils_py.mnist.normalize_data import normalize_data
-from utils_py.mnist.update_files import update_files
-from utils_py.ag_news.download_ag_news import download_ag_news
-from utils_py.ag_news.extract_ag_news import extract_ag_news
-from utils_py.wikitext.download_wikitext import download_wikitext
-from utils_py.wikitext.extract_wikitext import extract_wikitext
-from utils_py.vocab.download_vocab import download_vocab, train_vocab
-from utils_py.vocab.extract_vocab import extract_vocab
+from mnist.download_mnist import download_mnist, extract_mnist, MNIST_DIR
+from mnist.load_data import load_data
+from mnist.normalize_data import normalize_data
+from mnist.update_files import update_files
+from ag_news.download_ag_news import download_ag_news
+from ag_news.extract_ag_news import extract_ag_news
+from wikitext.download_wikitext import download_wikitext
+from wikitext.extract_wikitext import extract_wikitext
+from vocab.download_vocab import download_vocab, train_vocab
+from vocab.extract_vocab import extract_vocab
 
 import os
 
@@ -73,6 +73,9 @@ if __name__ == "__main__":
 
     print("Downloading and processing SentencePiece vocabulary...")
     # Download and process the SentencePiece vocabulary
+    if not os.path.exists(os.path.join(DATA_DIR, "vocab", "spm.model")):
+        os.makedirs(os.path.join(DATA_DIR, "vocab"))
+
     vocab_file_path = download_vocab(os.path.join(DATA_DIR, "vocab"))
     train_vocab(vocab_file_path)
     extract_vocab(os.path.join(DATA_DIR, "vocab"))
