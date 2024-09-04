@@ -54,9 +54,13 @@ multi_head_attention_model:
 profile_main:
 	make build && cd ${BUILD_DIR} && ulimit -s 16384 && valgrind --tool=callgrind ./$(MAIN_EXECUTABLE)
 
-# Download voacb
+# Download datasets and vocab
+download_data:
+	@mkdir -p data
+	. .venv/bin/activate && python utils_py/main.py
+
 
 # Phony targets
-.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model
+.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model download_data
 
 # End of Makefile
