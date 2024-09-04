@@ -1,4 +1,4 @@
-from datasets import load_dataset
+import datasets
 
 DATASET_NAME = "wikitext"
 
@@ -10,5 +10,4 @@ def download_wikitext():
     Returns:
     dataset (datasets.Dataset): The WikiText-2 dataset.
     """
-    dataset = load_dataset("wikitext", "wikitext-2-raw-v1")
-    return dataset
+    return datasets.load_dataset("wikitext", "wikitext-2-raw-v1")

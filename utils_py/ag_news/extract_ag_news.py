@@ -1,7 +1,8 @@
 import logging
 import os
 import re
-from utils_py.ag_news.download_ag_news import DATASET_NAME
+
+DATASET_NAME = "ag_news"
 
 
 def extract_ag_news(data_dir):

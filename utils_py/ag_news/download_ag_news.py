@@ -10,7 +10,7 @@ def download_ag_news(data_dir):
 
     Parameters:
     data_dir (str): The base directory where the data should be stored.
-    dataset_name (str): The name of the dataset directory.
+    Dataset_name (str): The name of the dataset directory.
 
     Returns:
     None
