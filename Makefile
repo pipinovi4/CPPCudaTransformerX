@@ -53,5 +53,10 @@ multi_head_attention_model:
 # Profile targets
 profile_main:
 	make build && cd ${BUILD_DIR} && ulimit -s 16384 && valgrind --tool=callgrind ./$(MAIN_EXECUTABLE)
+
+# Download voacb
+
 # Phony targets
 .PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model
+
+# End of Makefile

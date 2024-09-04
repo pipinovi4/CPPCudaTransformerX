@@ -4,12 +4,9 @@ project(C++CudaTransformerX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Find CUDA
-find_package(CUDAToolkit REQUIRED)
-
-# Include directories and link libraries
-include_directories(${CMAKE_BINARY_DIR}/include ${CUDAToolkit_INCLUDE_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib ${CUDAToolkit_LIBRARY_DIR})
+
+find_package(GTest REQUIRED)
 
 # Add the main executable
 add_executable(C++CudaTransformerX
@@ -32,7 +29,6 @@ add_executable(C++CudaTransformerX
         include/Tokenizer.h
         src/Tokenizer.tpp
         utils/loadAGNews.tpp
-        include/PositionalEncoder.h
         include/MultiHeadAttention.h
         src/MultiHeadAttention.tpp
         models/MultiHeadAttentionModel.h
@@ -54,10 +50,16 @@ add_executable(C++CudaTransformerX
         utils/loadMNIST.h
         utils/loadWikiText.tpp
         utils/swapEndian.tpp
+        src/BPE.tpp
+        src/BPE.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.tpp
+        models/Transformer.tpp
+        models/Transformer.tpp
 )
-
-# Link the main executable with CUDA
-target_link_libraries(C++CudaTransformerX ${CUDAToolkit_LIBRARIES})
 
 # Add the test executable
 add_executable(global_tests
@@ -75,6 +77,9 @@ add_executable(global_tests
         tests/test_bpe.cpp
 )
 
+# Link the test executable with Google Test libraries
+target_link_libraries(global_tests gtest gtest_main)
+
 # Add example of the DigitRecognizer executable
 add_executable(digit_recognizer
         examples/DigitRecognizerRunner.cpp
@@ -85,7 +90,7 @@ add_executable(digit_recognizer
         utils/loadMNIST.tpp
         utils/loadWikiText.h
         utils/readUint32.h
-        utils/swapEdian.h
+        utils/swapEndian.h
 )
 
 # Add example of the EmbeddingModel executable
@@ -103,8 +108,4 @@ add_executable(multi_head_attention_model
         models/MultiHeadAttentionModel.tpp
 )
 
-# Link the test executable with CUDA
-target_link_libraries(global_tests ${CUDAToolkit_LIBRARIES})
 
-# Link the test executable with Google Test libraries
-target_link_libraries(global_tests gtest gtest_main)
