@@ -24,7 +24,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Added a correct generation text from all test data and added displaying generated text." />
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Minor update" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -630,15 +630,7 @@
       <workItem from="1724916719781" duration="2565000" />
       <workItem from="1724997157003" duration="26903000" />
       <workItem from="1725094804961" duration="6490000" />
-      <workItem from="1725180950009" duration="21488000" />
-    </task>
-    <task id="LOCAL-00205" summary="Update method transpose for correct working method. Was changed a permutation mechanism for correct permutation Tensor by specified axis and added more exceptions for check permutation indices on true indices.">
-      <option name="closed" value="true" />
-      <created>1724229242724</created>
-      <option name="number" value="00205" />
-      <option name="presentableId" value="LOCAL-00205" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229242724</updated>
+      <workItem from="1725180950009" duration="21922000" />
     </task>
     <task id="LOCAL-00206" summary="Added batch size for test data. This was done because these layers were recently updated for parallel processing of batches">
       <option name="closed" value="true" />
@@ -1024,7 +1016,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725528141042</updated>
     </task>
-    <option name="localTasksCounter" value="254" />
+    <task id="LOCAL-00254" summary="Minor update">
+      <option name="closed" value="true" />
+      <created>1725528196560</created>
+      <option name="number" value="00254" />
+      <option name="presentableId" value="LOCAL-00254" />
+      <option name="project" value="LOCAL" />
+      <updated>1725528196560</updated>
+    </task>
+    <option name="localTasksCounter" value="255" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1047,7 +1047,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implemented the load_vocab function in C++ to load vocabulary from a file, where each line represents a word. The function reads the specified file, loads each word into a vector of strings, and ignores empty lines. Added necessary error handling to throw a runtime exception if the file cannot be opened. Additionally, provided detailed documentation for the function to clarify its usage and expected behavior." />
     <MESSAGE value="Deleted Eigen installation because we had installed it directly to the project" />
     <MESSAGE value="Added optimization for weights initialization over Eigen" />
     <MESSAGE value="Updated `dot` method and `transpose`. Was rewritten methods over Eigen for better performance because we're using this method the most often." />
@@ -1072,7 +1071,8 @@
     <MESSAGE value="Minor updates changed version conan from ~=2.5.0 to ==2.7.0" />
     <MESSAGE value="Was added correct setup Eigen" />
     <MESSAGE value="Added a correct generation text from all test data and added displaying generated text." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a correct generation text from all test data and added displaying generated text." />
+    <MESSAGE value="Minor update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor update" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

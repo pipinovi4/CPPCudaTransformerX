@@ -135,5 +135,5 @@ webencodings==0.5.1
 websocket-client==1.8.0
 widgetsnbextension==4.0.11
 datasets~=2.21.0
-conan==2.7.0
+conan==2.5.0
 sentencepiece~=0.1.96
