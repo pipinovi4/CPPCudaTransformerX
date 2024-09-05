@@ -54,7 +54,11 @@ int generate() {
 
     // Generate text
     std::cout << "Generating text..." << std::endl;
-    std::vector<std::string> generated_text = transformer.(test_data[0], 100);
+    for (const auto& sentence : test_data) {
+        std::string generated_text = transformer.generate(sentence);
+        generated_text = generated_text.substr(0, generated_text.find("<eos>"));
+        std::cout << "Generated text: " << generated_text << std::endl;
+    }
 
     return 0;
 }
