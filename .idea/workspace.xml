@@ -24,10 +24,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Pushed changes, minor update">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Minor updates changed version conan from ~=2.5.0 to ==2.7.0">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Transformer.h" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Transformer.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generate.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/generate.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +185,7 @@
       <recent name="$PROJECT_DIR$/examples/run" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.python">
+  <component name="RunManager" selected="C/C++ File.main.cpp">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="CLION.EXTERNAL.BUILD" enabled="true" />
@@ -632,15 +635,7 @@
       <workItem from="1724916719781" duration="2565000" />
       <workItem from="1724997157003" duration="26903000" />
       <workItem from="1725094804961" duration="6490000" />
-      <workItem from="1725180950009" duration="19864000" />
-    </task>
-    <task id="LOCAL-00202" summary="Refactor and optimize PositionalWiseDenseLayer class&#10;&#10;- Improved weight initialization using Xavier/Glorot initialization for more effective model training.&#10;- Added caching for the first projection in the forward pass to optimize memory usage and performance.&#10;- Enhanced the forward and backward passes to correctly handle input and gradient dimensions, ensuring compatibility with batch processing and token sizes.&#10;- Refined gradient calculations to improve accuracy during backpropagation.&#10;- Updated comments and documentation to reflect the changes and improve code readability.">
-      <option name="closed" value="true" />
-      <created>1724228951312</created>
-      <option name="number" value="00202" />
-      <option name="presentableId" value="LOCAL-00202" />
-      <option name="project" value="LOCAL" />
-      <updated>1724228951313</updated>
+      <workItem from="1725180950009" duration="21105000" />
     </task>
     <task id="LOCAL-00203" summary="Rename and create a correct header file for avoiding multiple definition.">
       <option name="closed" value="true" />
@@ -1026,7 +1021,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725521693830</updated>
     </task>
-    <option name="localTasksCounter" value="251" />
+    <task id="LOCAL-00251" summary="Minor updates changed version conan from ~=2.5.0 to ==2.7.0">
+      <option name="closed" value="true" />
+      <created>1725526563835</created>
+      <option name="number" value="00251" />
+      <option name="presentableId" value="LOCAL-00251" />
+      <option name="project" value="LOCAL" />
+      <updated>1725526563835</updated>
+    </task>
+    <option name="localTasksCounter" value="252" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1049,7 +1052,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Minor changes Tokenizer class for brevity and more wide docs with comments" />
     <MESSAGE value="Refactor and Implement Separate Methods for Downloading and Extracting Vocabulary&#10;&#10;- Split the vocab processing logic into two separate methods: `download_vocab` and `extract_vocab`.&#10;- `download_vocab` handles the creation and population of the vocabulary file using datasets like AG_NEWS and WikiText.&#10;- `extract_vocab` processes the SentencePiece model output, filtering out unwanted tokens and saving the final vocabulary.&#10;- Improved code readability and maintainability by modularizing the functionality.&#10;- Updated the main script to reflect these changes and ensure smooth integration." />
     <MESSAGE value="Minor updates for better brevity" />
     <MESSAGE value="Implemented the load_vocab function in C++ to load vocabulary from a file, where each line represents a word. The function reads the specified file, loads each word into a vector of strings, and ignores empty lines. Added necessary error handling to throw a runtime exception if the file cannot be opened. Additionally, provided detailed documentation for the function to clarify its usage and expected behavior." />
@@ -1074,7 +1076,8 @@
     <MESSAGE value="Added new files as `src/train.cpp` and `src/generate.cpp`" />
     <MESSAGE value="Some testing current architecture of the model and method `predict`" />
     <MESSAGE value="Pushed changes, minor update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Pushed changes, minor update" />
+    <MESSAGE value="Minor updates changed version conan from ~=2.5.0 to ==2.7.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor updates changed version conan from ~=2.5.0 to ==2.7.0" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

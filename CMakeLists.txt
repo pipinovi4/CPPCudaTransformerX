@@ -4,9 +4,20 @@ project(C++CudaTransformerX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+# Set the path to Eigen manually
+set(EIGEN3_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/eigen-3.4.0")
+
+# Set the path to the CUDAToolkit manually
 link_directories(${CMAKE_BINARY_DIR}/lib ${CUDAToolkit_LIBRARY_DIR})
 
+# Include the Eigen directory
+include_directories(${EIGEN3_INCLUDE_DIR})
+
+# Check if Google Test is installed
 find_package(GTest REQUIRED)
+
+# Check if the Eigen library is installed
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 # Add the main executable
 add_executable(C++CudaTransformerX
