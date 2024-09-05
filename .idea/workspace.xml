@@ -24,14 +24,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Minor updates changed version conan from ~=2.5.0 to ==2.7.0">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Transformer.h" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/Transformer.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.tpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/generate.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/generate.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Added a correct generation text from all test data and added displaying generated text." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -107,6 +100,8 @@
     <setting file="file://$PROJECT_DIR$/src/Tensor.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Tokenizer.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/Tokenizer.tpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/generate.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/generate.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
@@ -635,23 +630,7 @@
       <workItem from="1724916719781" duration="2565000" />
       <workItem from="1724997157003" duration="26903000" />
       <workItem from="1725094804961" duration="6490000" />
-      <workItem from="1725180950009" duration="21105000" />
-    </task>
-    <task id="LOCAL-00203" summary="Rename and create a correct header file for avoiding multiple definition.">
-      <option name="closed" value="true" />
-      <created>1724228995313</created>
-      <option name="number" value="00203" />
-      <option name="presentableId" value="LOCAL-00203" />
-      <option name="project" value="LOCAL" />
-      <updated>1724228995313</updated>
-    </task>
-    <task id="LOCAL-00204" summary="Refactor ResidualBlock class for better compatibility and maintainability&#10;&#10;- Adjusted the order of member initialization in the constructor to adhere to best practices.&#10;- Enhanced the forward method to correctly handle different layer types, ensuring proper mask application for MultiHeadAttention layers.&#10;- Modified the process_layer_ in the forward method to work with both pointer and non-pointer types, improving flexibility.&#10;- Updated the backward method to ensure correct gradient backpropagation through the process layer and layer normalization.">
-      <option name="closed" value="true" />
-      <created>1724229053164</created>
-      <option name="number" value="00204" />
-      <option name="presentableId" value="LOCAL-00204" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229053164</updated>
+      <workItem from="1725180950009" duration="21488000" />
     </task>
     <task id="LOCAL-00205" summary="Update method transpose for correct working method. Was changed a permutation mechanism for correct permutation Tensor by specified axis and added more exceptions for check permutation indices on true indices.">
       <option name="closed" value="true" />
@@ -1029,7 +1008,23 @@
       <option name="project" value="LOCAL" />
       <updated>1725526563835</updated>
     </task>
-    <option name="localTasksCounter" value="252" />
+    <task id="LOCAL-00252" summary="Was added correct setup Eigen">
+      <option name="closed" value="true" />
+      <created>1725528011644</created>
+      <option name="number" value="00252" />
+      <option name="presentableId" value="LOCAL-00252" />
+      <option name="project" value="LOCAL" />
+      <updated>1725528011645</updated>
+    </task>
+    <task id="LOCAL-00253" summary="Added a correct generation text from all test data and added displaying generated text.">
+      <option name="closed" value="true" />
+      <created>1725528141042</created>
+      <option name="number" value="00253" />
+      <option name="presentableId" value="LOCAL-00253" />
+      <option name="project" value="LOCAL" />
+      <updated>1725528141042</updated>
+    </task>
+    <option name="localTasksCounter" value="254" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1052,8 +1047,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor and Implement Separate Methods for Downloading and Extracting Vocabulary&#10;&#10;- Split the vocab processing logic into two separate methods: `download_vocab` and `extract_vocab`.&#10;- `download_vocab` handles the creation and population of the vocabulary file using datasets like AG_NEWS and WikiText.&#10;- `extract_vocab` processes the SentencePiece model output, filtering out unwanted tokens and saving the final vocabulary.&#10;- Improved code readability and maintainability by modularizing the functionality.&#10;- Updated the main script to reflect these changes and ensure smooth integration." />
-    <MESSAGE value="Minor updates for better brevity" />
     <MESSAGE value="Implemented the load_vocab function in C++ to load vocabulary from a file, where each line represents a word. The function reads the specified file, loads each word into a vector of strings, and ignores empty lines. Added necessary error handling to throw a runtime exception if the file cannot be opened. Additionally, provided detailed documentation for the function to clarify its usage and expected behavior." />
     <MESSAGE value="Deleted Eigen installation because we had installed it directly to the project" />
     <MESSAGE value="Added optimization for weights initialization over Eigen" />
@@ -1077,7 +1070,9 @@
     <MESSAGE value="Some testing current architecture of the model and method `predict`" />
     <MESSAGE value="Pushed changes, minor update" />
     <MESSAGE value="Minor updates changed version conan from ~=2.5.0 to ==2.7.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor updates changed version conan from ~=2.5.0 to ==2.7.0" />
+    <MESSAGE value="Was added correct setup Eigen" />
+    <MESSAGE value="Added a correct generation text from all test data and added displaying generated text." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a correct generation text from all test data and added displaying generated text." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
