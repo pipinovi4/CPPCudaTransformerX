@@ -4,51 +4,48 @@
 #include "Transformer.h"
 
 template <typename T>
-Transformer<T>::Transformer(const int vocab_size, const int d_model, const int n_heads, const int d_ff,
-    const int max_len, const float dropout, const float label_smoothing, const int warmup_steps,
-    typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule,
-    LossFunction<T>* loss_function, Optimizer<T>* optimizer, std::vector<std::string> vocab)
+Transformer<T>::Transformer(LossFunction<T>* loss_function, Optimizer<T>* optimizer, std::vector<std::string> vocab,
+        typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule, int vocab_size, int d_model,
+        int n_heads, int d_ff, int max_len, const float dropout, const float label_smoothing)
     : vocab_size_(vocab_size), d_model_(d_model), n_heads_(n_heads), d_ff_(d_ff),
       max_len_(max_len), dropout_(dropout), label_smoothing_(label_smoothing),
-      warmup_steps_(warmup_steps), learning_rate_schedule_(learning_rate_schedule),
-      loss_function_(loss_function), optimizer_(optimizer), embedding_(),
-      positional_encoder_(), encoder_layers_(), decoder_layers_(),
-      output_encoder_layers_(), output_layer_softmax_() {
-    // Initialize activation functions
-    typename ActivationFunction<T>::ReLU relu;
-    typename ActivationFunction<T>::Softmax softmax;
-
+      learning_rate_schedule_(learning_rate_schedule), loss_function_(loss_function),
+      optimizer_(optimizer), embedding_(), positional_encoder_(), encoder_layers_(),
+      decoder_layers_(), output_encoder_layers_(), output_layer_softmax_() {
+    // Initialize the ReLU activation function
     // Initialize the embedding layers
+
     this->embedding_ = std::make_unique<Embedding<T>>(vocab_size, d_model, learning_rate_schedule);
 
     // Initialize the positional encoder
-    positional_encoder_ = std::make_unique<Tokenizer<T>>(max_len); // Exclude <EOS> token for tgt and <SOS> token for src
+    positional_encoder_ = std::make_unique<Tokenizer<T>>(max_len);
 
     // build vocabulary
     const std::unordered_map<std::string, int> vocab_map = Tokenizer<T>::buildVocabulary(vocab);
     positional_encoder_->setVocabulary(vocab_map);
 
     // Initialize the encoder layers
+    std::cout << d_model / n_heads << std::endl;
     this->encoder_layers_.emplace_back(std::move(std::make_unique<ResidualBlock<T, Layer<T>*>>(
-    d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, &relu))));
+    d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, new typename ActivationFunction<T>::Softmax))));
     this->encoder_layers_.emplace_back(std::move(std::make_unique<ResidualBlock<T, Layer<T>*>>(
-        d_model, 1e-6, new PositionalWiseDenseLayer<T>(d_model, d_ff, relu, 0))));
+        d_model, 1e-6, new PositionalWiseDenseLayer<T>(d_model, d_ff, new typename ActivationFunction<T>::ReLU, 0.1))));
 
     // Initialize the decoder layers
     this->decoder_layers_.emplace_back(std::move(std::make_unique<ResidualBlock<T, Layer<T>*>>(
-        d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, &relu))));
+        d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, new typename ActivationFunction<T>::Softmax))));
     this->decoder_layers_.emplace_back(std::move(std::make_unique<ResidualBlock<T, Layer<T>*>>(
-        d_model, 1e-6, new PositionalWiseDenseLayer<T>(d_model, d_ff, relu, 0))));
+        d_model, 1e-6, new PositionalWiseDenseLayer<T>(d_model, d_ff, new typename ActivationFunction<T>::ReLU, 0.1))));
 
     // Initialize output encoder layers for shifted target (MASKED MULTIHEAD ATTENTION)
     this->output_encoder_layers_.emplace_back(std::move(std::make_unique<ResidualBlock<T, Layer<T>*>>(
-        d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, &relu))));
+        d_model, 1e-6, new MultiHeadAttention<T>(d_model, n_heads, d_model / n_heads, new typename ActivationFunction<T>::Softmax))));
 
     // Initialize the final dense layers
-    this->output_layer_softmax_ = std::make_unique<DenseLayer<T>>(d_model, vocab_size_, new typename ActivationFunction<T>::Softmax());
+    this->output_layer_softmax_ = std::make_unique<DenseLayer<T>>(d_model, vocab_size_, new typename ActivationFunction<T>::Softmax, 0.1);
 
     // Initialize optimizer parameters
-    optimizer_->initialize_params(parameters_shape());
+    optimizer_->initialize_params(parameters());
 }
 
 // Getter for the model parameters
@@ -169,34 +166,6 @@ Tensor<T> Transformer<T>::forward(const Tensor<T>& src, const Tensor<T>& tgt) {
     return tgt_embeded; // Return the final output (processed tgt_encoded)
 }
 
-
-// template <typename T>
-// Tensor<T> Transformer<T>::forward(const Tensor<T>& src, const Tensor<T>& tgt) {
-//     // Pass the input through the embedding layer
-//     Tensor<T> src_embeded = embedding_->forward(src);
-//     Tensor<T> tgt_embeded = embedding_->forward(tgt);
-//
-//     // Pass the encoded data through the encoder layers
-//     for (auto& layer : encoder_layers_) {
-//         src_embeded = layer->forward(src_embeded);
-//     }
-//
-//     // Pass the shifted target through the ResidualBlock with MASKED MULTIHEAD ATTENTION
-//     for (auto& layer : output_encoder_layers_) {
-//         tgt_embeded = layer->forward(tgt_embeded, &src_embeded); // Use src_encoded as mask in case of cross-attention
-//     }
-//
-//     // Pass the output through the decoder layers
-//     for (auto& layer : decoder_layers_) {
-//         tgt_embeded = layer->forward(tgt_embeded);
-//     }
-//
-//     // Pass the output through the final softmax dense layer
-//     tgt_embeded = output_layer_softmax_->forward(tgt_embeded);
-//
-//     return tgt_embeded; // Return the final output (processed tgt_encoded)
-// }
-
 template <typename T>
 void Transformer<T>::backward(Tensor<T>& grad) {
     // Pass the gradient through the final softmax dense layer
@@ -223,6 +192,7 @@ void Transformer<T>::backward(Tensor<T>& grad) {
 
 template <typename T>
 void Transformer<T>::update(int epoch) {
+    // Update the model parameters using the optimizer
     optimizer_->update(parameters(), gradients(), epoch);
 }
 
@@ -242,22 +212,14 @@ void Transformer<T>::train(const std::vector<std::vector<std::string>>& data, co
     // Initialize accumulated gradients to zero
     Tensor<T> true_labels_tokens({vocab_size_});
 
-    // Timer to control the batch processing time
-    using namespace std::chrono;
-    steady_clock::time_point start_time, end_time;
-    duration<float> elapsed{};
-
     // Step 3: Training loop with batch processing
     for (int epoch = 0; epoch < n_epochs; ++epoch) {
         for (int batch_start = 0; batch_start < num_sentences; batch_start += batch_size) {
-            start_time = steady_clock::now();  // Start timing
-            // Initialize the batch loss
-            T batch_loss = T(0);
-            #pragma omp parallel for reduction(+:batch_loss)
+            T loss = 0;
             for (int i = 0; i < batch_size; ++i) {
-                auto start_process_sentence = steady_clock::now();
                 // Get the current sentence index
                 int idx = batch_start + i;
+
                 if (idx >= num_sentences) break; // Prevent out-of-bounds access
 
                 // Initialize the predicted and true labels tokens
@@ -273,33 +235,41 @@ void Transformer<T>::train(const std::vector<std::vector<std::string>>& data, co
                     // Forward pass for the current token
                     Tensor<T> output = forward(masked_src, masked_tgt);
 
-                    // Compute predicted token
-                    Tensor<T> predicted = output.argmax();
-
-                    // Update the predicted and true labels tokens for compute grad and loss
-                    true_labels_tokens.data[true_label] += 1;
+                    // Sample or predict the token (can use sampling techniques if needed)
+                    Tensor<T> predicted = output.argmax(0);
 
                     // Update src and tgt tensors for the next token
                     masked_src.data[j + 1] = true_label;
                     masked_tgt.data[j] = true_label;
 
-                    T loss = loss_function_->forward(output, true_labels_tokens);
-                    end_time = steady_clock::now();
-                    elapsed = duration_cast<microseconds>(end_time - start_time);
-                    // Perform a single backward pass and update parameters after processing the entire batch
-                    Tensor<T> grad = loss_function_->backward(output, true_labels_tokens);
-                    backward(grad);
+                    // Label smoothing: Apply smoothing to the true labels before computing the loss
+                    float smoothing_value = label_smoothing_ / (vocab_size_ - 1);  // Adjust for (V - 1) non-true labels
+                    true_labels_tokens.fill(smoothing_value);
+                    true_labels_tokens.data[true_label] = 1 - label_smoothing_;
 
-                    true_labels_tokens.fill(0);
+                    // Compute the loss with the smoothed true labels
+                    loss += loss_function_->forward(output, true_labels_tokens);
+
+                    // Compute gradients of the model parameters using the smoothed true labels
+                    Tensor<T> grad_output = loss_function_->backward(output, true_labels_tokens);
+
+                    backward(grad_output);
+
+                    // Stop if the pad token is encountered
                     if (true_label == pad_token) break;
                 }
             }
-
+            // Update model parameters with the computed gradients
             update(epoch);
+
+            // Zero the gradients for the next batch
+            zero_grad();
 
             // Print the batch loss
             std::cout << "Epoch: " << epoch + 1 << " | Batch: " << (batch_start / batch_size) + 1
-                      << " | Batch Loss: " << std::endl;
+                      << " | Batch Loss: " << loss << std::endl;
+
+            loss = 0;
         }
     }
 }
@@ -376,11 +346,7 @@ Tensor<T> Transformer<T>::predict(const std::vector<std::vector<std::string>>& s
     predicted_tokens.print();
 
     // Convert the predicted tokens to text
-    std::vector<int> int_ids;
-    std::transform(predicted_tokens.data.begin(), predicted_tokens.data.end(), std::back_inserter(int_ids),
-                   [](float f) { return static_cast<int>(f); });
-    std::vector<std::string> predicted_text = positional_encoder_->idsToText(int_ids);
-
+    std::vector<std::string> predicted_text = positional_encoder_->idsToText(convert_to_int_tokens(predicted_tokens));
 
     // Print the predicted text
     std::cout << "Predicted text: " << std::endl;
@@ -409,6 +375,7 @@ std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std:
     std::vector<Tensor<T>> src(num_sentences, tgt_initial);
     std::vector<Tensor<T>> tgt(num_sentences, tgt_initial);
     std::vector<Tensor<T>> true_labels(num_sentences);
+    std::vector<Tensor<T>> mama(num_sentences);
 
     for (int i = 0; i < num_sentences; ++i) {
         const std::vector<std::string>& sentence_vector = data[i];
@@ -416,55 +383,82 @@ std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std:
         // Convert sentence to token IDs
         std::vector<int> sentence_ids = positional_encoder_->textToIds(sentence_vector);
 
+        mama[i] = Tensor<T>({max_len_}, sentence_ids);
+
         // Prepare src by copying tgt_initial and setting the first token
         src[i].data[1] = sentence_ids[0];
 
         // Prepare true_labels with eos and padding
-        sentence_ids.insert(sentence_ids.begin(), sos_id);
+        sentence_ids[0] = sos_id;
         if (sentence_len >= max_len_) {
             sentence_ids[max_len_ - 1] = eos_id;
         } else {
             sentence_ids[sentence_len + 1] = eos_id;
         }
-        sentence_ids.resize(max_len_, pad_id);
         true_labels[i] = Tensor<T>({max_len_}, sentence_ids);
     }
 
-    return {src, tgt, true_labels};
+    return {src, tgt, true_labels, mama};
 }
 
 template <typename T>
-std::string Transformer<T>::generate(const std::vector<std::string>& input) {
-    // Convert the input data to tokenized tensors
-    std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor({input}, 1);
+std::vector<std::vector<std::string>> Transformer<T>::generate(const std::vector<std::vector<std::string>>& input) {
+    // Initialize the EOS token ID constant
+    const int EOS_TOKEN_ID = positional_encoder_->textToIds({"<eos>"})[0];
 
-    // loop through the input data
-    for (int i = 0; i < 1; ++i) {
-        // Initialize the predicted and true labels tokens
+    // Convert the input data to tokenized tensors
+    std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor(input);
+
+    // Print size of processed data by zero dimension
+    std::cout << "Processed data size by zero dimension: " << processed_data.size() << std::endl;
+
+    // Print size of processed data by first dimenion
+    std::cout << "Processed data size by first dimension: " << processed_data[0].size() << std::endl;
+
+    // Initialize the generated sentences
+    std::vector<std::vector<std::string>> generated_sentences;
+
+    // Update processed data over that to add 3 additional context tokens
+    for (int i = 0; i < processed_data[0].size(); ++i) {
+        for (int j = 1; j < 3; ++j) {
+            processed_data[0][i].data[j + 1] = processed_data[2][i].data[j]; // src
+            processed_data[1][i].data[j] = processed_data[2][i].data[j]; // tgt
+        }
+    }
+
+    // Loop through the processed data
+    for (int i = 0; i < processed_data[0].size(); ++i) {
+        // Initialize the source, target, and true label tensors
         Tensor<T> masked_src = processed_data[0][i];
         Tensor<T> masked_tgt = processed_data[1][i];
         Tensor<T> true_label_subtensor = processed_data[2][i];
 
         // Initialize the first token of the target tensor
-        for (int j = 1; j < max_len_; j++) {
-            // Get the true label for the current token
-            T true_label = true_label_subtensor.data[j + 1];
-
+        for (int j = 3; j < max_len_; j++) {
             // Forward pass for the current token
             Tensor<T> output = forward(masked_src, masked_tgt);
 
             // Compute predicted token
-            Tensor<T> predicted = output.argmax();
+            Tensor<T> predicted = output.argmax(0);
 
             // Update src and tgt tensors for the next token
             masked_src.data[j + 1] = predicted.data[0];
             masked_tgt.data[j] = predicted.data[0];
 
-            if (true_label == masked_src.data[j + 1]) break;
+            // Break if the EOS token is reached
+            if (predicted.data[0] == EOS_TOKEN_ID) break;
         }
+        // Convert the predicted tokens to text and add to the generated sentences
+        generated_sentences.push_back(positional_encoder_->idsToText(convert_to_int_tokens(masked_tgt)));
     }
+    return generated_sentences;
+}
 
-    return "";
+template <typename T>
+void Transformer<T>::zero_grad() {
+    for (auto& grad : this->gradients()) {
+        grad.get().fill(0);
+    }
 }
 
 template <typename T>
@@ -506,6 +500,15 @@ void Transformer<T>::save_weights(const std::string& filepath) {
     }
 
     outfile.close();
+}
+
+// Convert float tokens to int tokens
+template <typename T>
+std::vector<int> Transformer<T>::convert_to_int_tokens(const Tensor<T>& tokens) {
+    std::vector<int> int_ids;
+    std::transform(tokens.data.begin(), tokens.data.end(), std::back_inserter(int_ids),
+                   [](const float f) { return static_cast<int>(f); });
+    return int_ids;
 }
 
 #endif //TRANSFORMER_TPP

@@ -8,24 +8,21 @@
 #include "../include/Embedding.h"
 #include "../include/MultiHeadAttention.h"
 #include "../include/ResidualBlock.h"
-#include "../include/PositionalWiseDenseLayer.h"
 #include "../include/Tokenizer.h"
 #include <memory>
 #include <vector>
 #include <string>
 #include <functional>
 #include "../include/DenseLayer.h"
-#include "chrono"
 
 
 template <typename T>
 class Transformer {
 public:
     // Constructor
-    Transformer(int vocab_size, int d_model, int n_heads, int d_ff, int max_len,
-        float dropout, float label_smoothing, int warmup_steps,
-        typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule,
-        LossFunction<T>* loss_function, Optimizer<T>* optimizer, std::vector<std::string> vocab);
+    Transformer(LossFunction<T>* loss_function, Optimizer<T>* optimizer, std::vector<std::string> vocab,
+        typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule, int vocab_size,
+        int d_model, int n_heads, int d_ff, int max_len, float dropout, float label_smoothing);
 
     // Defaulted Destructor
     ~Transformer() = default;
@@ -63,7 +60,7 @@ public:
     Tensor<T> predict(const std::vector<std::vector<std::string>>& src, int max_len);
 
     // Method to generate text
-    std::string generate(const std::vector<std::string>& input);
+    std::vector<std::vector<std::string>>  generate(const std::vector<std::vector<std::string>>& input);
 
     // Getters model parameters
     std::vector<std::reference_wrapper<Tensor<T>>> parameters();
@@ -72,10 +69,12 @@ public:
     // Getters model parameters shape
     std::vector<std::vector<int>> parameters_shape();
 
-    // Convert sequence to tokenized tensor
-    std::vector<std::vector<Tensor<T>>> convert_to_tensor(const std::vector<std::vector<std::string>>& data);
-
 private:
+    // Activation functions
+    // typename ActivationFunction<T>::ReLU relu_;
+    // typename ActivationFunction<T>::Softmax softmax_;
+
+    // Parameters of the model
     int vocab_size_;
     int d_model_;
     int n_heads_;
@@ -83,10 +82,15 @@ private:
     int max_len_;
     float dropout_;
     float label_smoothing_;
-    int warmup_steps_;
-    typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule_;
-    LossFunction<T>* loss_function_;
-    Optimizer<T>* optimizer_;
+
+    // Learning rate schedule
+    typename Optimizer<T>::LearningRateSchedule& learning_rate_schedule_; // Reference to learning rate schedule
+
+    // Loss function
+    LossFunction<T>* loss_function_; // Pointer to loss function
+
+    // Optimizer
+    Optimizer<T>* optimizer_; // Pointer to optimizer
 
     // Embedding layers
     std::unique_ptr<Embedding<T>> embedding_; // Embedding layer
@@ -102,8 +106,14 @@ private:
     // Output layer
     std::unique_ptr<DenseLayer<T>> output_layer_softmax_; // Softmax layer
 
-    // // Label smoothing function
-    // Tensor<T> apply_label_smoothing(const Tensor<T>& logits, const Tensor<T>& labels);
+    // Set all gradients as zeros
+    void zero_grad();
+
+    // Convert sequence to tokenized tensor
+    std::vector<std::vector<Tensor<T>>> convert_to_tensor(const std::vector<std::vector<std::string>>& data);
+
+    // Convert float tokens to int tokebs
+    std::vector<int> convert_to_int_tokens(const Tensor<T>& tokens);
 };
 
 #include "Transformer.tpp"
