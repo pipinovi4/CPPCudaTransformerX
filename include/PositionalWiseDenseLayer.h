@@ -31,7 +31,7 @@ public:
      * @param activation_function The activation function to apply between the two dense layers.
      * @param bias_init_value The initial value for the biases (default is 0.0).
      */
-    PositionalWiseDenseLayer(int dimensions_model, int dimensions_feed_forward, ActivationFunction<T>& activation_function, T bias_init_value = 0.0);
+    PositionalWiseDenseLayer(int dimensions_model, int dimensions_feed_forward, ActivationFunction<T>* activation_function, T bias_init_value = 0.0);
 
     /**
      * @brief Forward pass through the PositionalWiseDenseLayer.
@@ -82,7 +82,7 @@ private:
 
     Tensor<T> cache_projection_1_; ///< Cache the result of the first projection for the backward pass.
 
-    ActivationFunction<T>& activation_function_; ///< Activation function.
+    ActivationFunction<T>* activation_function_; ///< Activation function.
 
     int dimensions_model_; ///< Input dimension (d_model).
     int dimensions_feed_forward_; ///< Output dimension (d_ff).

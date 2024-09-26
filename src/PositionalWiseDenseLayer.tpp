@@ -5,7 +5,7 @@
 
 // Constructor for the PositionalWiseDenseLayer class.
 template <typename T>
-PositionalWiseDenseLayer<T>::PositionalWiseDenseLayer(const int dimensions_model, const int dimensions_feed_forward, ActivationFunction<T>& activation_function, T bias_init_value)
+PositionalWiseDenseLayer<T>::PositionalWiseDenseLayer(const int dimensions_model, const int dimensions_feed_forward, ActivationFunction<T>* activation_function, T bias_init_value)
     : activation_function_(activation_function), dimensions_model_(dimensions_model), dimensions_feed_forward_(dimensions_feed_forward) {
     // Initialize the first set of weights with dimensions (dimensions_model_, dimensions_feed_forward_) (without data only reserve memory).
     weights_1_ = Tensor<T>({dimensions_model_, dimensions_feed_forward_}, dimensions_model_ * dimensions_feed_forward_);
@@ -76,7 +76,7 @@ Tensor<T> PositionalWiseDenseLayer<T>::forward(const Tensor<T>& input) {
     cache_projection_1_ += biases_1_;
 
     // Apply the activation function
-    // activation_function_.forward(cache_projection_1_);
+    activation_function_->forward(cache_projection_1_);
 
     // Perform the second matrix multiplication and add the second bias
     Tensor<T> output = cache_projection_1_.dot(weights_2_);
@@ -93,18 +93,18 @@ void PositionalWiseDenseLayer<T>::backward(Tensor<T>& grad) {
     }
 
     // Step 1: Calculate the gradient w.r.t. the second set of weights and biases.
-    grad_weights_2_ = cache_projection_1_.transpose({1, 0}).dot(grad);
-    grad_biases_2_ = grad.sum(0);
+    grad_weights_2_ += cache_projection_1_.transpose({1, 0}).dot(grad);
+    grad_biases_2_ += grad.sum(0);
 
     // Step 2: Backpropagate the gradient through the second layer to the first layer.
     Tensor<T> grad_intermediate = grad.dot(weights_2_.transpose({1, 0}));
 
     // Step 3: Apply the activation function gradient.
-    // activation_function_.backward(grad_intermediate);
+    activation_function_->backward(grad_intermediate);
 
     // Step 4: Calculate the gradient w.r.t. the first set of weights and biases.
-    grad_weights_1_ = input_cache_.transpose({1, 0}).dot(grad_intermediate);
-    grad_biases_1_ = grad_intermediate.sum(0);
+    grad_weights_1_ += input_cache_.transpose({1, 0}).dot(grad_intermediate);
+    grad_biases_1_ += grad_intermediate.sum(0);
 
     // Step 5: Backpropagate the gradient to the input.
     grad = grad_intermediate.dot(weights_1_.transpose({1, 0}));
@@ -114,14 +114,14 @@ void PositionalWiseDenseLayer<T>::backward(Tensor<T>& grad) {
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> PositionalWiseDenseLayer<T>::parameters() {
     // Return a vector containing references to all the parameters (weights and biases).
-    return {weights_1_, biases_1_, weights_2_, biases_2_};
+    return {weights_1_, weights_2_, biases_1_, biases_2_};
 }
 
 // Getter for the gradients of the PositionalWiseDenseLayer.
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> PositionalWiseDenseLayer<T>::gradients() {
     // Return a vector containing references to all the gradients of the parameters.
-    return {grad_weights_1_, grad_biases_1_, grad_weights_2_, grad_biases_2_};
+    return {grad_weights_1_, grad_weights_2_, grad_biases_1_, grad_biases_2_};
 }
 
 #endif //POSITIONALWISEDENSELAYER_TPP
