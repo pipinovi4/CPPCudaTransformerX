@@ -42,10 +42,10 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
     if (input_shape.size() != 1) {
         throw std::invalid_argument("Input tensor must be 1D for embedding layer. Received shape: " + std::to_string(input_shape.size()));
     }
-    
+
     // Define the shape of the output tensor [sequence_length, embedding_dims]
     std::vector<int> output_shape = {input_shape[0], embedding_dims_};
-    
+
     Tensor<T> output(output_shape);
 
     // Data access for better performance
@@ -66,33 +66,33 @@ Tensor<T> Embedding<T>::forward(const Tensor<T>& input) {
 
 template <typename T>
 void Embedding<T>::backward(Tensor<T>& grad) {
-    // Zero the gradients before accumulation
-    zero_grad();
-
-    // Ensure the gradient tensor is 3D [sequence_length, embedding_dims]
+    // Ensure the gradient tensor is 2D [sequence_length, embedding_dims]
     const std::vector<int> grad_shape = grad.shape();
     const std::vector<int> input_cache_shape = input_cache_.shape();
+
     if (grad_shape.size() != 2) {
         throw std::invalid_argument("Gradient tensor must be 2D for embedding layer. Received shape: " + std::to_string(grad_shape.size()));
     }
 
+    // Check the input cache is 1D and matches the sequence length
+    if (input_cache_shape.size() != 1 || input_cache_shape[0] != grad_shape[0]) {
+        throw std::invalid_argument("Input cache must be 1D and match the sequence length.");
+    }
+
     // Data access for better performance
-    T* grad_data_ptr = grad.data.data();
-    T* input_cache_data_ptr = input_cache_.data.data();
-    T* grad_data_ptr_ = grad_.data.data();
+    T* grad_data_ptr = grad.data.data();  // Incoming gradient [sequence_length, embedding_dims]
+    T* input_cache_data_ptr = input_cache_.data.data();  // Input token indices [sequence_length]
+    T* grad_data_ptr_ = grad_.data.data();  // Embedding weight gradient [vocab_size, embedding_dims]
 
     // Accumulate gradients for the embeddings based on the backward pass
-    for (int k = 0; k < embedding_dims_; ++k) {
-        for (int j = 0; j < grad_shape[0]; ++j) {
-            const int index = static_cast<int>(input_cache_data_ptr[j]);
-            grad_data_ptr_[index * embedding_dims_ + k] += grad_data_ptr[j * grad_shape[1] + k];
+    for (int i = 0; i < vocab_size_; ++i) {
+        for (int j = 0; j < grad_shape[0]; ++j) {  // Iterate over the sequence length
+            const int index = static_cast<int>(input_cache_data_ptr[j]);  // Embedding index from input cache
+            for (int k = 0; k < grad_shape[1]; ++k) {  // Iterate over the embedding dimensions
+                grad_data_ptr_[index * grad_shape[1] + k] += grad_data_ptr[j * grad_shape[1] + k];  // Accumulate gradients for the embedding weights
+            }
         }
     }
-}
-
-template <typename T>
-void Embedding<T>::zero_grad() {
-    std::fill(grad_.data.begin(), grad_.data.end(), static_cast<T>(0));
 }
 
 template <typename T>

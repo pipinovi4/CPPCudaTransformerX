@@ -61,11 +61,6 @@ public:
     void initializeWeights();
 
     /**
-     * @brief Sets the gradients of the embedding layer to zero.
-     */
-    void zero_grad();
-
-    /**
      * @brief Sets the weights of the embedding layer.
      *
      * @param new_weights A tensor containing the new weights to be assigned to the embedding layer.
