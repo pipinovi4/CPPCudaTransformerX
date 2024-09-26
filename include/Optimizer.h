@@ -43,21 +43,22 @@ public:
     /**
      * @brief Constructor for the Optimizer class.
      *
+     * @param learning_rate Initial learning rate.
+     * @param lr_schedule Reference to the learning rate schedule.
+     * @param weight_decay Decay rate for RMSprop and other decay-based optimizers.
      * @param beta1 Coefficient used for computing running averages of gradient.
      * @param beta2 Coefficient used for computing running averages of squared gradient.
      * @param epsilon Small constant for numerical stability.
-     * @param learning_rate Initial learning rate.
-     * @param lr_schedule Reference to the learning rate schedule.
      */
-    explicit Optimizer(T beta1, T beta2, T epsilon, T learning_rate, LearningRateSchedule& lr_schedule)
-     : beta1(beta1), beta2(beta2), epsilon(epsilon), learning_rate(learning_rate), lr_schedule(lr_schedule) {}
+    explicit Optimizer(T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay, T beta1, T beta2, T epsilon)
+     : learning_rate_(learning_rate), lr_schedule_(lr_schedule), weight_decay_(weight_decay), beta1_(beta1), beta2_(beta2), epsilon_(epsilon) {}
 
     /**
      * @brief Initialize parameters for the optimizer.
      *
-     * @param param_shape Shapes of the parameters to be optimized.
+     * @param parameters References to the model parameters.
      */
-    virtual void initialize_params(const std::vector<std::vector<int>>& param_shape) = 0;
+    virtual void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) = 0;
 
     /**
      * @brief Update the model parameters based on gradients.
@@ -75,18 +76,18 @@ public:
     class SGD;     ///< Stochastic Gradient Descent (SGD) optimizer implementation.
 
 protected:
-    T beta1; ///< Coefficient for computing running averages of gradient.
-    T beta2; ///< Coefficient for computing running averages of squared gradient.
-    T epsilon; ///< Small constant for numerical stability.
+    T learning_rate_; ///< Current learning rate.
+    LearningRateSchedule& lr_schedule_; ///< Reference to the learning rate schedule.
+    T weight_decay_; ///< Decay rate for RMSprop and other decay-based optimizers.
 
-    size_t time_step = 0; ///< Current time step.
-    std::vector<Tensor<T>> first_moment_vector; ///< First moment vectors for the parameters.
-    std::vector<Tensor<T>> second_moment_vector; ///< Second moment vectors for the parameters.
-    Tensor<T> mean_squared_gradients; ///< Mean squared gradients for RMSprop optimizer.
+    T beta1_; ///< Coefficient for computing running averages of gradient.
+    T beta2_; ///< Coefficient for computing running averages of squared gradient.
+    T epsilon_; ///< Small constant for numerical stability.
 
-    T learning_rate; ///< Current learning rate.
-    LearningRateSchedule& lr_schedule; ///< Reference to the learning rate schedule.
-    T decay_rate; ///< Decay rate for RMSprop and other decay-based optimizers.
+    size_t time_step_ = 1; ///< Current time step.
+    std::vector<Tensor<T>> first_moment_vector_; ///< First moment vectors for the parameters.
+    std::vector<Tensor<T>> second_moment_vector_; ///< Second moment vectors for the parameters.
+    Tensor<T> mean_squared_gradients_; ///< Mean squared gradients for RMSprop optimizer.
 
     /**
      * @brief Update the learning rate based on the current epoch.
@@ -94,14 +95,6 @@ protected:
      * @param epoch Current epoch number.
      */
     void updateLearningRate(size_t epoch);
-
-    /**
-     * @brief Apply weight decay to the parameters.
-     *
-     * @param params Tensor containing the parameters.
-     * @param weight_decay Decay factor.
-     */
-    static void apply_weight_decay(Tensor<T>& params, T weight_decay);
 
     /**
      * @brief Clip the gradients to a specified range.

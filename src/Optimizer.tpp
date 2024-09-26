@@ -11,11 +11,13 @@ template <typename T>
 T clamp_value(T value, T min_value, T max_value) {
     if (value < min_value) {
         return min_value;
-    } else if (value > max_value) {
-        return max_value;
-    } else {
-        return value;
     }
+
+    if (value > max_value) {
+        return max_value;
+    }
+
+    return value;
 }
 
 template <typename T>
@@ -50,43 +52,48 @@ private:
 template <typename T>
 class Optimizer<T>::Adam final : public Optimizer<T> {
 public:
-    Adam(const std::vector<std::vector<int>>& param_shape, T learning_rate, LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
-            : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {
-        initialize_params(param_shape);
+    Adam(std::vector<std::reference_wrapper<Tensor<T>>> parameters, T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+            : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {
+        initialize_params(parameters);
     }
 
-    explicit Adam(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
-        : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+    explicit Adam(T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+        : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {}
 
-    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
-        for (const auto& shape : param_shape) {
-            this->first_moment_vector.push_back(Tensor<T>(shape));
-            this->second_moment_vector.push_back(Tensor<T>(shape));
+    void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) override {
+        for (auto parameter : parameters) {
+            this->first_moment_vector_.push_back(parameter.get());  // First moment vector
+            this->second_moment_vector_.push_back(parameter.get()); // Second moment vector
         }
     }
 
     void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params,
                 const std::vector<std::reference_wrapper<Tensor<T>>>& grads,
                 const size_t& epoch) override {
+        // Update learning rate based on the current epoch
         this->updateLearningRate(epoch);
+        //
+        // Clip gradients to avoid exploding gradients
+        for (auto& grad : grads) {
+            clip_gradients(grad.get(), 1.0);  // Clip before updating parameters
+        }
 
-        T beta1_pow_epoch = std::pow(beta1, epoch + 1);
-        T beta2_pow_epoch = std::pow(beta2, epoch + 1);
-        T inv_beta1 = 1 - beta1;
-        T inv_beta2 = 1 - beta2;
+        // Update parameters
+        T beta1_pow_t = std::pow(beta1_, time_step_);
+        T beta2_pow_t = std::pow(beta2_, time_step_);
+        T inv_beta1 = 1 - beta1_;
+        T inv_beta2 = 1 - beta2_;
 
-        for (size_t i = 0; i < first_moment_vector.size(); ++i) {
-            auto& fm = first_moment_vector[i].data;
-            auto& sm = second_moment_vector[i].data;
+        // Update parameters with Adam
+        for (size_t i = 0; i < first_moment_vector_.size(); ++i) {
+            // Get references to the data
+            auto& fm = first_moment_vector_[i].data;
+            auto& sm = second_moment_vector_[i].data;
             auto& p = params[i].get().data;
             auto& g = grads[i].get().data;
 
             if (fm.size() != sm.size() || sm.size() != p.size() || p.size() != g.size()) {
-                std::cerr << "Size mismatch between vectors in method update of the Optimizer!" << std::endl;
-                std::cerr << "First moment: " << fm.size() << " | ";
-                std::cerr << "Second moment: " << sm.size() << std::endl;
-                std::cerr << "Parameters: " << p.size() << " | ";
-                std::cerr << "Gradients: " << g.size() << std::endl;
+                std::cerr << "Error in Adam Optimizer: Size mismatch detected between tensors during the update step." << std::endl;
                 return;
             }
 
@@ -97,109 +104,155 @@ public:
             auto p_current = p.data();
 
             for (size_t j = 0; j < p.size(); ++j) {
-                // Perform the updates
-                fm_current[j] = beta1 * fm_current[j] + inv_beta1 * g_current[j];
-                sm_current[j] = beta2 * sm_current[j] + inv_beta2 * std::pow(g_current[j], 2);
+                //
+                // Perform the updates for first and second moment estimates
+                fm_current[j] = beta1_ * fm_current[j] + inv_beta1 * g_current[j];
+                sm_current[j] = beta2_ * sm_current[j] + inv_beta2 * std::pow(g_current[j], 2);
 
-                // Compute m_hat and v_hat
-                T m_hat = fm_current[j] / (1 - beta1_pow_epoch);
-                T v_hat = sm_current[j] / (1 - beta2_pow_epoch);
+                // Compute bias-corrected m_hat and v_hat
+                T m_hat = fm_current[j] / (1 - beta1_pow_t);
+                // if (fm_current[j] < 0) {
+                //     std::cerr << "Wictory: fm_current[j] is negative." << std::endl;
+                // }
+                T v_hat = std::max(sm_current[j] / (1 - beta2_pow_t), static_cast<T>(0.0));
 
-                // Apply the update to parameters
-                p[j] -= this->learning_rate * m_hat / (std::sqrt(v_hat) + epsilon);
+                // Update the parameters with Adam step
+                p_current[j] -= this->learning_rate_ * m_hat / (std::sqrt(v_hat) + epsilon_);
+
+                // Apply weight decay (L2 regularization)
+                p_current[j] -= weight_decay_ * p_current[j];
+
+                // If is nan (std::sqrt(v_hat) + epsilon_) that print them
+                // if (p_current[j] < 0) {
+                //     std::cerr << "Wictory: p_current[j] is negative." << std::endl;
+                // }
             }
+            // // Print statistics about m_hat and p_current
+            // T min_m_hat = *std::min_element(fm.begin(), fm.end());
+            // T max_m_hat = *std::max_element(fm.begin(), fm.end());
+            // T min_p = *std::min_element(p.begin(), p.end());
+            // T max_p = *std::max_element(p.begin(), p.end());
+            //
+            // std::cout << "m_hat: Min = " << min_m_hat << ", Max = " << max_m_hat << std::endl;
+            // std::cout << "p_current: Min = " << min_p << ", Max = " << max_p << std::endl;
         }
+
+        // Increment time step for future use
+        this->time_step_ += 1;
     }
 };
 
 template <typename T>
 class Optimizer<T>::RMSprop final : public Optimizer<T> {
 public:
-    RMSprop(const std::vector<std::vector<int>>& param_shape, T learning_rate, T decay_rate, T epsilon, LearningRateSchedule& lr_schedule)
-        : Optimizer<T>(0.9, 0.999, epsilon, learning_rate, lr_schedule), decay_rate(decay_rate), epsilon(epsilon) {
-        initialize_params(param_shape);
+    RMSprop(std::vector<std::reference_wrapper<Tensor<T>>> parameters, T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+        : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {
+        initialize_params(parameters);
     }
 
-    explicit RMSprop(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
-    : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+    explicit RMSprop(T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+    : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {}
 
-    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
-        for (const auto& shape : param_shape) {
-            this->first_moment_vector.push_back(Tensor<T>(shape));  // Unused in RMSprop
-            this->second_moment_vector.push_back(Tensor<T>(shape)); // Used to store mean squared gradients
+    void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) override {
+        for (auto parameter : parameters) {
+            this->first_moment_vector_.push_back(parameter.get());  // First moment vector
+            this->second_moment_vector_.push_back(parameter.get()); // Second moment vector
         }
     }
 
     void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params,
                 const std::vector<std::reference_wrapper<Tensor<T>>>& grads,
                 const size_t& epoch) override {
+        // Update learning rate based on the current epoch
         this->updateLearningRate(epoch);
 
+        // Clip gradients to avoid exploding gradients
+        for (auto& grad : grads) {
+            clip_gradients(grad.get(), 1.0);  // Clip before updating parameters
+        }
+
+        // Update parameters
         for (size_t i = 0; i < params.size(); ++i) {
+            // Get references to the data
             auto& p = params[i].get().data;
             auto& g = grads[i].get().data;
-            auto& sm = second_moment_vector[i].data; // Mean squared gradients
+            auto& sm = second_moment_vector_[i].data; // Mean squared gradients
 
+            // Update the parameters
             for (size_t j = 0; j < p.size(); ++j) {
+                // Get references to the current values
                 T& sm_current = sm[j];
                 T& g_current = g[j];
 
-                sm_current = decay_rate * sm_current + (1 - decay_rate) * std::pow(g_current, 2);
+                // Update the mean squared gradients
+                sm_current = weight_decay_ * sm_current + (1 - weight_decay_) * std::pow(g_current, 2);
 
-                p[j] -= this->learning_rate * g_current / (std::sqrt(sm_current) + epsilon);
+                // Update the parameters
+                p[j] -= this->learning_rate_ * g_current / (std::sqrt(sm_current) + epsilon_);
+
+                // Apply weight decay (L2 regularization)
+                p[j] -= weight_decay_ * p[j];
             }
         }
-    }
 
-private:
-    T decay_rate;
-    T epsilon;
+        // Increment time step for future use
+        this->time_step_ += 1;
+    }
 };
 
 template <typename T>
 class Optimizer<T>::SGD final : public Optimizer<T> {
 public:
-    SGD(const std::vector<std::vector<int>>& param_shape, T learning_rate, LearningRateSchedule& lr_schedule)
-        : Optimizer<T>(0.0, 0.0, 0.0, learning_rate, lr_schedule) {
-        initialize_params(param_shape);
+    SGD(std::vector<std::reference_wrapper<Tensor<T>>> parameters, T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+        : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {
+        initialize_params(parameters);
     }
 
-    explicit SGD(LearningRateSchedule& lr_schedule, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8, T learning_rate = 0.001)
-    : Optimizer<T>(beta1, beta2, epsilon, learning_rate, lr_schedule) {}
+    explicit SGD(T learning_rate, LearningRateSchedule& lr_schedule, T weight_decay = 0.0, T beta1 = 0.9, T beta2 = 0.999, T epsilon = 1e-8)
+        : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {}
 
-    void initialize_params(const std::vector<std::vector<int>>& param_shape) override {
+    void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) override {
         // Initialize moment vectors (if necessary)
         // In SGD, we typically don't need these, but we'll follow the structure
-        for (const auto& shape : param_shape) {
-            this->first_moment_vector.push_back(Tensor<T>(shape));  // Unused in SGD
-            this->second_moment_vector.push_back(Tensor<T>(shape)); // Unused in SGD
-        }
+        // for (auto parameter : parameters) {
+        //      this->first_moment_vector_.push_back(parameter.get());  // First moment vector
+        //      this->second_moment_vector_.push_back(parameter.get()); // Second moment vector
+        // }
     }
 
     void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params,
                 const std::vector<std::reference_wrapper<Tensor<T>>>& grads,
                 const size_t& epoch) override {
+        // Update learning rate based on the current epoch
         this->updateLearningRate(epoch);
+
+        // Clip gradients to avoid exploding gradients
+        for (auto& grad : grads) {
+            clip_gradients(grad.get(), 1.0);  // Clip before updating parameters
+        }
 
         for (size_t i = 0; i < params.size(); ++i) {
             auto& p = params[i].get().data;
             auto& g = grads[i].get().data;
 
             for (size_t j = 0; j < p.size(); ++j) {
-                p[j] -= this->learning_rate * g[j];
+                // Update the parameters
+                p[j] -= this->learning_rate_ * g[j];
+
+                // Apply weight decay (L2 regularization)
+                // Apply weight decay (L2 regularization)
+                p[j] -= weight_decay_ * p[j];
             }
         }
+
+        // Increment time step for future use
+        this->time_step_ += 1;
     }
 };
 
 template <typename T>
 void Optimizer<T>::updateLearningRate(size_t epoch) {
-    learning_rate = lr_schedule.getLearningRate(epoch);
-}
-
-template <typename T>
-void Optimizer<T>::apply_weight_decay(Tensor<T>& params, T weight_decay) {
-    params -= params * weight_decay;
+    learning_rate_ = lr_schedule_.getLearningRate(epoch);
 }
 
 template <typename T>
@@ -215,10 +268,10 @@ void Optimizer<T>::save_state(const std::string& filename) const {
     std::ofstream model_file(filename);
     if (model_file.is_open()) {
         model_file << "{";
-        model_file << this->time_step << ", ";
-        this->first_moment_vector.serialize(model_file);
+        model_file << this->time_step_ << ", ";
+        this->first_moment_vector_.serialize(model_file);
         model_file << ", ";
-        this->second_moment_vector.serialize(model_file);
+        this->second_moment_vector_.serialize(model_file);
         model_file << "}";
         model_file.close();
     } else {
@@ -230,14 +283,14 @@ template <typename T>
 void Optimizer<T>::deserialize(std::istream& is) {
     char ch;
     is >> ch; // Read '{'
-    is >> this->time_step;
+    is >> this->time_step_;
     is >> ch; // Read ','
 
     // Read first_moment_vector
-    this->first_moment_vector.deserialize(is);
+    this->first_moment_vector_.deserialize(is);
 
     // Read second_moment_vector
-    this->second_moment_vector.deserialize(is);
+    this->second_moment_vector_.deserialize(is);
     is >> ch; // Read '}'
 }
 
