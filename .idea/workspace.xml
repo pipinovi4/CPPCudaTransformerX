@@ -24,7 +24,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Minor update" />
+    <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Updated MultiHeadAttention to improve efficiency, readability, and clarity. Changed the default activation function to Softmax instead of Linear. Applied adjustments to parameter initialization and refactored the forward and backward methods to utilize the new activation function structure. Improved gradient calculations and in-place operations, ensuring better performance and handling of weights and biases. Also, enhanced comments and documentation to reflect the latest changes in code logic and functionality.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,23 +62,34 @@
     &quot;assignee&quot;: &quot;pipinovi4&quot;
   }
 }</component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="f14f44d3-818c-4cf2-9e47-b23a4bf0c8d4" />
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/pipinovi4/CPPCudaTransformerX&quot;,
-    &quot;accountId&quot;: &quot;1b9524dd-7cfa-4648-87af-37595fe29dfb&quot;
+    &quot;accountId&quot;: &quot;f14f44d3-818c-4cf2-9e47-b23a4bf0c8d4&quot;
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///home/pipin/C++CudaTransformerX/examples/DigitRecognizerRunner.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/examples/EmbeddingModelRunner.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/examples/MultiHeadAttentionModelRunner.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/examples/MultiHeadAttentionModelRunner.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/ActivationFunction.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/include/DenseLayer.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/DenseLayer.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Embedding.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/Embedding.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/Embedding.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Float16.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Layer.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/LayerNorm.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/LossFunction.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/MultiHeadAttention.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/MultiHeadAttention.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/Optimizer.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Optimizer.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/include/PositionalWiseDenseLayer.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/PositionalWiseDenseLayer.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/ResidualBlock.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/include/Tensor.h" root0="FORCE_HIGHLIGHTING" />
@@ -81,31 +98,37 @@
     <setting file="file://$PROJECT_DIR$/models/EmbeddingModel.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/models/MultiHeadAttentionModel.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/models/Transformer.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/models/Transformer.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/models/Transformer.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/models/Transformer.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/models/Transformer.tpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/models/Transformer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/ActivationFunction.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/BPE.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/DenseLayer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DenseLayer.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/DenseLayer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Embedding.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/Embedding.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/LayerNorm.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/LossFunction.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/MultiHeadAttention.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/MultiHeadAttention.tpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/Optimizer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Optimizer.tpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/PositionalWiseDenseLayer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/PositionalWiseDenseLayer.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/ResidualBlock.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Tensor.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Tokenizer.tpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/src/Tokenizer.tpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/generate.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/generate.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/generate.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///home/pipin/C++CudaTransformerX/src/main.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/train.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/train.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/src/train.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/tests/test_dense_layer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/tests/test_dense_layer.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///home/pipin/C++CudaTransformerX/tests/test_positional_wise_dense_layer.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/utils/loadAGNews.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/utils/loadWikiText.tpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/utils/readUint32.h" root0="FORCE_HIGHLIGHTING" />
@@ -181,11 +204,6 @@
     </key>
   </component>
   <component name="RunManager" selected="C/C++ File.main.cpp">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Tensor_Constructor_Test" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" TEST_CLASS="Tensor_Constructor_Test" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -630,95 +648,13 @@
       <workItem from="1724916719781" duration="2565000" />
       <workItem from="1724997157003" duration="26903000" />
       <workItem from="1725094804961" duration="6490000" />
-      <workItem from="1725180950009" duration="21922000" />
-    </task>
-    <task id="LOCAL-00206" summary="Added batch size for test data. This was done because these layers were recently updated for parallel processing of batches">
-      <option name="closed" value="true" />
-      <created>1724229423119</created>
-      <option name="number" value="00206" />
-      <option name="presentableId" value="LOCAL-00206" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229423119</updated>
-    </task>
-    <task id="LOCAL-00207" summary="Add unit tests for BPE class to verify tokenization functionality&#10;&#10;- Introduced a new BPETest fixture for managing setup and teardown of the BPE object.&#10;- Added test cases to validate the correct tokenization of various words:&#10;  - &quot;lowert&quot; is expected to tokenize to {&quot;low&quot;, &quot;er&quot;, &quot;t&quot;}.&#10;  - &quot;lower&quot; is expected to tokenize to {&quot;low&quot;, &quot;er&quot;}.&#10;  - &quot;slowest&quot; is expected to tokenize to {&quot;s&quot;, &quot;low&quot;, &quot;e&quot;, &quot;s&quot;, &quot;t&quot;}.&#10;- Ensured that the BPE class is functioning as expected with the provided vocabulary and merge rules.">
-      <option name="closed" value="true" />
-      <created>1724229474947</created>
-      <option name="number" value="00207" />
-      <option name="presentableId" value="LOCAL-00207" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229474947</updated>
-    </task>
-    <task id="LOCAL-00208" summary="Updated expected data for transpose this was made it because early we update implementation of this method in Tensor.tpp.">
-      <option name="closed" value="true" />
-      <created>1724229534173</created>
-      <option name="number" value="00208" />
-      <option name="presentableId" value="LOCAL-00208" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229534173</updated>
-    </task>
-    <task id="LOCAL-00209" summary="Minor update was deleted unnecessary includes">
-      <option name="closed" value="true" />
-      <created>1724229574044</created>
-      <option name="number" value="00209" />
-      <option name="presentableId" value="LOCAL-00209" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229574044</updated>
-    </task>
-    <task id="LOCAL-00210" summary="Added new files.&#10;&#10;  src/LayerNorm.tpp&#10;        include/BPE.h&#10;        src/BPE.tpp&#10;        utils/loadAGNews.h&#10;        utils/loadMNIST.h&#10;        utils/loadWikiText.tpp&#10;        utils/swapEndian.tpp">
-      <option name="closed" value="true" />
-      <created>1724229597827</created>
-      <option name="number" value="00210" />
-      <option name="presentableId" value="LOCAL-00210" />
-      <option name="project" value="LOCAL" />
-      <updated>1724229597827</updated>
-    </task>
-    <task id="LOCAL-00211" summary="Refactored Transformer implementation with intermediate checkpoint:&#10;&#10;- Removed `PositionalEncoder` and integrated `Tokenizer` for tokenization and positional encoding.&#10;- Updated embedding layers to use a single `Embedding` instance shared across both source and target sequences.&#10;- Modified `Transformer` constructor and forward method to accommodate the updated architecture.&#10;- Implemented support for `SOS` and `EOS` tokens to handle sequence shifting for autoregressive tasks.&#10;- Introduced new final dense layers with softmax activation for output probabilities.&#10;- Refined parameter and gradient management for enhanced modularity.&#10;- Added placeholder methods for loading and saving model weights.&#10;- Adjusted training loop to tokenize data upfront and handle sequence padding and shifting effectively.&#10;- Note: This commit serves as an intermediate checkpoint towards a complete implementation of the model.&#10;&#10;Further refinements and testing are needed to complete the implementation.">
-      <option name="closed" value="true" />
-      <created>1724314430516</created>
-      <option name="number" value="00211" />
-      <option name="presentableId" value="LOCAL-00211" />
-      <option name="project" value="LOCAL" />
-      <updated>1724314430516</updated>
-    </task>
-    <task id="LOCAL-00212" summary="Optimized Activation Functions Implementation: Refactored the Softmax forward pass to improve efficiency by reducing redundant computations and in-place operations. Optimized the backward pass to streamline the gradient computation by eliminating nested loops and leveraging precomputed dot products. Ensured consistency in forward and backward methods across all activation functions. Maintained a consistent style in handling input and gradient tensors. Introduced in-place operations and input caching in ReLU for efficiency. Simplified LeakyReLU and ELU to enhance readability and performance. This commit enhances the performance and maintainability of the activation functions in the neural network implementation, ensuring faster execution during both the forward and backward passes.">
-      <option name="closed" value="true" />
-      <created>1724485912327</created>
-      <option name="number" value="00212" />
-      <option name="presentableId" value="LOCAL-00212" />
-      <option name="project" value="LOCAL" />
-      <updated>1724485912327</updated>
-    </task>
-    <task id="LOCAL-00213" summary="Small changes were implemented for better brevity">
-      <option name="closed" value="true" />
-      <created>1724485953928</created>
-      <option name="number" value="00213" />
-      <option name="presentableId" value="LOCAL-00213" />
-      <option name="project" value="LOCAL" />
-      <updated>1724485953928</updated>
-    </task>
-    <task id="LOCAL-00214" summary="Deleted comment for better brevity">
-      <option name="closed" value="true" />
-      <created>1724485985217</created>
-      <option name="number" value="00214" />
-      <option name="presentableId" value="LOCAL-00214" />
-      <option name="project" value="LOCAL" />
-      <updated>1724485985217</updated>
-    </task>
-    <task id="LOCAL-00215" summary="Refactored Embedding Layer Implementation: &#10;&#10;- Simplified the forward method by changing the input tensor requirement from 2D to 1D, improving usability and aligning with the common usage pattern for embedding layers.&#10;- Updated the backward method to handle 2D gradients, improving consistency with the new forward method structure.&#10;- Removed unnecessary parallelization in the forward method for simpler, more readable code.&#10;- Optimized gradient accumulation in the backward method for better performance.&#10;- Improved input validation with more accurate error messages for tensor shape mismatches.&#10;- Code is now more streamlined and better suited for typical embedding layer applications in sequence models.">
-      <option name="closed" value="true" />
-      <created>1724486196615</created>
-      <option name="number" value="00215" />
-      <option name="presentableId" value="LOCAL-00215" />
-      <option name="project" value="LOCAL" />
-      <updated>1724486196615</updated>
-    </task>
-    <task id="LOCAL-00216" summary="Added method remove empty sentences for reducing unnecessary dataset size">
-      <option name="closed" value="true" />
-      <created>1724486237661</created>
-      <option name="number" value="00216" />
-      <option name="presentableId" value="LOCAL-00216" />
-      <option name="project" value="LOCAL" />
-      <updated>1724486237661</updated>
+      <workItem from="1725180950009" duration="26639000" />
+      <workItem from="1725552948520" duration="22612000" />
+      <workItem from="1726765498806" duration="43771000" />
+      <workItem from="1726923932954" duration="4067000" />
+      <workItem from="1726965259022" duration="2793000" />
+      <workItem from="1726968337900" duration="28751000" />
+      <workItem from="1727279400740" duration="9687000" />
     </task>
     <task id="LOCAL-00217" summary="Updated method `InitializerParameter` which used better random number generator">
       <option name="closed" value="true" />
@@ -1024,7 +960,95 @@
       <option name="project" value="LOCAL" />
       <updated>1725528196560</updated>
     </task>
-    <option name="localTasksCounter" value="255" />
+    <task id="LOCAL-00255" summary="Changed conan version from 2.7.0 to 2.5.0">
+      <option name="closed" value="true" />
+      <created>1725528627209</created>
+      <option name="number" value="00255" />
+      <option name="presentableId" value="LOCAL-00255" />
+      <option name="project" value="LOCAL" />
+      <updated>1725528627209</updated>
+    </task>
+    <task id="LOCAL-00256" summary="Fixed error with passing the activation function to the layer constructor. Changed the activation function to be used as a pointer object (e.g., ActivationFunction&lt;T&gt;::Relu*).">
+      <option name="closed" value="true" />
+      <created>1727357895273</created>
+      <option name="number" value="00256" />
+      <option name="presentableId" value="LOCAL-00256" />
+      <option name="project" value="LOCAL" />
+      <updated>1727357895277</updated>
+    </task>
+    <task id="LOCAL-00257" summary="Refactored the Optimizer classes to improve parameter initialization and handling. Modified the constructor for Adam, RMSprop, and SGD to accept parameter references directly. Added weight decay functionality and gradient clipping for stability. Updated method signatures for clarity and adjusted the internal structure of the learning rate schedule. Improved documentation and error handling, ensuring consistent behavior across all optimizers. Optimized variable naming and introduced raw pointers for efficient data manipulation.">
+      <option name="closed" value="true" />
+      <created>1727358993628</created>
+      <option name="number" value="00257" />
+      <option name="presentableId" value="LOCAL-00257" />
+      <option name="project" value="LOCAL" />
+      <updated>1727358993628</updated>
+    </task>
+    <task id="LOCAL-00258" summary="Made some correction in the expected data.">
+      <option name="closed" value="true" />
+      <created>1727359029416</created>
+      <option name="number" value="00258" />
+      <option name="presentableId" value="LOCAL-00258" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359029416</updated>
+    </task>
+    <task id="LOCAL-00259" summary="Refactored the Transformer class for better clarity and modularity. Updated constructor parameters for flexibility and readability. Added the generate method to improve text generation capabilities. Implemented zero_grad method for resetting gradients, and enhanced the convert_to_tensor function for efficient data preprocessing. Simplified the model's architecture and improved handling of activation functions. Modified parameter initialization and improved overall training flow, making the code cleaner and more maintainable. Added support for loading and saving model weights, as well as converting float tokens to integers for better usability.">
+      <option name="closed" value="true" />
+      <created>1727359293572</created>
+      <option name="number" value="00259" />
+      <option name="presentableId" value="LOCAL-00259" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359293573</updated>
+    </task>
+    <task id="LOCAL-00260" summary="Refactored the training script for improved readability and structure. Adjusted model parameters, added support for loading pretrained weights, and enhanced the flexibility of the Transformer initialization. Replaced hardcoded values with constants for easier tuning. Integrated batch processing, label smoothing, and dropout, allowing smoother and more realistic training. Utilized std::filesystem to handle weight loading/saving efficiently, making the training process more robust and adaptable for future experiments.">
+      <option name="closed" value="true" />
+      <created>1727359468356</created>
+      <option name="number" value="00260" />
+      <option name="presentableId" value="LOCAL-00260" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359468356</updated>
+    </task>
+    <task id="LOCAL-00261" summary="Change way to initialize optimizer after changes when at the moment of the initialization optimizer must pass links on the parameters not just a shape">
+      <option name="closed" value="true" />
+      <created>1727359552532</created>
+      <option name="number" value="00261" />
+      <option name="presentableId" value="LOCAL-00261" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359552532</updated>
+    </task>
+    <task id="LOCAL-00262" summary="Refactored and optimized the Embedding layer implementation for improved performance and clarity. Ensured more efficient gradient accumulation in the backward method. Enhanced error handling for input dimensions, and verified the initialization process. Updated function documentation and retained compliance with the Xavier/Glorot initialization technique. Removed redundant code and maintained consistency across forward and backward passes.">
+      <option name="closed" value="true" />
+      <created>1727359739045</created>
+      <option name="number" value="00262" />
+      <option name="presentableId" value="LOCAL-00262" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359739045</updated>
+    </task>
+    <task id="LOCAL-00263" summary="Is not critical changes omp optimization.">
+      <option name="closed" value="true" />
+      <created>1727359766456</created>
+      <option name="number" value="00263" />
+      <option name="presentableId" value="LOCAL-00263" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359766456</updated>
+    </task>
+    <task id="LOCAL-00264" summary="Refactored the generate function to main for improved structure and clarity. Updated hyperparameters for the Transformer model to optimize generation quality. Integrated loading of weights from the file path and added detailed test data display for verification. Adapted model generation to handle full sentences and ensured seamless handling of vocabulary and batch processing. Code now supports enhanced evaluation and output generation while maintaining backward compatibility.">
+      <option name="closed" value="true" />
+      <created>1727359846610</created>
+      <option name="number" value="00264" />
+      <option name="presentableId" value="LOCAL-00264" />
+      <option name="project" value="LOCAL" />
+      <updated>1727359846610</updated>
+    </task>
+    <task id="LOCAL-00265" summary="Updated MultiHeadAttention to improve efficiency, readability, and clarity. Changed the default activation function to Softmax instead of Linear. Applied adjustments to parameter initialization and refactored the forward and backward methods to utilize the new activation function structure. Improved gradient calculations and in-place operations, ensuring better performance and handling of weights and biases. Also, enhanced comments and documentation to reflect the latest changes in code logic and functionality.">
+      <option name="closed" value="true" />
+      <created>1727360089161</created>
+      <option name="number" value="00265" />
+      <option name="presentableId" value="LOCAL-00265" />
+      <option name="project" value="LOCAL" />
+      <updated>1727360089161</updated>
+    </task>
+    <option name="localTasksCounter" value="266" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1047,17 +1071,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Deleted Eigen installation because we had installed it directly to the project" />
-    <MESSAGE value="Added optimization for weights initialization over Eigen" />
-    <MESSAGE value="Updated `dot` method and `transpose`. Was rewritten methods over Eigen for better performance because we're using this method the most often." />
-    <MESSAGE value="Minor updates in building vocabulary changed from input datasets to vocabulary with type vector of strings for better brevity" />
-    <MESSAGE value="Changed vocabulary size from 20000 to 30000 and added special symbols and numbers" />
-    <MESSAGE value="There Were added docs and more comments for better brevity and was deleted inverseVocabularyBuild because this method was unnecessary." />
-    <MESSAGE value="Updated expected data after previous changes" />
-    <MESSAGE value="Optimized to lower a mechanism in method `textToIds`" />
-    <MESSAGE value="Refactored `Transformer` class for improved data handling and efficiency:&#10;&#10;- Updated `Tokenizer` initialization in `Transformer` constructor to handle the entire length including special tokens.&#10;- Refined the `train`, `predict`, and `generate_text` methods for better clarity and performance.&#10;- Reorganized and cleaned up `forward`, `backward`, and `update` methods for consistency.&#10;- Removed unnecessary redundant code and outdated comments to streamline the implementation.&#10;- Ensured more accurate token processing and gradient accumulation during training.&#10;&#10;This refactor enhances readability and prepares the codebase for further optimizations." />
-    <MESSAGE value="Added conan requirements for the project for using `make test` and `make build` commands for building and testing the project." />
-    <MESSAGE value="Added new files of the project and some changes in the names some files for correct grammar." />
     <MESSAGE value="Added `download_data` command for downloading datasets and vocab" />
     <MESSAGE value="Changed actual pip version for the project" />
     <MESSAGE value="Changed imports from utils_py.* to (directory_space).*" />
@@ -1072,7 +1085,18 @@
     <MESSAGE value="Was added correct setup Eigen" />
     <MESSAGE value="Added a correct generation text from all test data and added displaying generated text." />
     <MESSAGE value="Minor update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor update" />
+    <MESSAGE value="Changed conan version from 2.7.0 to 2.5.0" />
+    <MESSAGE value="Fixed error with passing the activation function to the layer constructor. Changed the activation function to be used as a pointer object (e.g., ActivationFunction&lt;T&gt;::Relu*)." />
+    <MESSAGE value="Refactored the Optimizer classes to improve parameter initialization and handling. Modified the constructor for Adam, RMSprop, and SGD to accept parameter references directly. Added weight decay functionality and gradient clipping for stability. Updated method signatures for clarity and adjusted the internal structure of the learning rate schedule. Improved documentation and error handling, ensuring consistent behavior across all optimizers. Optimized variable naming and introduced raw pointers for efficient data manipulation." />
+    <MESSAGE value="Made some correction in the expected data." />
+    <MESSAGE value="Refactored the Transformer class for better clarity and modularity. Updated constructor parameters for flexibility and readability. Added the generate method to improve text generation capabilities. Implemented zero_grad method for resetting gradients, and enhanced the convert_to_tensor function for efficient data preprocessing. Simplified the model's architecture and improved handling of activation functions. Modified parameter initialization and improved overall training flow, making the code cleaner and more maintainable. Added support for loading and saving model weights, as well as converting float tokens to integers for better usability." />
+    <MESSAGE value="Refactored the training script for improved readability and structure. Adjusted model parameters, added support for loading pretrained weights, and enhanced the flexibility of the Transformer initialization. Replaced hardcoded values with constants for easier tuning. Integrated batch processing, label smoothing, and dropout, allowing smoother and more realistic training. Utilized std::filesystem to handle weight loading/saving efficiently, making the training process more robust and adaptable for future experiments." />
+    <MESSAGE value="Change way to initialize optimizer after changes when at the moment of the initialization optimizer must pass links on the parameters not just a shape" />
+    <MESSAGE value="Refactored and optimized the Embedding layer implementation for improved performance and clarity. Ensured more efficient gradient accumulation in the backward method. Enhanced error handling for input dimensions, and verified the initialization process. Updated function documentation and retained compliance with the Xavier/Glorot initialization technique. Removed redundant code and maintained consistency across forward and backward passes." />
+    <MESSAGE value="Is not critical changes omp optimization." />
+    <MESSAGE value="Refactored the generate function to main for improved structure and clarity. Updated hyperparameters for the Transformer model to optimize generation quality. Integrated loading of weights from the file path and added detailed test data display for verification. Adapted model generation to handle full sentences and ensured seamless handling of vocabulary and batch processing. Code now supports enhanced evaluation and output generation while maintaining backward compatibility." />
+    <MESSAGE value="Updated MultiHeadAttention to improve efficiency, readability, and clarity. Changed the default activation function to Softmax instead of Linear. Applied adjustments to parameter initialization and refactored the forward and backward methods to utilize the new activation function structure. Improved gradient calculations and in-place operations, ensuring better performance and handling of weights and biases. Also, enhanced comments and documentation to reflect the latest changes in code logic and functionality." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated MultiHeadAttention to improve efficiency, readability, and clarity. Changed the default activation function to Softmax instead of Linear. Applied adjustments to parameter initialization and refactored the forward and backward methods to utilize the new activation function structure. Improved gradient calculations and in-place operations, ensuring better performance and handling of weights and biases. Also, enhanced comments and documentation to reflect the latest changes in code logic and functionality." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

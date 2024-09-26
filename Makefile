@@ -1,3 +1,5 @@
+# Purpose: Makefile for the C++CudaTransformerX project
+
 # Specify the build directory
 BUILD_DIR = build
 
@@ -7,6 +9,8 @@ TEST_EXECUTABLE = global_tests
 DIGIT_RECOGNIZER_EXECUTABLE = digit_recognizer
 EMBEDDING_MODEL_EXECUTABLE = embedding_model
 MULTI_HEAD_ATTENTION_MODEL_EXECUTABLE = multi_head_attention_model
+TRAIN_EXECUTABLE = train
+GENERATE_EXECUTABLE = generate
 
 # The 'all' target will run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets
 all: venv build test digit_recognizer clean
@@ -59,8 +63,35 @@ download_data:
 	@mkdir -p data
 	. .venv/bin/activate && python utils_py/main.py
 
+# Train the model
+train:
+	cd ${BUILD_DIR} && cmake --build . && ./$(TRAIN_EXECUTABLE)
+
+# Generate text
+generate:
+	cd ${BUILD_DIR} && cmake --build . && ./$(GENERATE_EXECUTABLE)
+
+# The 'help' target
+help:
+	@echo "Usage: make [target]"
+	@echo "Targets:"
+	@echo "  all: Run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets"
+	@echo "  venv: Create and activate the Python virtual environment"
+	@echo "  build: Build the C++ executable"
+	@echo "  clean: Remove build artifacts"
+	@echo "  clean_venv: Remove the Python virtual environment"
+	@echo "  test: Run the global tests"
+	@echo "  digit_recognizer: Run the DigitRecognizer executable"
+	@echo "  embedding_model: Run the EmbeddingModel executable"
+	@echo "  multi_head_attention_model: Run the MultiHeadAttentionModel executable"
+	@echo "  profile_main: Profile the main executable using Valgrind"
+	@echo "  download_data: Download datasets and vocab"
+	@echo "  help: Display this help message"
+	@echo "  train: Train the model"
+	@echo "  generate: Generate text"
+
 
 # Phony targets
-.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model download_data
+.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model download_data train generate help
 
 # End of Makefile
