@@ -96,7 +96,6 @@ void DenseLayer<T>::backward(Tensor<T>& grad) {
     #pragma omp parallel for
     for (size_t j = 0; j < outputUnits; ++j) {
         T grad_val = grad_data[j];  // Gradient from the next layer
-        #pragma omp atomic
         bias_gradients_data[j] += grad_val;  // Accumulate bias gradients
 
         #pragma omp simd
