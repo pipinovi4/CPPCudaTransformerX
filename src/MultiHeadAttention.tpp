@@ -163,9 +163,8 @@ Tensor<T> MultiHeadAttention<T>::forward(const Tensor<T>& input, const Tensor<T>
             }
          }
 
-         // // Apply the activation function (typically softmax)
-         typename ActivationFunction<T>::Softmax softmax;
-         softmax.forward(attention_scores);
+         // Apply the activation function (typically softmax)
+         activation->forward(attention_scores);
 
          Tensor<T> attention_output = attention_scores.dot(values_heads[i]);
 
@@ -189,8 +188,8 @@ void MultiHeadAttention<T>::backward(Tensor<T>& grad) {
     Tensor<T> grad_concatenated = grad.dot(W_o.transpose({1, 0}));
 
     // In-place operation for weight gradient computation
-    grad_W_o = concat_heads(attention_heads).transpose({1, 0}).dot(grad);
-    grad_b_o = grad.sum(0); // Assuming b_o is a bias vector
+    grad_W_o += concat_heads(attention_heads).transpose({1, 0}).dot(grad);
+    grad_b_o += grad.sum(0); // Assuming b_o is a bias vector
 
     // Step 2: Split the gradient of the concatenated heads back into multiple heads
     std::vector<Tensor<T>> grad_attention_heads = split_heads(grad_concatenated);
@@ -207,9 +206,8 @@ void MultiHeadAttention<T>::backward(Tensor<T>& grad) {
         Tensor<T> grad_attention_scores = grad_attention_heads[i].dot(values_heads[i].transpose({1, 0}));
         grad_attention_scores /= std::sqrt(static_cast<T>(head_dim));  // Scale gradient
 
-        // Apply the softmax gradient in-place
-        typename ActivationFunction<T>::Softmax softmax;
-        softmax.backward(grad_attention_scores);
+         // Apply the activation function (typically softmax)
+        activation->backward(grad_attention_scores);
 
         // Compute gradients w.r.t. queries, keys, and values
         grad_queries_heads[i] = grad_attention_scores.dot(keys_heads[i]);
@@ -223,14 +221,14 @@ void MultiHeadAttention<T>::backward(Tensor<T>& grad) {
     Tensor<T> grad_values = concat_heads(grad_values_heads);
 
     // Step 5: Compute gradients of the linear projections (W_q, W_k, W_v) efficiently
-    grad_W_q = input_cache.transpose({1, 0}).dot(grad_queries);
-    grad_W_k = input_cache.transpose({1, 0}).dot(grad_keys);
-    grad_W_v = input_cache.transpose({1, 0}).dot(grad_values);
+    grad_W_q += input_cache.transpose({1, 0}).dot(grad_queries);
+    grad_W_k += input_cache.transpose({1, 0}).dot(grad_keys);
+    grad_W_v += input_cache.transpose({1, 0}).dot(grad_values);
 
     // Compute the gradients with respect to the biases
-    grad_b_q = grad_queries.sum(0);  // Shape: [d_model]
-    grad_b_k = grad_keys.sum(0);  // Shape: [d_model]
-    grad_b_v = grad_values.sum(0);  // Shape: [d_model]
+    grad_b_q += grad_queries.sum(0);  // Shape: [d_model]
+    grad_b_k += grad_keys.sum(0);  // Shape: [d_model]
+    grad_b_v += grad_values.sum(0);  // Shape: [d_model]
 
     // Step 6: Compute the gradients of the input
     grad = grad_queries.dot(W_q.transpose({1, 0})) + grad_keys.dot(W_k.transpose({1, 0})) + grad_values.dot(W_v.transpose({1, 0}));

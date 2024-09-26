@@ -27,7 +27,7 @@ public:
      * @param head_dim Dimension size for each attention head.
      * @param activation Pointer to an activation function. Defaults to a linear activation.
      */
-    MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation = new typename ActivationFunction<T>::Linear());
+    MultiHeadAttention(const int& hidden_dim, const int& num_heads, const int& head_dim, ActivationFunction<T>* activation = new typename ActivationFunction<T>::Softmax());
 
     /**
      * @brief Destructor for MultiHeadAttention.
