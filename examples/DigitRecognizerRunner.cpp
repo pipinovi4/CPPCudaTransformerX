@@ -50,7 +50,7 @@ int main() {
             auto param_shape = ref.get().shape();
             params_shape.push_back(param_shape);
         }
-        const auto optimizer = new Optimizer<float>::Adam(params_shape, LEARNING_RATE, learning_rate_scheduler);
+        const auto optimizer = new Optimizer<float>::Adam(model.parameters(), LEARNING_RATE, learning_rate_scheduler);
 
         // Train the model
         model.train(train_data, train_labels, NUM_EPOCHS, optimizer, BATCH_SIZE);

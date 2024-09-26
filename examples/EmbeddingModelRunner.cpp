@@ -59,7 +59,7 @@ int main() {
         }
 
         // Initialize the optimizer
-        Optimizer<float>::Adam optimizer(params_shape, LEARNING_RATE, learning_rate_scheduler);
+        Optimizer<float>::Adam optimizer(model.parameters(), LEARNING_RATE, learning_rate_scheduler);
 
         // Perform multiple epochs of training
         for (int epoch = 0; epoch < NUM_EPOCHS; ++epoch) {

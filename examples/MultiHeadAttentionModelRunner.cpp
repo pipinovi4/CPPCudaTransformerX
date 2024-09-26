@@ -50,7 +50,7 @@ int main() {
     }
 
     // Define the optimizer
-    Optimizer<float>::Adam optimizer(params_shape, 0.9, learning_rate_scheduler, 1e-8);
+    Optimizer<float>::Adam optimizer(model.parameters(), 0.9, learning_rate_scheduler, 1e-8);
 
     // Define large dummy data for training
     std::vector<Tensor<float>> input_data(1000);
