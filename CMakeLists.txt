@@ -1,4 +1,9 @@
+# CMakeLists.txt
+
+# Set the minimum required version of CMake
 cmake_minimum_required(VERSION 3.12)
+
+# Set the project name
 project(C++CudaTransformerX)
 
 # Set the C++ standard
@@ -70,8 +75,6 @@ add_executable(C++CudaTransformerX
         utils/loadVocab.tpp
         models/Transformer.tpp
         models/Transformer.tpp
-        src/generate.cpp
-        src/train.cpp
 )
 
 # Add the test executable
@@ -121,4 +124,104 @@ add_executable(multi_head_attention_model
         models/MultiHeadAttentionModel.tpp
 )
 
+# Add example of the train LLM executable
+add_executable(train
+        src/train.cpp
+        src/Tensor.tpp
+        include/Tensor.h
+        include/DenseLayer.h
+        include/ActivationFunction.h
+        include/Optimizer.h
+        include/LossFunction.h
+        src/Optimizer.tpp
+        src/DenseLayer.tpp
+        src/LossFunction.tpp
+        src/ActivationFunction.tpp
+        include/Embedding.h
+        src/Embedding.tpp
+        utils/loadMNIST.tpp
+        include/Tokenizer.h
+        src/Tokenizer.tpp
+        utils/loadAGNews.tpp
+        include/MultiHeadAttention.h
+        src/MultiHeadAttention.tpp
+        models/MultiHeadAttentionModel.h
+        src/MultiHeadAttention.tpp
+        utils/loadWikiText.tpp
+        models/Transformer.h
+        models/Transformer.tpp
+        include/LayerNorm.h
+        src/LayerNorm.tpp
+        include/ResidualBlock.h
+        src/ResidualBlock.tpp
+        include/PositionalWiseDenseLayer.h
+        src/PositionalWiseDenseLayer.tpp
+        include/Layer.h
+        src/LayerNorm.tpp
+        include/BPE.h
+        src/BPE.tpp
+        utils/loadAGNews.h
+        utils/loadMNIST.h
+        utils/loadWikiText.tpp
+        utils/swapEndian.tpp
+        src/BPE.tpp
+        src/BPE.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.tpp
+        models/Transformer.tpp
+        models/Transformer.tpp
+)
 
+# Add example of the generate LLM executable
+add_executable(generate
+        src/generate.cpp
+        src/Tensor.tpp
+        include/Tensor.h
+        include/DenseLayer.h
+        include/ActivationFunction.h
+        include/Optimizer.h
+        include/LossFunction.h
+        src/Optimizer.tpp
+        src/DenseLayer.tpp
+        src/LossFunction.tpp
+        src/ActivationFunction.tpp
+        include/Embedding.h
+        src/Embedding.tpp
+        utils/loadMNIST.tpp
+        include/Tokenizer.h
+        src/Tokenizer.tpp
+        utils/loadAGNews.tpp
+        include/MultiHeadAttention.h
+        src/MultiHeadAttention.tpp
+        models/MultiHeadAttentionModel.h
+        src/MultiHeadAttention.tpp
+        utils/loadWikiText.tpp
+        models/Transformer.h
+        models/Transformer.tpp
+        include/LayerNorm.h
+        src/LayerNorm.tpp
+        include/ResidualBlock.h
+        src/ResidualBlock.tpp
+        include/PositionalWiseDenseLayer.h
+        src/PositionalWiseDenseLayer.tpp
+        include/Layer.h
+        src/LayerNorm.tpp
+        include/BPE.h
+        src/BPE.tpp
+        utils/loadAGNews.h
+        utils/loadMNIST.h
+        utils/loadWikiText.tpp
+        utils/swapEndian.tpp
+        src/BPE.tpp
+        src/BPE.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.h
+        utils/loadVocab.tpp
+        utils/loadVocab.tpp
+        models/Transformer.tpp
+        models/Transformer.tpp
+)
