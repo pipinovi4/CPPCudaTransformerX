@@ -17,7 +17,7 @@ protected:
         d_ff = 3;
         max_token_size = 3;  // Define max_token_size here
         activation_function = new ActivationFunction<float>::ReLU();
-        layer = new PositionalWiseDenseLayer<float>(d_model, d_ff, *activation_function);
+        layer = new PositionalWiseDenseLayer<float>(d_model, d_ff, activation_function);
     }
 
     // Tear down the test environment

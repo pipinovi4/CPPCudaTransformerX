@@ -18,7 +18,7 @@ protected:
         params_shape.push_back(embedding->parameters()[0].get().shape());
 
         // Define new optimizer
-        optimizer = new Optimizer<float>::Adam(params_shape, learning_rate, *lr_schedule);
+        optimizer = new Optimizer<float>::Adam(embedding->parameters(), learning_rate, *lr_schedule);
     }
 
     [[nodiscard]] Tensor<float> ProcessInputForward(const Tensor<float>& input_data) const {

@@ -50,11 +50,20 @@ protected:
     Optimizer<float>::Adam optimizer;
 
     AdamTest()
-        : OptimizerTest<float>(), optimizer({{2, 2}}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+        : OptimizerTest<float>(), optimizer({tensor1, tensor2}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+
+private:
+    Tensor<float> tensor1 = Tensor<float>(std::vector<float>{0, 0});
+    Tensor<float> tensor2 = Tensor<float>(std::vector<float>{0, 0});
 
 protected:
     void SetUp() override {
-        optimizer.initialize_params({{2, 2}});
+        Tensor<float> tensor1({0, 0});
+        Tensor<float> tensor2({0, 0});
+
+        const std::vector<std::reference_wrapper<Tensor<float>>> tensor_refs = {tensor1, tensor2};
+
+        optimizer.initialize_params(tensor_refs);
     }
 };
 
@@ -111,11 +120,19 @@ public:
     Optimizer<float>::SGD optimizer;
 
     SGDTest()
-        : OptimizerTest<float>(), optimizer({{2, 2}}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+        : OptimizerTest<float>(), optimizer({tensor1, tensor2}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
 
+private:
+    Tensor<float> tensor1 = Tensor<float>(std::vector<float>{0, 0});
+    Tensor<float> tensor2 = Tensor<float>(std::vector<float>{0, 0});
 protected:
     void SetUp() override {
-        optimizer.initialize_params({{2, 2}});
+        Tensor<float> tensor1({0, 0});
+        Tensor<float> tensor2({0, 0});
+
+        const std::vector<std::reference_wrapper<Tensor<float>>> tensor_refs = {tensor1, tensor2};
+
+        optimizer.initialize_params(tensor_refs);
     }
 };
 
@@ -173,11 +190,20 @@ public:
     Optimizer<float>::RMSprop optimizer;
 
     RMSpropTest()
-        : OptimizerTest<float>(), optimizer({{2, 2}}, 0.01, 0.9, 1e-8, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+        : OptimizerTest<float>(), optimizer({tensor1, tensor2}, 0.01, *std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100)) {}
+
+private:
+    Tensor<float> tensor1 = Tensor<float>(std::vector<float>{0, 0});
+    Tensor<float> tensor2 = Tensor<float>(std::vector<float>{0, 0});
 
 protected:
     void SetUp() override {
-        optimizer.initialize_params({{2, 2}});
+        Tensor<float> tensor1({0, 0});
+        Tensor<float> tensor2({0, 0});
+
+        const std::vector<std::reference_wrapper<Tensor<float>>> tensor_refs = {tensor1, tensor2};
+
+        optimizer.initialize_params(tensor_refs);
     }
 };
 

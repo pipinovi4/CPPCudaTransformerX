@@ -46,7 +46,7 @@ TEST(DenseLayerTest, UpdateParameters) {
 
     // Create learning rate schedule and optimizer
     auto lr_schedule = std::make_shared<Optimizer<float>::LearningRateSchedule::StepDecaySchedule>(0.01, 0.1, 100);
-    Optimizer<float>::SGD optimizer({{64, 64}}, 0.01, *lr_schedule);
+    Optimizer<float>::SGD optimizer(dense_layer.parameters(), 0.01, *lr_schedule);
 
     // Create input data and perform forward pass
     Tensor<float> input_data = Tensor<float>::uniform({1, 64}, 0.0f, 1.0f);
