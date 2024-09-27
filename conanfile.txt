@@ -5,6 +5,3 @@ gtest/1.15.0
 [generators]
 CMakeDeps
 CMakeToolchain
-
-[layout]
-cmake_layout
