@@ -41,6 +41,7 @@ int main() {
     constexpr float epsilon = 1e-8;
     constexpr float label_smoothing = 0.1;
     constexpr float dropout = 0.1;
+    constexpr int max_context_tokens = 3;
     const std::string weights_path = "../data/weights/transformer_weights.txt";
 
     // Define learning rate scheduler
@@ -71,7 +72,7 @@ int main() {
 
     // Generate text
     std::cout << "Generating text..." << std::endl;
-    const std::vector<std::vector<std::string>>  generated_text = transformer.generate(test_data);
+    const std::vector<std::vector<std::string>>  generated_text = transformer.generate(test_data, max_context_tokens);
     for (auto& sentence : generated_text) {
         for (auto& word : sentence) {
             std::cout << word << " ";
