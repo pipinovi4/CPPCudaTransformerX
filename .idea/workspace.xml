@@ -26,9 +26,11 @@
   <component name="ChangeListManager">
     <list default="true" id="66559b8f-b057-46f1-aa1b-2a4c4195d614" name="Changes" comment="Updated MultiHeadAttention to improve efficiency, readability, and clarity. Changed the default activation function to Softmax instead of Linear. Applied adjustments to parameter initialization and refactored the forward and backward methods to utilize the new activation function structure. Improved gradient calculations and in-place operations, ensuring better performance and handling of weights and biases. Also, enhanced comments and documentation to reflect the latest changes in code logic and functionality.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main" beforeDir="false" afterPath="$PROJECT_DIR$/main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conanfile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/conanfile.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Transformer.h" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/Transformer.tpp" beforeDir="false" afterPath="$PROJECT_DIR$/models/Transformer.tpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/generate.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/generate.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
