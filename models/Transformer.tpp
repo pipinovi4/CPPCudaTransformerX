@@ -275,89 +275,111 @@ void Transformer<T>::train(const std::vector<std::vector<std::string>>& data, co
 }
 
 template <typename T>
-float Transformer<T>::evaluate(const std::vector<std::vector<std::string>>& val_data, int batch_size) {
-    return 0.0;
-}
-
-template <typename T>
-Tensor<T> Transformer<T>::predict(const std::vector<std::vector<std::string>>& src, const int max_len) {
-    // Step 1: Tokenize the data once
-    std::cout << "Predicting..." << std::endl;
-    const int num_sentence = static_cast<int>(src.size());
+std::vector<std::vector<std::string>> Transformer<T>::generate(const std::vector<std::vector<std::string>>& input, const int context_tokens_size ) {
+    // Initialize the EOS token ID constant
+    const int EOS_TOKEN_ID = positional_encoder_->textToIds({"<eos>"})[0];
 
     // Convert the input data to tokenized tensors
-    std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor(src);
+    std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor(input);
 
-    // Step 2: Initialize variables for prediction
-    std::vector<Tensor<T>> src_tensors = processed_data[0];
-    std::vector<Tensor<T>> tgt_tensors = processed_data[1];
-    std::vector<Tensor<T>> true_labels_tensors = processed_data[2];
+    // Print size of processed data by zero dimension
+    std::cout << "Processed data size by zero dimension: " << processed_data.size() << std::endl;
 
-    // Initialize the predicted tokens tensor
-    Tensor<T> predicted_tokens({max_len_});
-    Tensor<T> true_labels_tokens({max_len_});
+    // Print size of processed data by first dimenion
+    std::cout << "Processed data size by first dimension: " << processed_data[0].size() << std::endl;
 
-    // Predict the output for each sentence
-    for (int i = 0; i < num_sentence; ++i) {
-        // Initialize the predicted and true labels tokens
-        Tensor<T> masked_src = src_tensors[i];
-        Tensor<T> masked_tgt = tgt_tensors[i];
-        Tensor<T> true_label_subtensor = true_labels_tensors[i];
+    // Initialize the generated sentences
+    std::vector<std::vector<std::string>> generated_sentences;
+
+    // Update processed data over that to add 3 additional context tokens
+    for (int i = 0; i < processed_data[0].size(); ++i) {
+        for (int j = 1; j < context_tokens_size; ++j) {
+            processed_data[0][i].data[j + 1] = processed_data[2][i].data[j]; // src
+            processed_data[1][i].data[j] = processed_data[2][i].data[j]; // tgt
+        }
+    }
+
+    // Loop through the processed data
+    for (int i = 0; i < processed_data[0].size(); ++i) {
+        // Initialize the source, target, and true label tensors
+        Tensor<T> masked_src = processed_data[0][i];
+        Tensor<T> masked_tgt = processed_data[1][i];
+        Tensor<T> true_label_subtensor = processed_data[2][i];
 
         // Initialize the first token of the target tensor
-        for (int j = 1; j < max_len_; j++) {
-            // Get the true label for the current token
-            T true_label = true_label_subtensor.data[j];
-
+        for (int j = context_tokens_size; j < max_len_; j++) {
             // Forward pass for the current token
             Tensor<T> output = forward(masked_src, masked_tgt);
 
             // Compute predicted token
-            Tensor<T> predicted = output.argmax();
-
-            // Update the predicted and true labels tokens for compute grad and loss
-            predicted_tokens.data[j-1] = predicted.data[0];
-            true_labels_tokens.data[j-1] = true_label;
+            Tensor<T> predicted = output.argmax(0);
 
             // Update src and tgt tensors for the next token
-            masked_src.data[j + 1] = true_label;
-            masked_tgt.data[j] = true_label;
+            masked_src.data[j + 1] = predicted.data[0];
+            masked_tgt.data[j] = predicted.data[0];
+
+            // Break if the EOS token is reached
+            if (predicted.data[0] == EOS_TOKEN_ID) break;
+        }
+        // Convert the predicted tokens to text and add to the generated sentences
+        generated_sentences.push_back(positional_encoder_->idsToText(convert_to_int_tokens(masked_tgt)));
+    }
+    return generated_sentences;
+}
+
+// Zero the gradients of the model parameters
+template <typename T>
+void Transformer<T>::zero_grad() {
+    for (auto& grad : this->gradients()) {
+        grad.get().fill(0);
+    }
+}
+
+
+// Load the model weights from a file
+template <typename T>
+void Transformer<T>::load_weights(const std::string& filepath) {
+    std::ifstream infile(filepath, std::ios::binary);
+    if (!infile.is_open()) {
+        throw std::runtime_error("Failed to open file for loading weights: " + filepath);
+    }
+
+    for (auto& param : this->parameters()) {
+        Tensor<T>& tensor = param.get();
+        infile.read(reinterpret_cast<char*>(tensor.data.data()), tensor.size() * sizeof(T));
+        if (!infile) {
+            throw std::runtime_error("Error reading weights from file: " + filepath);
         }
     }
 
-    // Compute the loss for the predicted tokens
-    T loss = loss_function_->forward(predicted_tokens, true_labels_tokens);
-
-    // Print the loss
-    std::cout << "Predicted Loss: " << loss << std::endl;
-
-    // Compute the accuracy
-    T accuracy = predicted_tokens.data[predicted_tokens.argmax().data[0]] / true_labels_tokens.data[true_labels_tokens.argmax().data[0]];
-
-    // Print the accuracy
-    std::cout << "Predicted Accuracy: " << accuracy << std::endl;
-
-    // Print the true labels
-    std::cout << "True labels: " << std::endl;
-    true_labels_tokens.print();
-
-    // Print the predicted tokens
-    std::cout << "Predicted tokens: " << std::endl;
-    predicted_tokens.print();
-
-    // Convert the predicted tokens to text
-    std::vector<std::string> predicted_text = positional_encoder_->idsToText(convert_to_int_tokens(predicted_tokens));
-
-    // Print the predicted text
-    std::cout << "Predicted text: " << std::endl;
-    for (const auto& token : predicted_text) {
-        std::cout << token << " ";
-    }
-    std::cout << std::endl;
-
-    return Tensor<T>();
+    infile.close();
 }
 
+// Save the model weights to a file
+template <typename T>
+void Transformer<T>::save_weights(const std::string& filepath) {
+    std::ofstream outfile(filepath, std::ios::binary);
+    if (!outfile.is_open()) {
+        throw std::runtime_error("Failed to open file for saving weights: " + filepath);
+    }
+
+    for (auto& param : this->parameters()) {
+        std::cout << "Saving weights: [";
+        for (auto& shape : param.get().shape()) {
+            std::cout << shape << " ";
+        }
+        std::cout << "]" << std::endl;
+        Tensor<T>& tensor = param.get();
+        outfile.write(reinterpret_cast<const char*>(tensor.data.data()), tensor.size() * sizeof(T));
+        if (!outfile) {
+            throw std::runtime_error("Error writing weights to file: " + filepath);
+        }
+    }
+
+    outfile.close();
+}
+
+// Convert the input data to tokenized tensors
 template <typename T>
 std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std::vector<std::vector<std::string>>& data) {
     // Prepare special tokens
@@ -399,107 +421,6 @@ std::vector<std::vector<Tensor<T>>> Transformer<T>::convert_to_tensor(const std:
     }
 
     return {src, tgt, true_labels, mama};
-}
-
-template <typename T>
-std::vector<std::vector<std::string>> Transformer<T>::generate(const std::vector<std::vector<std::string>>& input) {
-    // Initialize the EOS token ID constant
-    const int EOS_TOKEN_ID = positional_encoder_->textToIds({"<eos>"})[0];
-
-    // Convert the input data to tokenized tensors
-    std::vector<std::vector<Tensor<T>>> processed_data = convert_to_tensor(input);
-
-    // Print size of processed data by zero dimension
-    std::cout << "Processed data size by zero dimension: " << processed_data.size() << std::endl;
-
-    // Print size of processed data by first dimenion
-    std::cout << "Processed data size by first dimension: " << processed_data[0].size() << std::endl;
-
-    // Initialize the generated sentences
-    std::vector<std::vector<std::string>> generated_sentences;
-
-    // Update processed data over that to add 3 additional context tokens
-    for (int i = 0; i < processed_data[0].size(); ++i) {
-        for (int j = 1; j < 3; ++j) {
-            processed_data[0][i].data[j + 1] = processed_data[2][i].data[j]; // src
-            processed_data[1][i].data[j] = processed_data[2][i].data[j]; // tgt
-        }
-    }
-
-    // Loop through the processed data
-    for (int i = 0; i < processed_data[0].size(); ++i) {
-        // Initialize the source, target, and true label tensors
-        Tensor<T> masked_src = processed_data[0][i];
-        Tensor<T> masked_tgt = processed_data[1][i];
-        Tensor<T> true_label_subtensor = processed_data[2][i];
-
-        // Initialize the first token of the target tensor
-        for (int j = 3; j < max_len_; j++) {
-            // Forward pass for the current token
-            Tensor<T> output = forward(masked_src, masked_tgt);
-
-            // Compute predicted token
-            Tensor<T> predicted = output.argmax(0);
-
-            // Update src and tgt tensors for the next token
-            masked_src.data[j + 1] = predicted.data[0];
-            masked_tgt.data[j] = predicted.data[0];
-
-            // Break if the EOS token is reached
-            if (predicted.data[0] == EOS_TOKEN_ID) break;
-        }
-        // Convert the predicted tokens to text and add to the generated sentences
-        generated_sentences.push_back(positional_encoder_->idsToText(convert_to_int_tokens(masked_tgt)));
-    }
-    return generated_sentences;
-}
-
-template <typename T>
-void Transformer<T>::zero_grad() {
-    for (auto& grad : this->gradients()) {
-        grad.get().fill(0);
-    }
-}
-
-template <typename T>
-void Transformer<T>::load_weights(const std::string& filepath) {
-    std::ifstream infile(filepath, std::ios::binary);
-    if (!infile.is_open()) {
-        throw std::runtime_error("Failed to open file for loading weights: " + filepath);
-    }
-
-    for (auto& param : this->parameters()) {
-        Tensor<T>& tensor = param.get();
-        infile.read(reinterpret_cast<char*>(tensor.data.data()), tensor.size() * sizeof(T));
-        if (!infile) {
-            throw std::runtime_error("Error reading weights from file: " + filepath);
-        }
-    }
-
-    infile.close();
-}
-
-template <typename T>
-void Transformer<T>::save_weights(const std::string& filepath) {
-    std::ofstream outfile(filepath, std::ios::binary);
-    if (!outfile.is_open()) {
-        throw std::runtime_error("Failed to open file for saving weights: " + filepath);
-    }
-
-    for (auto& param : this->parameters()) {
-        std::cout << "Saving weights: [";
-        for (auto& shape : param.get().shape()) {
-            std::cout << shape << " ";
-        }
-        std::cout << "]" << std::endl;
-        Tensor<T>& tensor = param.get();
-        outfile.write(reinterpret_cast<const char*>(tensor.data.data()), tensor.size() * sizeof(T));
-        if (!outfile) {
-            throw std::runtime_error("Error writing weights to file: " + filepath);
-        }
-    }
-
-    outfile.close();
 }
 
 // Convert float tokens to int tokens
