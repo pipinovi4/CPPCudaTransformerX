@@ -1,97 +1,68 @@
-# Purpose: Makefile for the C++CudaTransformerX project
+# Makefile for C++CudaTransformerX
 
-# Specify the build directory
+# Define build directory and executables
 BUILD_DIR = build
+EXECUTABLES = C++CudaTransformerX global_tests digit_recognizer embedding_model multi_head_attention_model train generate
 
-# Specify the name of the executable
-MAIN_EXECUTABLE = C++CudaTransformerX
-TEST_EXECUTABLE = global_tests
-DIGIT_RECOGNIZER_EXECUTABLE = digit_recognizer
-EMBEDDING_MODEL_EXECUTABLE = embedding_model
-MULTI_HEAD_ATTENTION_MODEL_EXECUTABLE = multi_head_attention_model
-TRAIN_EXECUTABLE = train
-GENERATE_EXECUTABLE = generate
-
-# The 'all' target will run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets
+# Default target: create virtual environment, build, test, run digit recognizer, then clean
 all: venv build test digit_recognizer clean
 
-# The 'venv' target to create and activate the Python virtual environment
+# Create a Python virtual environment and install dependencies
 venv:
-	@echo "Creating Python virtual environment..."
+	@echo "Installing Python3 virtual environment..."
+	sudo apt install python3-venv
+	@echo "Creating and activating the virtual environment..."
 	python3 -m venv .venv
-	@echo "Activating virtual environment and installing dependencies..."
+	@echo "Installing Python dependencies..."
 	. .venv/bin/activate && pip install -r requirements.txt
 
-# The 'build' target
+# Build the project using Conan and CMake
 build:
+	@echo "Cleaning build directory..."
 	rm -rf $(BUILD_DIR)
+	@echo "Detecting Conan profile..."
 	conan profile detect --force
-	conan profile path default
+	@echo "Installing Conan dependencies..."
 	conan install . --output-folder=build --build=missing
-	cd ${BUILD_DIR} && cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release && cmake --build .
+	@echo "Running CMake build..."
+	cd $(BUILD_DIR) && cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release && cmake --build .
 
-# The 'clean' target to remove build artifacts
+# Clean build directory and virtual environment
 clean:
-	rm -rf $(BUILD_DIR)
+	@echo "Cleaning build directory and virtual environment..."
+	rm -rf $(BUILD_DIR) .venv
 
-# The 'clean_venv' target to remove the Python virtual environment
-clean_venv:
-	rm -rf .venv
+# Targets to run tests, models, and executables
+test digit_recognizer embedding_model multi_head_attention_model train generate:
+	@echo "Running $(subst _, ,$@)..."
+	cd $(BUILD_DIR) && cmake --build . && ./$(subst _,,$@)
 
-# The 'test' target
-test:
-	cd ${BUILD_DIR} && cmake --build . && ./$(TEST_EXECUTABLE)
+# Run the main executable
+main:
+	@echo "Running main executable..."
+	cd $(BUILD_DIR) && cmake --build . && ./C++CudaTransformerX
 
-# The 'digit_recognizer' target to run the DigitRecognizer executable
-digit_recognizer:
-	cd ${BUILD_DIR} && cmake --build . && ./$(DIGIT_RECOGNIZER_EXECUTABLE)
-
-# The 'embedding_model' target to run the EmbeddingModel executable
-embedding_model:
-	cd ${BUILD_DIR} && cmake --build . && ./$(EMBEDDING_MODEL_EXECUTABLE)
-
-# The 'multi_head_attention_model' target to run the MultiHeadAttentionModel executable
-multi_head_attention_model:
-	cd ${BUILD_DIR} && cmake --build . && ./$(MULTI_HEAD_ATTENTION_MODEL_EXECUTABLE)
-
-# Profile targets
+# Profile the main executable using Valgrind
 profile_main:
-	make build && cd ${BUILD_DIR} && ulimit -s 16384 && valgrind --tool=callgrind ./$(MAIN_EXECUTABLE)
+	@echo "Profiling main executable with Valgrind..."
+	make build && cd $(BUILD_DIR) && ulimit -s 16384 && valgrind --tool=callgrind ./C++CudaTransformerX
 
-# Download datasets and vocab
+# Download necessary datasets and vocabulary
 download_data:
-	@mkdir -p data
+	@echo "Downloading data..."
 	. .venv/bin/activate && python utils_py/main.py
 
-# Train the model
-train:
-	cd ${BUILD_DIR} && cmake --build . && ./$(TRAIN_EXECUTABLE)
-
-# Generate text
-generate:
-	cd ${BUILD_DIR} && cmake --build . && ./$(GENERATE_EXECUTABLE)
-
-# The 'help' target
+# Display help message for available targets
 help:
-	@echo "Usage: make [target]"
-	@echo "Targets:"
-	@echo "  all: Run 'venv', 'build', 'test', 'digit_recognizer', and 'clean' targets"
-	@echo "  venv: Create and activate the Python virtual environment"
-	@echo "  build: Build the C++ executable"
-	@echo "  clean: Remove build artifacts"
-	@echo "  clean_venv: Remove the Python virtual environment"
-	@echo "  test: Run the global tests"
-	@echo "  digit_recognizer: Run the DigitRecognizer executable"
-	@echo "  embedding_model: Run the EmbeddingModel executable"
-	@echo "  multi_head_attention_model: Run the MultiHeadAttentionModel executable"
-	@echo "  profile_main: Profile the main executable using Valgrind"
-	@echo "  download_data: Download datasets and vocab"
-	@echo "  help: Display this help message"
-	@echo "  train: Train the model"
-	@echo "  generate: Generate text"
+	@echo "Available targets:"
+	@echo "  all - Runs 'venv', 'build', 'test', 'digit_recognizer', and 'clean'"
+	@echo "  venv - Set up Python virtual environment and install dependencies"
+	@echo "  build - Build project using CMake and Conan"
+	@echo "  clean - Clean build artifacts and virtual environment"
+	@echo "  test, digit_recognizer, embedding_model, multi_head_attention_model, main, train, generate - Run respective executables"
+	@echo "  profile_main - Profile the main executable using Valgrind"
+	@echo "  download_data - Download datasets and vocab"
+	@echo "  help - Display this help message"
 
-
-# Phony targets
-.PHONY: all venv build test digit_recognizer clean profile_main clean_venv embedding_model multi_head_attention_model download_data train generate help
-
-# End of Makefile
+# Declare phony targets to prevent conflicts with files
+.PHONY: all venv build clean test digit_recognizer embedding_model multi_head_attention_model profile_main download_data main train generate help
