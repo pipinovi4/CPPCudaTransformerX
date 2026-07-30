@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
+#include <stdexcept>
 
 template <typename T>
 T clamp_value(T value, T min_value, T max_value) {
@@ -61,10 +62,15 @@ public:
         : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {}
 
     void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) override {
+        this->first_moment_vector_.clear();
+        this->second_moment_vector_.clear();
+        this->first_moment_vector_.reserve(parameters.size());
+        this->second_moment_vector_.reserve(parameters.size());
         for (auto parameter : parameters) {
-            this->first_moment_vector_.push_back(parameter.get());  // First moment vector
-            this->second_moment_vector_.push_back(parameter.get()); // Second moment vector
+            this->first_moment_vector_.emplace_back(parameter.get().shape());
+            this->second_moment_vector_.emplace_back(parameter.get().shape());
         }
+        this->time_step_ = 1;
     }
 
     void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params,
@@ -72,7 +78,20 @@ public:
                 const size_t& epoch) override {
         // Update learning rate based on the current epoch
         this->updateLearningRate(epoch);
-        //
+
+        if (params.size() != grads.size()) {
+            throw std::invalid_argument("Adam requires one gradient tensor per parameter tensor.");
+        }
+        bool state_mismatch = this->first_moment_vector_.size() != params.size()
+                           || this->second_moment_vector_.size() != params.size();
+        for (size_t i = 0; !state_mismatch && i < params.size(); ++i) {
+            state_mismatch = this->first_moment_vector_[i].shape() != params[i].get().shape()
+                          || this->second_moment_vector_[i].shape() != params[i].get().shape();
+        }
+        if (state_mismatch) {
+            initialize_params(std::vector<std::reference_wrapper<Tensor<T>>>(params.begin(), params.end()));
+        }
+
         // Clip gradients to avoid exploding gradients
         for (auto& grad : grads) {
             clip_gradients(grad.get(), 1.0);  // Clip before updating parameters
@@ -85,7 +104,7 @@ public:
         T inv_beta2 = 1 - beta2_;
 
         // Update parameters with Adam
-        for (size_t i = 0; i < first_moment_vector_.size(); ++i) {
+        for (size_t i = 0; i < params.size(); ++i) {
             // Get references to the data
             auto& fm = first_moment_vector_[i].data;
             auto& sm = second_moment_vector_[i].data;
@@ -93,8 +112,7 @@ public:
             auto& g = grads[i].get().data;
 
             if (fm.size() != sm.size() || sm.size() != p.size() || p.size() != g.size()) {
-                std::cerr << "Error in Adam Optimizer: Size mismatch detected between tensors during the update step." << std::endl;
-                return;
+                throw std::invalid_argument("Adam parameter, gradient, and moment tensor sizes must match.");
             }
 
             // Pointer to raw data
@@ -154,10 +172,15 @@ public:
     : Optimizer<T>(learning_rate, lr_schedule, weight_decay, beta1, beta2, epsilon) {}
 
     void initialize_params(std::vector<std::reference_wrapper<Tensor<T>>> parameters) override {
+        this->first_moment_vector_.clear();
+        this->second_moment_vector_.clear();
+        this->first_moment_vector_.reserve(parameters.size());
+        this->second_moment_vector_.reserve(parameters.size());
         for (auto parameter : parameters) {
-            this->first_moment_vector_.push_back(parameter.get());  // First moment vector
-            this->second_moment_vector_.push_back(parameter.get()); // Second moment vector
+            this->first_moment_vector_.emplace_back(parameter.get().shape());
+            this->second_moment_vector_.emplace_back(parameter.get().shape());
         }
+        this->time_step_ = 1;
     }
 
     void update(const std::vector<std::reference_wrapper<Tensor<T>>>& params,
@@ -165,6 +188,17 @@ public:
                 const size_t& epoch) override {
         // Update learning rate based on the current epoch
         this->updateLearningRate(epoch);
+
+        if (params.size() != grads.size()) {
+            throw std::invalid_argument("RMSprop requires one gradient tensor per parameter tensor.");
+        }
+        bool state_mismatch = this->second_moment_vector_.size() != params.size();
+        for (size_t i = 0; !state_mismatch && i < params.size(); ++i) {
+            state_mismatch = this->second_moment_vector_[i].shape() != params[i].get().shape();
+        }
+        if (state_mismatch) {
+            initialize_params(std::vector<std::reference_wrapper<Tensor<T>>>(params.begin(), params.end()));
+        }
 
         // Clip gradients to avoid exploding gradients
         for (auto& grad : grads) {
@@ -178,6 +212,10 @@ public:
             auto& g = grads[i].get().data;
             auto& sm = second_moment_vector_[i].data; // Mean squared gradients
 
+            if (p.size() != g.size() || p.size() != sm.size()) {
+                throw std::invalid_argument("RMSprop parameter, gradient, and state tensor sizes must match.");
+            }
+
             // Update the parameters
             for (size_t j = 0; j < p.size(); ++j) {
                 // Get references to the current values
@@ -185,7 +223,7 @@ public:
                 T& g_current = g[j];
 
                 // Update the mean squared gradients
-                sm_current = weight_decay_ * sm_current + (1 - weight_decay_) * std::pow(g_current, 2);
+                sm_current = beta1_ * sm_current + (1 - beta1_) * std::pow(g_current, 2);
 
                 // Update the parameters
                 p[j] -= this->learning_rate_ * g_current / (std::sqrt(sm_current) + epsilon_);

@@ -1,18 +1,6 @@
 #include <gtest/gtest.h>
 #include "../include/Tensor.h"
 
-std::ostream& operator<<(std::ostream& os, const std::vector<int>& vec) {
-  os << "[";
-  for (size_t i = 0; i < vec.size(); ++i) {
-    os << vec[i];
-    if (i != vec.size() - 1) {
-      os << ", ";
-    }
-  }
-  os << "]";
-  return os;
-}
-
 class TensorTest : public ::testing::Test {
 protected:
   Tensor<float> input_tensor;
@@ -27,7 +15,7 @@ protected:
   }
 
   void ExpectTensorNear(const float abs_error = 1e-2) const {
-    EXPECT_TRUE(result_tensor.shape() == expected_tensor.shape()) << "Expected shape: " << expected_tensor.shape() << " but got " << result_tensor.shape();
+    EXPECT_EQ(result_tensor.shape(), expected_tensor.shape());
     EXPECT_TRUE(result_tensor.size() == expected_tensor.size()) << "Expected size: " << expected_tensor.size() << " but got " << result_tensor.size();
     for (int i = 0; i < result_tensor.size(); i++) {
       EXPECT_NEAR(result_tensor.data[i], expected_tensor.data[i], abs_error) << "Expected value: " << expected_tensor.data[i] << " but got " << result_tensor.data[i] << " at index " << i;

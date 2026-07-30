@@ -114,14 +114,14 @@ void PositionalWiseDenseLayer<T>::backward(Tensor<T>& grad) {
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> PositionalWiseDenseLayer<T>::parameters() {
     // Return a vector containing references to all the parameters (weights and biases).
-    return {weights_1_, weights_2_, biases_1_, biases_2_};
+    return {weights_1_, biases_1_, weights_2_, biases_2_};
 }
 
 // Getter for the gradients of the PositionalWiseDenseLayer.
 template <typename T>
 std::vector<std::reference_wrapper<Tensor<T>>> PositionalWiseDenseLayer<T>::gradients() {
     // Return a vector containing references to all the gradients of the parameters.
-    return {grad_weights_1_, grad_weights_2_, grad_biases_1_, grad_biases_2_};
+    return {grad_weights_1_, grad_biases_1_, grad_weights_2_, grad_biases_2_};
 }
 
 #endif //POSITIONALWISEDENSELAYER_TPP

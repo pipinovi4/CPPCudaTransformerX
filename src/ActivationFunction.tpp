@@ -90,7 +90,6 @@ public:
     // Backward method for computation of the gradient (derivative of the ReLU function)
     void backward(Tensor<T>& gradOutput) override {
         for (size_t i = 0; i < gradOutput.data.size(); ++i) {
-            gradOutput.data[i];
             gradOutput.data[i] *= (input_cache.data[i] > 0) ? 1 : 0;
         }
     }

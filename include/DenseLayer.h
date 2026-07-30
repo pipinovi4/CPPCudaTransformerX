@@ -11,7 +11,7 @@
 #include "Layer.h"
 #include "../include/Tensor.h"
 #include "../include/ActivationFunction.h"
-#include "eigen3/Eigen/Dense"
+#include "Eigen/Dense"
 
 /**
  * @class DenseLayer
