@@ -14,6 +14,8 @@ CMakeFiles
 profile_logs/
 .venv
 .idea
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
 .vscode
 __pycache__
 *.pyc
