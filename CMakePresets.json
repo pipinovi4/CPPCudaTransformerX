@@ -1,38 +1,73 @@
 {
-    "version": 3,
-    "vendor": {
-        "conan": {}
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 15,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default debug build",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
     },
-    "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 15,
-        "patch": 0
+    {
+      "name": "release",
+      "displayName": "Release build",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     },
-    "configurePresets": [
-        {
-            "name": "conan-release",
-            "displayName": "'conan-release' config",
-            "description": "'conan-release' configure using 'Unix Makefiles' generator",
-            "generator": "Unix Makefiles",
-            "cacheVariables": {
-                "CMAKE_POLICY_DEFAULT_CMP0091": "NEW",
-                "CMAKE_BUILD_TYPE": "Release"
-            },
-            "toolchainFile": "conan_toolchain.cmake",
-            "binaryDir": "/home/pipin/C++CudaTransformerX"
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "conan-release",
-            "configurePreset": "conan-release",
-            "jobs": 8
-        }
-    ],
-    "testPresets": [
-        {
-            "name": "conan-release",
-            "configurePreset": "conan-release"
-        }
-    ]
+    {
+      "name": "conan-release",
+      "displayName": "Release build with Conan",
+      "inherits": "release",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/build/conan_toolchain.cmake"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "conan-release",
+      "configurePreset": "conan-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "conan-release",
+      "configurePreset": "conan-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
 }

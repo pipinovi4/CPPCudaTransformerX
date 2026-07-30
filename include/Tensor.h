@@ -17,7 +17,7 @@
 #include <functional>
 #include <random>
 #include <immintrin.h>
-#include "eigen3/Eigen/Dense"
+#include <Eigen/Dense>
 
 /**
  * @brief A class representing a multi-dimensional array (tensor) and providing various operations.

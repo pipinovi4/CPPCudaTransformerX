@@ -1,0 +1,7 @@
+-r requirements.txt
+
+# Direct dependencies used by the optional Python baseline notebooks.
+ipykernel>=6.29,<7
+ipython>=8.26,<10
+matplotlib>=3.9,<4
+torchvision>=0.19,<1

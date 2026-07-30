@@ -1,142 +1,195 @@
-#include <iostream>
 #include <algorithm>
+#include <cctype>
+#include <exception>
+#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
+
 #include "../include/LossFunction.h"
 #include "../include/Optimizer.h"
 #include "../models/Transformer.h"
 #include "../utils/loadVocab.h"
 
-int main() {
-    int initial_token_count = 0;
-    std::string input_text;
+namespace {
+
+constexpr int kMaxContextTokens = 4;
+
+std::vector<std::string> splitTokens(const std::string& text) {
+    std::istringstream stream(text);
     std::vector<std::string> tokens;
+    std::string token;
 
-    std::cout << "Enter context for text generation (max 4 tokens): ";
-    std::getline(std::cin, input_text);
-
-    // Split input into individual tokens
-    std::istringstream stream(input_text);
-    std::string word;
-    while (stream >> word) {
-        tokens.push_back(word);
+    while (stream >> token) {
+        tokens.push_back(token);
     }
 
-    initial_token_count = tokens.size();
+    return tokens;
+}
 
-    // Adjust token size if greater than 4
-    if (tokens.size() > 4) {
-        std::cout << "Maximum context size is 4 tokens." << std::endl;
-        tokens.resize(4);
-        input_text = "";
-        for (const auto& token : tokens) {
-            input_text += token + " ";
+std::string joinTokens(const std::vector<std::string>& tokens) {
+    std::ostringstream stream;
+
+    for (std::size_t index = 0; index < tokens.size(); ++index) {
+        if (index != 0) {
+            stream << ' ';
         }
-
-        std::cout << "Reduced to 4 tokens: " << input_text << std::endl;
-        std::cout << "Continue? (yes/no): ";
-
-        std::string response;
-        std::getline(std::cin, response);
-        std::transform(response.begin(), response.end(), response.begin(), ::tolower);
-
-        if (response == "no" || response == "n") {
-            std::cout << "Exiting..." << std::endl;
-            return 0;
-        }
-    } else if (tokens.size() < 4) {
-        std::cout << "Context has fewer than 4 tokens." << std::endl;
-        int missing_tokens = 4 - tokens.size();
-        tokens.insert(tokens.end(), missing_tokens, "<PAD>");
-        input_text = "";
-        for (const auto& token : tokens) {
-            input_text += token + " ";
-        }
-
-        std::cout << "Filled with <PAD>: " << input_text << std::endl;
-        std::cout << "Continue? (yes/no): ";
-
-        std::string response;
-        std::getline(std::cin, response);
-        std::transform(response.begin(), response.end(), response.begin(), ::tolower);
-        if (response == "no" || response == "n") {
-            std::cout << "Exiting..." << std::endl;
-            return 0;
-        }
+        stream << tokens[index];
     }
 
-    // Load vocabulary
-    std::cout << "Loading vocabulary..." << std::endl;
-    const std::vector<std::string> vocab = load_vocab("../data/vocab/vocab_30000_words.txt");
-    std::cout << "Vocabulary loaded." << std::endl;
+    return stream.str();
+}
 
-    // Model parameters
-    constexpr int max_tokens = 8;
-    constexpr int d_model = 32;
-    constexpr int n_heads = 8;
-    constexpr int d_ff = 128;
-    const int vocab_size = static_cast<int>(vocab.size());
-    constexpr float learning_rate = 0.001;
-    constexpr float decay_rate = 0.9;
-    constexpr float weight_decay = 0.001;
-    constexpr float b1 = 0.9;
-    constexpr float b2 = 0.999;
-    constexpr float epsilon = 1e-8;
-    constexpr float label_smoothing = 0.1;
-    constexpr float dropout = 0.1;
-    const std::string weights_path = "../data/weights/transformer_weights.txt";
+std::string toLower(std::string value) {
+    std::transform(
+        value.begin(),
+        value.end(),
+        value.begin(),
+        [](const unsigned char character) {
+            return static_cast<char>(std::tolower(character));
+        }
+    );
+    return value;
+}
 
-    // Initialize learning rate scheduler, loss function, and optimizer
-    Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule lr_schedule(learning_rate, decay_rate);
-    LossFunction<float>::crossEntropyLoss loss_fn;
-    Optimizer<float>::Adam optimizer(learning_rate, lr_schedule, weight_decay, b1, b2, epsilon);
+bool confirm(const std::string& prompt) {
+    std::cout << prompt;
 
-    // Initialize and load the Transformer model
-    Transformer<float> transformer(&loss_fn, &optimizer, vocab, lr_schedule, vocab_size, d_model, n_heads, d_ff, max_tokens, dropout, label_smoothing);
-    transformer.load_weights(weights_path);
-
-    std::cout << "Do you want to see the model's parameters? (yes/no): ";
     std::string response;
-    std::getline(std::cin, response);
-    std::transform(response.begin(), response.end(), response.begin(), ::tolower);
-
-    if (response == "yes" || response == "y") {
-        std::cout << "\nModel Parameters:\n";
-        std::cout << "Vocab size: " << vocab_size << "\n"
-                  << "Max tokens: " << max_tokens << "\n"
-                  << "Learning rate: " << learning_rate << "\n"
-                  << "d_model: " << d_model << "\n"
-                  << "n_heads: " << n_heads << "\n"
-                  << "d_ff: " << d_ff << "\n"
-                  << "Weight decay: " << weight_decay << "\n"
-                  << "b1: " << b1 << "\n"
-                  << "b2: " << b2 << "\n"
-                  << "Epsilon: " << epsilon << "\n"
-                  << "Dropout: " << dropout << "\n"
-                  << "Label smoothing: " << label_smoothing << "\n";
+    if (!std::getline(std::cin, response)) {
+        return false;
     }
 
-    // Generate text based on input
-    const std::vector<std::vector<std::string>> generated_text = transformer.generate({transformer.positional_encoder_->tokenize(input_text)}, initial_token_count);
-    std::cout << "Text generated successfully!" << std::endl;
+    response = toLower(response);
+    return response == "yes" || response == "y";
+}
 
-    // Output the generated text
-    std::cout << "\nGenerated text: ";
-    for (int i = initial_token_count + 1; i < generated_text[0].size(); ++i) {
-        std::cout << generated_text[0][i] << " ";
-    }
+}  // namespace
 
-    std::cout << "\nFull generated text: ";
-    for (const auto& sentence : generated_text) {
-        for (const auto& word : sentence) {
-            std::cout << word << " ";
-            if (word == "<EOS>") break;
+int main(int argc, char* argv[]) {
+    const std::string vocabPath =
+        argc > 1 ? argv[1] : "../data/vocab/vocab_30000_words.txt";
+    const std::string weightsPath =
+        argc > 2 ? argv[2] : "../data/weights/transformer_weights.txt";
+
+    try {
+        std::cout << "BackpropLab experimental text-generation demo\n";
+        std::cout << "Enter context (1-" << kMaxContextTokens << " tokens): ";
+
+        std::string inputText;
+        if (!std::getline(std::cin, inputText)) {
+            std::cerr << "Unable to read the input context.\n";
+            return 1;
         }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
 
-    std::cout << "Goodbye!" << std::endl;
-    return 0;
+        std::vector<std::string> tokens = splitTokens(inputText);
+        if (tokens.empty()) {
+            std::cerr << "The context must contain at least one token.\n";
+            return 1;
+        }
+
+        if (tokens.size() > kMaxContextTokens) {
+            tokens.resize(kMaxContextTokens);
+            inputText = joinTokens(tokens);
+
+            std::cout << "Context was reduced to " << kMaxContextTokens
+                      << " tokens: " << inputText << '\n';
+
+            if (!confirm("Continue? (yes/no): ")) {
+                std::cout << "Exiting.\n";
+                return 0;
+            }
+        }
+
+        const int contextTokenCount = static_cast<int>(tokens.size());
+
+        std::cout << "Loading vocabulary from " << vocabPath << "...\n";
+        const std::vector<std::string> vocab = load_vocab(vocabPath);
+        std::cout << "Vocabulary loaded.\n";
+
+        constexpr int maxTokens = 8;
+        constexpr int dModel = 32;
+        constexpr int numberOfHeads = 8;
+        constexpr int feedForwardSize = 128;
+        constexpr float learningRate = 0.001F;
+        constexpr float decayRate = 0.9F;
+        constexpr float weightDecay = 0.001F;
+        constexpr float beta1 = 0.9F;
+        constexpr float beta2 = 0.999F;
+        constexpr float epsilon = 1e-8F;
+        constexpr float labelSmoothing = 0.1F;
+        constexpr float dropout = 0.1F;
+
+        const int vocabularySize = static_cast<int>(vocab.size());
+
+        Optimizer<float>::LearningRateSchedule::ExponentialDecaySchedule
+            learningRateSchedule(learningRate, decayRate);
+        LossFunction<float>::crossEntropyLoss lossFunction;
+        Optimizer<float>::Adam optimizer(
+            learningRate,
+            learningRateSchedule,
+            weightDecay,
+            beta1,
+            beta2,
+            epsilon
+        );
+
+        Transformer<float> transformer(
+            &lossFunction,
+            &optimizer,
+            vocab,
+            learningRateSchedule,
+            vocabularySize,
+            dModel,
+            numberOfHeads,
+            feedForwardSize,
+            maxTokens,
+            dropout,
+            labelSmoothing
+        );
+
+        std::cout << "Loading model weights from " << weightsPath << "...\n";
+        transformer.load_weights(weightsPath);
+
+        if (confirm("Show model configuration? (yes/no): ")) {
+            std::cout << "\nModel configuration:\n"
+                      << "Vocabulary size: " << vocabularySize << '\n'
+                      << "Maximum tokens: " << maxTokens << '\n'
+                      << "Model dimension: " << dModel << '\n'
+                      << "Attention heads: " << numberOfHeads << '\n'
+                      << "Feed-forward size: " << feedForwardSize << '\n'
+                      << "Learning rate: " << learningRate << '\n'
+                      << "Weight decay: " << weightDecay << '\n'
+                      << "Label smoothing: " << labelSmoothing << '\n'
+                      << "Configured dropout: " << dropout
+                      << " (not currently applied)\n";
+        }
+
+        const std::vector<std::vector<std::string>> generatedText =
+            transformer.generate(
+                {transformer.positional_encoder_->tokenize(inputText)},
+                contextTokenCount
+            );
+
+        if (generatedText.empty()) {
+            std::cerr << "The model returned no generated sentences.\n";
+            return 1;
+        }
+
+        std::cout << "\nGenerated tokens:\n";
+        for (const auto& sentence : generatedText) {
+            for (const auto& token : sentence) {
+                std::cout << token << ' ';
+                if (token == "<eos>") {
+                    break;
+                }
+            }
+            std::cout << '\n';
+        }
+
+        return 0;
+    } catch (const std::exception& error) {
+        std::cerr << "BackpropLab demo failed: " << error.what() << '\n';
+        return 1;
+    }
 }
